@@ -55,7 +55,7 @@
                     <div class="sb-nav-link-icon"><i class="fa-solid fa-tag"></i></div>
                     Categorias
                 </a>
-                <a class="nav-link" href="{{ route('categorias.index') }}">
+                <a class="nav-link" href="{{ route('marcas.index') }}">
                     <div class="sb-nav-link-icon"><i class="fa-solid fa-code-branch"></i></div>
                     Marcas
                 </a>
