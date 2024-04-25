@@ -59,13 +59,13 @@
                     <div class="sb-nav-link-icon"><i class="fa-solid fa-code-branch"></i></div>
                     Marcas
                 </a>
-                <a class="nav-link" href="{{ route('categorias.index') }}">
+                <a class="nav-link" href="{{ route('presentaciones.index') }}">
                     <div class="sb-nav-link-icon"><i class="fa-solid fa-bag-shopping"></i></div>
                     Presentaciones
                 </a>
-                <a class="nav-link" href="#">
-                    <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                    Tables
+                <a class="nav-link" href="{{ route('productos.index') }}">
+                    <div class="sb-nav-link-icon"><i class="fa-solid fa-kit-medical"></i></div>
+                    Productos
                 </a>
             </div>
         </div>

@@ -2,7 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCaracteristicaRequest;
+use App\Http\Requests\UpdateMarcaRequest;
+use App\Http\Requests\UpdatePresentacioneRequest;
+use App\Models\Caracteristica;
+use App\Models\Presentacione;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class presentacioneController extends Controller
 {
@@ -11,7 +18,8 @@ class presentacioneController extends Controller
      */
     public function index()
     {
-        //
+        $presentaciones = Presentacione::with('caracteristica')->latest()->get();
+        return view('presentacione.index',compact('presentaciones'));
     }
 
     /**
@@ -19,17 +27,27 @@ class presentacioneController extends Controller
      */
     public function create()
     {
-        //
+        return view('presentacione.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCaracteristicaRequest $request)
     {
-        //
-    }
 
+        try {
+            DB::beginTransaction();
+            $caracteristica = Caracteristica::create($request->validated());
+            $caracteristica->presentacione()->create([
+                'caracteristica_id' => $caracteristica->id
+            ]);
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+        }
+        return redirect()->route('presentaciones.index')->with('success', 'Presentacion registrado');
+    }
     /**
      * Display the specified resource.
      */
@@ -41,17 +59,20 @@ class presentacioneController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Presentacione $presentacione)
     {
-        //
+        return view('presentacione.edit',compact('presentacione'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdatePresentacioneRequest $request, Presentacione $presentacione)
     {
-        //
+        Caracteristica::where('id', $presentacione->caracteristica->id)
+            ->update($request->validated());
+
+        return redirect()->route('presentaciones.index')->with('success', 'Presentacion editado');
     }
 
     /**
@@ -59,6 +80,22 @@ class presentacioneController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $message = '';
+        $presentacione = Presentacione::find($id);
+        if ($presentacione->caracteristica->estado == 1) {
+            Caracteristica::where('id', $presentacione->caracteristica->id)
+                ->update([
+                    'estado' => 0
+                ]);
+            $message = 'Presentacion eliminado';
+        } else {
+            Caracteristica::where('id', $presentacione->caracteristica->id)
+                ->update([
+                    'estado' => 1
+                ]);
+            $message = 'Presentacion restaurado';
+        }
+
+        return redirect()->route('presentaciones.index')->with('success', $message);
     }
 }
