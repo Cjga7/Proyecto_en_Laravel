@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreProductoRequest;
 use App\Models\Categoria;
 use App\Models\Marca;
 use App\Models\Presentacione;
+use App\Models\Producto;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB; // Importar DB
 
 class ProductoController extends Controller
 {
@@ -23,14 +27,17 @@ class ProductoController extends Controller
     public function create()
     {
         $marcas = Marca::join('caracteristicas as c', 'marcas.caracteristica_id','=','c.id')
+        ->select('marcas.id as id','c.nombre as nombre')
         ->where('c.estado',1)
         ->get();
 
         $presentaciones = Presentacione::join('caracteristicas as c','presentaciones.caracteristica_id','=','c.id')
+        ->select('presentaciones.id as id', 'c.nombre as nombre')
         ->where('c.estado',1)
         ->get();
 
         $categorias = Categoria::join('caracteristicas as c','categorias.caracteristica_id','=','c.id')
+        ->select('categorias.id as id','c.nombre as nombre')
         ->where('c.estado',1)
         ->get();
         return view('producto.create',compact('marcas','presentaciones','categorias'));
@@ -39,9 +46,41 @@ class ProductoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreProductoRequest $request)
     {
-        //
+        try{
+            DB::beginTransaction();
+            //tabla producto
+            $producto = new Producto();
+            if($request->hasFile('img_path') ){
+                $name = $producto->hanbleUploadImage($request->file('img_path'));
+            }else{
+                $name = null;
+            }
+
+            $producto->fill([
+                'codigo' => $request->codigo,
+                'nombre' => $request->nombre,
+                'descripcion' => $request->descripcion,
+                'fecha_vencimiento' => $request->fecha_vencimiento,
+                'img_path' => $name,
+                'marca_id' => $request->marca_id,
+                'presentacione_id' => $request->presentacione_id
+            ]);
+            $producto->save();
+            //tabla categoria producto
+            $categorias = $request->get('categorias');
+            $producto->categorias()->attach($categorias);
+
+            
+
+            DB::commit();
+        }catch(Exception $e){
+            DB::rollback();
+        }
+        
+        return redirect()->route('productos.index')->with('success','Producto Registrado');
+
     }
 
     /**

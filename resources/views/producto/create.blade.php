@@ -22,7 +22,7 @@
             <li class="breadcrumb-item active">Crear Producto</li>
         </ol>
         <div class="container w-100 border border-3 border-primary rounded p-4 mt-3">
-            <form action="{{ route('productos.store') }}" method="post">
+            <form action="{{ route('productos.store') }}" method="post" enctype="multipart/form-data">
                 @csrf
                 <div class="row g-3">
 
@@ -80,7 +80,7 @@
                         <select data-size="4" title="Seleccione una marca" data-live-search="true" name="marca_id"
                             id="marca_id" class="form-control selectpicker show-tick">
                             @foreach ($marcas as $item)
-                                <option value="{{ $item->id }}">{{ $item->caracteristica->nombre }}</option>
+                                <option value="{{ $item->id }}"{{ old('marca_id') == $item->id ? 'selected' : '' }}>{{ $item->nombre }}</option>
                             @endforeach
                         </select>
                         @error('marca_id')
@@ -94,7 +94,7 @@
                         <select data-size="4" title="Seleccione una presentacion" data-live-search="true"
                             name="presentacione_id" id="presentacione_id" class="form-control selectpicker show-tick">
                             @foreach ($presentaciones as $item)
-                                <option value="{{ $item->id }}">{{ $item->caracteristica->nombre }}</option>
+                                <option value="{{ $item->id }}"{{ old('presentacione_id') == $item->id ? 'selected' : '' }}>{{ $item->nombre }}</option>
                             @endforeach
                         </select>
                         @error('presentacione_id')
@@ -108,7 +108,7 @@
                         <select data-size="4" title="Seleccione una categoria" data-live-search="true" name="categorias[]"
                             id="categorias" class="form-control selectpicker show-tick" multiple>
                             @foreach ($categorias as $item)
-                                <option value="{{ $item->id }}">{{ $item->caracteristica->nombre }}</option>
+                                <option value="{{ $item->id }}"{{ (in_array($item->id , old('categorias',[]))) ? 'selected': '' }}>{{ $item->nombre }}</option>
                             @endforeach
                         </select>
                         @error('categorias')
