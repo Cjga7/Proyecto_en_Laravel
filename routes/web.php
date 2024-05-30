@@ -23,6 +23,7 @@ Route::get('/', function () {
 
 Route::view('/panel', 'panel.index')->name('panel');
 
+
 Route::resources([
     'categorias' => categoriaController::class,
     'presentaciones' => PresentacioneController::class,
