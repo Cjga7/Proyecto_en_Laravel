@@ -22,7 +22,8 @@
             <li class="breadcrumb-item active">Editar Producto</li>
         </ol>
         <div class="container w-100 border border-3 border-primary rounded p-4 mt-3">
-            <form action="" method="post" enctype="multipart/form-data">
+            <form action="{{route ('productos.update',['producto'=>$producto])}}" method="post" enctype="multipart/form-data">
+                @method('PATCH')
                 @csrf
                 <div class="row g-3">
 
@@ -110,7 +111,6 @@
                             <small class="text-danger">{{ '*' . $message }}</small>
                         @enderror
                     </div>
-
                     <!-----Categorias---->
                     <div class="col-md-6 mb-2">
                         <label for="categorias" class="form-label">Categoria:</label>
