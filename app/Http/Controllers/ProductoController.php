@@ -9,6 +9,7 @@ use App\Models\Marca;
 use App\Models\Presentacione;
 use App\Models\Producto;
 use Exception;
+use GuzzleHttp\Handler\Proxy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB; // Importar DB
 use Illuminate\Support\Facades\Storage;
@@ -163,6 +164,22 @@ class ProductoController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $message = '';
+        $producto = Producto::find($id);
+        if ($producto->estado == 1) {
+            Producto::where('id', $producto->id)
+                ->update([
+                    'estado' => 0
+                ]);
+            $message = 'Producto eliminado';
+        } else {
+            Producto::where('id', $producto->id)
+                ->update([
+                    'estado' => 1
+                ]);
+            $message = 'Producto restaurado';
+        }
+
+        return redirect()->route('productos.index')->with('success', $message);
     }
 }

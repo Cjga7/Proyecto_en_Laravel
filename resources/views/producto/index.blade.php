@@ -38,7 +38,7 @@
         <div class="mb-4">
             <a href="{{ route('productos.create') }}" class="btn btn-primary">Añadir un nuevo Producto</a>
         </div>
-        
+
         <div class="card mb-4">
             <div class="card-header">
                 <i class="fas fa-table me-1"></i> Tabla Productos
@@ -77,7 +77,13 @@
                                     <div class="btn-group" role="group" aria-label="Basic mixed styles example">
                                         <a href="{{ route('productos.edit', ['producto' => $item->id]) }}" class="btn btn-warning">Editar</a>
                                         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#verModal-{{ $item->id }}">Ver</button>
-                                        <button type="button" class="btn btn-danger">Eliminar</button>
+
+                                        @if ($item->estado == 1)
+                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal-{{ $item->id }}">Eliminar</button>
+                                        @else
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal-{{ $item->id }}">Resturar</button>
+                                        @endif
+
                                     </div>
                                 </td>
                             </tr>
@@ -112,6 +118,32 @@
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Modal de confirmacion-->
+                            <div class="modal fade" id="confirmModal-{{ $item->id }}" tabindex="-1"
+                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Mensaje de confirmacion</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ $item->estado == 1 ? 'Seguro quieres eliminar este producto?' : 'Seguro que quieres restaurar este Producto?' }}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-bs-dismiss="modal">Cerrar</button>
+                                            <form action="{{ route('productos.destroy', ['producto'=> $item->id]) }}" method="post">
+                                                @method('DELETE')
+                                                @csrf
+                                                <button type="submit" class="btn btn-danger">Confirmar</button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
