@@ -83,14 +83,12 @@
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                                        <form action="{{ route('clientes.edit', ['cliente' => $item]) }}"
-                                            method="get">
+                                        <form action="{{ route('clientes.edit', ['cliente' => $item]) }}" method="get">
                                             <button type="submit" class="btn btn-warning">Editar</button>
-                                            <button type="submit" class="btn btn-danger">Eliminar</button>
                                         </form>
 
                                         @if ($item->persona->estado == 1)
-
+                                        <button type="submit" class="btn btn-danger">Eliminar</button>
                                         @else
 
                                         @endif
