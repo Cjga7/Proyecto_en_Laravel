@@ -44,7 +44,7 @@
         <div class="card mb-4">
             <div class="card-header">
                 <i class="fas fa-table me-1"></i>
-                Tabla Categorias
+                Tabla Marcas
             </div>
             <div class="card-body">
                 <table id="datatablesSimple" class="table table-striped">
