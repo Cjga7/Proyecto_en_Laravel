@@ -96,9 +96,9 @@ class compraController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Compra $compra)
     {
-        //
+        return view('compra.show',compact('compra'));
     }
 
     /**
@@ -122,6 +122,10 @@ class compraController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Compra::where('id',$id)
+        ->update([
+            'estado' => 0
+        ]);
+        return redirect()->route('compras.index')->with('success', 'compra eliminada');
     }
 }
