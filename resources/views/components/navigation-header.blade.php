@@ -18,7 +18,7 @@
                 <li><a class="dropdown-item" href="#!">Configuracion</a></li>
                 <li><a class="dropdown-item" href="#!">Registro de Actividad</a></li>
                 <li><hr class="dropdown-divider" /></li>
-                <li><a class="dropdown-item" href="#!">Cerrar Sesion</a></li>
+                <li><a class="dropdown-item" href="{{ route('logout') }}">Cerrar Sesion</a></li>
             </ul>
         </li>
     </ul>

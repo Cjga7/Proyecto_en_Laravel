@@ -12,19 +12,21 @@
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
         @stack('css')
     </head>
+    @auth
+
     <body class="sb-nav-fixed">
 
         <x-navigation-header />
-        
+
         <div id="layoutSidenav">
             <x-navigation-menu/>
             <div id="layoutSidenav_content">
                 <main>
-                    
+
                     @yield('content')
 
                 </main>
-                
+
                 <x-footer/>
 
             </div>
@@ -33,6 +35,10 @@
         <script src="{{asset('js/scripts.js')}}"></script>
         @stack('js')
 
-        
+
     </body>
+    @endauth
+    @guest
+    @include('pages.401')
+    @endguest
 </html>
