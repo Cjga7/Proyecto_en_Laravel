@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\homeController;
 use App\Http\Controllers\loginController;
 use App\Http\Controllers\logoutController;
+use App\Http\Controllers\userController;
+use App\Http\Controllers\roleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +37,9 @@ Route::resources([
     'clientes' => clienteController::class,
     'proveedores' => proveedoreController::class,
     'compras' => compraController::class,
-    'ventas' => ventaController::class
+    'ventas' => ventaController::class,
+    'users' => userController::class,
+    'roles' => roleController::class
 ]);
 
 

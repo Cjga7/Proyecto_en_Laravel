@@ -105,6 +105,15 @@
                     Proveedores
                 </a>
 
+                <div class="sb-sidenav-menu-heading">Otros</div>
+                <a class="nav-link" href="{{ route('users.index') }}">
+                    <div class="sb-nav-link-icon"><i class=" fa-solid fa-user"></i></i></div>
+                    Usuarios
+                </a>
+                <a class="nav-link" href="{{ route('roles.index') }}">
+                    <div class="sb-nav-link-icon"><i class=" fa-solid fa-person-circle-plus"></i></i></div>
+                    Roles
+                </a>
             </div>
         </div>
         <div class="sb-sidenav-footer">
