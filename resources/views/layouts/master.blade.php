@@ -16,10 +16,12 @@
 
     <body class="sb-nav-fixed">
 
-        <x-navigation-header />
+        <!--x-navigation-header /-->
+        @include('layouts.navigation-header')
 
         <div id="layoutSidenav">
-            <x-navigation-menu/>
+            <!--x-navigation-menu/-->
+            @include('layouts.navigation-menu')
             <div id="layoutSidenav_content">
                 <main>
 
@@ -27,7 +29,8 @@
 
                 </main>
 
-                <x-footer/>
+                <!--x-footer/-->
+                @include('layouts.footer')
 
             </div>
         </div>
