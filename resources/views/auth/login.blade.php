@@ -1,106 +1,120 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+@extends('layouts.master-without-nav')
 
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="Inicio de sesión del sistema" />
-    <meta name="author" content="Garcia Alanis" />
-    <title>Login - SB Admin</title>
-    <link href="{{ asset('css/template.css') }}" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-    <style>
-        body {
-            background: linear-gradient(to right, #6a11cb, #2575fc);
-        }
-        .card {
-            border-radius: 1rem;
-            overflow: hidden;
-        }
-        .card-header {
-            background: #6a11cb;
-            color: white;
-        }
-        .btn-primary {
-            background-color: #2575fc;
-            border: none;
-            transition: background-color 0.3s ease;
-        }
-        .btn-primary:hover {
-            background-color: #1a5bbd;
-        }
-        .form-control:focus {
-            box-shadow: none;
-            border-color: #6a11cb;
-        }
-    </style>
-</head>
+@section('title')
+    @lang('translation.Login')
+@endsection
 
-<body>
-    <div id="layoutAuthentication">
-        <div id="layoutAuthentication_content">
-            <main>
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-lg-5">
-                            <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                <div class="card-header text-center">
-                                    <h3 class="font-weight-light my-4">Acceso al sistema</h3>
-                                </div>
-                                <div class="card-body">
-                                    @if ($errors->any())
-                                        @foreach ($errors->all() as $item)
-                                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                                {{ $item }}
-                                                <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                        @endforeach
-                                    @endif
-                                    <form action="/login" method="post">
-                                        @csrf
-                                        <div class="form-floating mb-3">
-                                            <input class="form-control" name="email" id="inputEmail" type="email"
-                                                placeholder="name@example.com" />
-                                            <label for="inputEmail">Correo Electrónico</label>
+@section('content')
+    <div class="account-pages my-5 pt-sm-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="text-center">
+                        <a href="{{ url('index') }}" class="mb-5 d-block auth-logo">
+                            <img src="{{ URL::asset('/assets/images/logo-dark.png') }}" alt="" height="22"
+                                class="logo logo-dark">
+                            <img src="{{ URL::asset('/assets/images/logo-light.png') }}" alt="" height="22"
+                                class="logo logo-light">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="row align-items-center justify-content-center">
+                <div class="col-md-8 col-lg-6 col-xl-5">
+                    <div class="card">
+
+                        <div class="card-body p-4">
+                            <div class="text-center mt-2">
+                                <h5 class="text-primary">Welcome Back !</h5>
+                                <p class="text-muted">Sign in to continue to Minible.</p>
+                            </div>
+                            <div class="p-2 mt-4">
+                                <form method="POST" action="{{ route('login') }}">
+                                    @csrf
+
+                                    <div class="mb-3">
+                                        <label class="form-label" for="email">Email</label>
+                                        <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                            name="email" value="{{ old('email') }}" id="email"
+                                            placeholder="Enter Email address" required autofocus>
+                                        @error('email')
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="float-end">
+                                            @if (Route::has('password.request'))
+                                                <a href="{{ route('password.request') }}" class="text-muted">Forgot
+                                                    password?</a>
+                                            @endif
                                         </div>
-                                        <div class="form-floating mb-3">
-                                            <input class="form-control" name="password" id="inputPassword"
-                                                type="password" placeholder="Password" />
-                                            <label for="inputPassword">Contraseña</label>
+                                        <label class="form-label" for="userpassword">Password</label>
+                                        <input type="password" class="form-control @error('password') is-invalid @enderror"
+                                            name="password" id="userpassword" placeholder="Enter password" required>
+                                        @error('password')
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong>{{ $message }}</strong>
+                                            </span>
+                                        @enderror
+                                    </div>
+
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="auth-remember-check"
+                                            name="remember" {{ old('remember') ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="auth-remember-check">Remember me</label>
+                                    </div>
+
+                                    <div class="mt-3 text-end">
+                                        <button class="btn btn-primary w-sm waves-effect waves-light" type="submit">Log
+                                            In</button>
+                                    </div>
+
+                                    <div class="mt-4 text-center">
+                                        <div class="signin-other-title">
+                                            <h5 class="font-size-14 mb-3 title">Sign in with</h5>
                                         </div>
-                                        <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
-                                            <button class="btn btn-primary">Iniciar Sesión</button>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="card-footer text-center py-3">
-                                    <div class="small"><a href="/register">¿Necesitas una cuenta? Regístrate</a></div>
-                                </div>
+
+                                        <ul class="list-inline">
+                                            <li class="list-inline-item">
+                                                <a href="javascript:void(0)"
+                                                    class="social-list-item bg-primary text-white border-primary">
+                                                    <i class="mdi mdi-facebook"></i>
+                                                </a>
+                                            </li>
+                                            <li class="list-inline-item">
+                                                <a href="javascript:void(0)"
+                                                    class="social-list-item bg-info text-white border-info">
+                                                    <i class="mdi mdi-twitter"></i>
+                                                </a>
+                                            </li>
+                                            <li class="list-inline-item">
+                                                <a href="javascript:void(0)"
+                                                    class="social-list-item bg-danger text-white border-danger">
+                                                    <i class="mdi mdi-google"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="mt-4 text-center">
+                                        <p class="mb-0">Don't have an account? <a href="{{ url('register') }}"
+                                                class="fw-medium text-primary"> Signup now </a> </p>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
-                </div>
-            </main>
-        </div>
-        <!---div id="layoutAuthentication_footer">
-            <footer class="py-4 bg-light mt-auto">
-                <div class="container-fluid px-4">
-                    <div class="d-flex align-items-center justify-content-between small">
-                        <div class="text-muted">Copyright &copy; Your Website 2023</div>
-                        <div>
-                            <a href="#">Privacy Policy</a>
-                            &middot;
-                            <a href="#">Terms &amp; Conditions</a>
-                        </div>
+
+                    <div class="mt-5 text-center">
+                        <p>© <script>
+                                document.write(new Date().getFullYear())
+                            </script> Minible. Crafted with <i class="mdi mdi-heart text-danger"></i> by Themesbrand</p>
                     </div>
                 </div>
-            </footer>
-        </!---div-->
+            </div>
+        </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-</body>
-
-</html>
+@endsection
