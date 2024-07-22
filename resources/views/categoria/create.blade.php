@@ -1,4 +1,4 @@
-@extends('template')
+@extends('layouts.master')
 
 @section('title','Crear categoria')
 
@@ -26,7 +26,7 @@
                 <label for="nombre" class="form-label">Nombre:</label>
                 <input type="text" name="nombre" id="nombre" class="form-control" value="{{old('nombre')}}">
                 @error('nombre')
-                   <small class="text-danger">{{'*'.$message}}</small> 
+                   <small class="text-danger">{{'*'.$message}}</small>
                 @enderror
             </div>
 
@@ -34,7 +34,7 @@
                 <label for="descripcion" class="form-label">Descripcion</label>
                 <textarea name="descripcion" id="descripcion" rows="3" class="form-control">{{old('descripcion')}}</textarea>
                 @error('descripcion')
-                   <small class="text-danger">{{'*'.$message}}</small> 
+                   <small class="text-danger">{{'*'.$message}}</small>
                 @enderror
             </div>
 

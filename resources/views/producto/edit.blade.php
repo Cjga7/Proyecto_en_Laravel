@@ -1,4 +1,4 @@
-@extends('template')
+@extends('layouts.master')
 
 @section('title', 'Editar Producto')
 
@@ -86,7 +86,7 @@
                             @else
                             <option value="{{ $item->id }}"{{ old('marca_id') == $item->id ? 'selected' : '' }}>{{ $item->nombre }}</option>
                             @endif
-                                
+
                             @endforeach
                         </select>
                         @error('marca_id')

@@ -1,4 +1,4 @@
-@extends('template')
+@extends('layouts.master')
 
 @section('title', 'Crear compra')
 
