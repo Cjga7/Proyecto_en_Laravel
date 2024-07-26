@@ -16,16 +16,14 @@ class loginController extends Controller
     }
 
     public function login(loginRequest $request){
-        //VAlidar credenciales
-
+        // Validar credenciales
         if(!Auth::validate($request->only('email', 'password'))){
-            return redirect()->to('login')->withErrors('Credenciales incorrectas');
+            return redirect()->to('login')->with('error', 'Credenciales incorrectas');
         }
 
-        //Crear una sesion
-
+        // Crear una sesión
         $user = Auth::getProvider()->retrieveByCredentials($request->only('email', 'password'));
         Auth::login($user);
-        return redirect()->route('panel')->with('success','Bienvenido'.$user->name);
+        return redirect()->route('panel')->with('success', 'Bienvenido '.$user->name);
     }
 }

@@ -160,16 +160,17 @@
                     </a>
                 </li>
                 @endcan
+                <!--div class="sidebar-footer">
+                    <div class="small">Bienvenid@:</div>
+                    {{ auth()->user()->name }}
+                </!--div-->
 
             </ul>
         </div>
         <!-- Sidebar -->
     </div>
 
-    <div class="sidebar-footer">
-        <div class="small">Bienvenid@:</div>
-        {{ auth()->user()->name }}
-    </div>
+
 
 </div>
 <!-- Left Sidebar End -->

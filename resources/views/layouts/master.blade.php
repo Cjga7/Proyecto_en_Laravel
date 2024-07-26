@@ -18,7 +18,7 @@
 </head>
 
 @section('body')
-<body data-layout-mode="dark" class="sb-nav-fixed">
+<body data-layout-mode="light" class="sb-nav-fixed">
 @show
 
 @auth
