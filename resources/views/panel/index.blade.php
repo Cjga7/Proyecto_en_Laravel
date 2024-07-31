@@ -96,25 +96,25 @@
                 </div>
             </div>
 
-            <!-- Marcas -->
+            <!-- registro sanitario -->
             <div class="col-xl-3 col-md-6">
                 <div class="card bg-danger text-white mb-4">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-8">
-                                <i class="fa-solid fa-bullhorn"></i><span class="m-1">Marcas</span>
+                                <i class="fa-solid fa-bullhorn"></i><span class="m-1">Registro sanitario</span>
                             </div>
                             <div class="col-4">
                                 <?php
-                                    use App\Models\Marca;
-                                    $marcas = count(Marca::all());
+                                    use App\Models\Registrosanitario;
+                                    $registrosanitarios = count(Registrosanitario::all());
                                 ?>
-                                <p class="text-center fw-bold fs-4">{{ $marcas }}</p>
+                                <p class="text-center fw-bold fs-4">{{ $registrosanitarios }}</p>
                             </div>
                         </div>
                     </div>
                     <div class="card-footer d-flex align-items-center justify-content-between">
-                        <a class="small text-white stretched-link" href="{{ route('marcas.index') }}">Ver más</a>
+                        <a class="small text-white stretched-link" href="{{ route('registrosanitarios.index') }}">Ver más</a>
                         <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                     </div>
                 </div>

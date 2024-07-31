@@ -32,11 +32,11 @@ class PermissionSeeder extends Seeder
             'mostrar-compra',
             'eliminar-compra',
 
-            //Marca
-            'ver-marca',
-            'crear-marca',
-            'editar-marca',
-            'eliminar-marca',
+            //registrosanitario
+            'ver-registrosanitario',
+            'crear-registrosanitario',
+            'editar-registrosanitario',
+            'eliminar-registrosanitario',
 
             //Presentacione
             'ver-presentacione',

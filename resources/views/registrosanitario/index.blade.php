@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'marcas')
+@section('title', 'Registros Sanitarios')
 
 @push('css')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -29,22 +29,22 @@
         </script>
     @endif
 
-
     <div class="container-fluid px-4">
-        <h1 class="mt-4 text-center">Marcas</h1>
+        <h1 class="mt-4 text-center">Registros Sanitarios</h1>
         <ol class="breadcrumb mb-4">
             <li class="breadcrumb-item active"><a href="{{ route('panel') }}">Inicio</a></li>
-            <li class="breadcrumb-item active">Marcas</li>
+            <li class="breadcrumb-item active">Registros Sanitarios</li>
         </ol>
 
         <div class="mb-4">
-            <a href="{{ route('marcas.create') }}">
-                <button type="button" class="btn btn-primary">Añadir un nuevo registro</button></a>
+            <a href="{{ route('registrosanitarios.create') }}">
+                <button type="button" class="btn btn-primary">Añadir un nuevo registro</button>
+            </a>
         </div>
         <div class="card mb-4">
             <div class="card-header">
                 <i class="fas fa-table me-1"></i>
-                Tabla Marcas
+                Tabla Registros Sanitarios
             </div>
             <div class="card-body">
                 <table id="datatablesSimple" class="table table-striped">
@@ -57,16 +57,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($marcas as $marca)
+                        @foreach ($registrosanitarios as $registrosanitario)
                             <tr>
                                 <td>
-                                    {{ $marca->caracteristica->nombre }}
+                                    {{ $registrosanitario->caracteristica->nombre }}
                                 </td>
                                 <td>
-                                    {{ $marca->caracteristica->descripcion }}
+                                    {{ $registrosanitario->caracteristica->descripcion }}
                                 </td>
                                 <td>
-                                    @if ($marca->caracteristica->estado == 1)
+                                    @if ($registrosanitario->caracteristica->estado == 1)
                                         <span class="fw-bolder p-1 rounded bg-success text-white">Activo</span>
                                     @else
                                         <span class="fw-bolder p-1 rounded bg-danger text-white">Eliminado</span>
@@ -74,38 +74,38 @@
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                                        <form action="{{ route('marcas.edit', ['marca' => $marca]) }}"
+                                        <form action="{{ route('registrosanitarios.edit', ['registrosanitario' => $registrosanitario]) }}"
                                             method="get">
                                             <button type="submit" class="btn btn-warning">Editar</button>
                                         </form>
 
-                                        @if ($marca->caracteristica->estado == 1)
+                                        @if ($registrosanitario->caracteristica->estado == 1)
                                             <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                                data-bs-target="#confirModal-{{ $marca->id }}">Eliminar</button>
+                                                data-bs-target="#confirModal-{{ $registrosanitario->id }}">Eliminar</button>
                                         @else
                                             <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                                data-bs-target="#confirModal-{{ $marca->id }}">Restaurar</button>
+                                                data-bs-target="#confirModal-{{ $registrosanitario->id }}">Restaurar</button>
                                         @endif
                                     </div>
                                 </td>
                             </tr>
                             <!-- Modal -->
-                            <div class="modal fade" id="confirModal-{{ $marca->id }}" tabindex="-1"
+                            <div class="modal fade" id="confirModal-{{ $registrosanitario->id }}" tabindex="-1"
                                 aria-labelledby="exampleModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Mensaje de confirmacion</h1>
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Mensaje de confirmación</h1>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            {{ $marca->caracteristica->estado == 1 ? 'Seguro quieres eliminar esta marca?' : 'Seguro que quieres restaurar esta categoria?' }}
+                                            {{ $registrosanitario->caracteristica->estado == 1 ? '¿Seguro quieres eliminar este registro sanitario?' : '¿Seguro que quieres restaurar este registro sanitario?' }}
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary"
                                                 data-bs-dismiss="modal">Cerrar</button>
-                                            <form action="{{ route('marcas.destroy', ['marca' => $marca->id]) }}"
+                                            <form action="{{ route('registrosanitarios.destroy', ['registrosanitario' => $registrosanitario->id]) }}"
                                                 method="post">
                                                 @method('DELETE')
                                                 @csrf

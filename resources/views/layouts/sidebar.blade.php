@@ -91,12 +91,12 @@
                 </li>
                 @endcan
 
-                <!-- Marcas -->
-                @can('ver-marca')
+                <!-- registrosanitario -->
+                @can('ver-registrosanitario')
                 <li>
-                    <a href="{{ route('marcas.index') }}" class="waves-effect">
+                    <a href="{{ route('registrosanitarios.index') }}" class="waves-effect">
                         <i class="fa-solid fa-code-branch"></i>
-                        <span>Marcas</span>
+                        <span>Registro sanitario</span>
                     </a>
                 </li>
                 @endcan

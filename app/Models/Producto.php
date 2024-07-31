@@ -20,15 +20,15 @@ class Producto extends Model
     public function categorias(){
         return $this->belongsToMany(Categoria::class)->withTimestamps();
     }
-    public function marca(){
-        return $this->belongsTo(Marca::class);
+    public function registrosanitario(){
+        return $this->belongsTo(Registrosanitario::class);
     }
 
     public function presentacione(){
         return $this->belongsTo(Presentacione::class);
     }
 
-    protected $fillable = ['codigo','nombre','descripcion','fecha_vencimiento','marca_id','presentacione_id','img_path'];
+    protected $fillable = ['codigo','nombre','descripcion','fecha_vencimiento','registrosanitario_id','presentacione_id','img_path'];
 
     public function hanbleUploadImage($image){
         $file = $image;

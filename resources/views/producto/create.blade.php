@@ -74,16 +74,16 @@
                             <small class="text-danger">{{ '*' . $message }}</small>
                         @enderror
                     </div>
-                    <!-----Marca---->
+                    <!-----registrosanitario---->
                     <div class="col-md-6 mb-2">
-                        <label for="marca_id" class="form-label">Marca:</label>
-                        <select data-size="4" title="Seleccione una marca" data-live-search="true" name="marca_id"
-                            id="marca_id" class="form-control selectpicker show-tick">
-                            @foreach ($marcas as $item)
-                                <option value="{{ $item->id }}"{{ old('marca_id') == $item->id ? 'selected' : '' }}>{{ $item->nombre }}</option>
+                        <label for="registrosanitario_id" class="form-label">Registro sanitario:</label>
+                        <select data-size="4" title="Seleccione un registro sanitario" data-live-search="true" name="registrosanitario_id"
+                            id="registrosanitario_id" class="form-control selectpicker show-tick">
+                            @foreach ($registrosanitarios as $item)
+                                <option value="{{ $item->id }}"{{ old('registrosanitario_id') == $item->id ? 'selected' : '' }}>{{ $item->nombre }}</option>
                             @endforeach
                         </select>
-                        @error('marca_id')
+                        @error('registrosanitario_id')
                             <small class="text-danger">{{ '*' . $message }}</small>
                         @enderror
                     </div>

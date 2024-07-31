@@ -3,7 +3,7 @@
 use App\Http\Controllers\categoriaController;
 use App\Http\Controllers\clienteController;
 use App\Http\Controllers\compraController;
-use App\Http\Controllers\marcaController;
+use App\Http\Controllers\registrosanitarioControllerController;
 use App\Http\Controllers\PresentacioneController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\proveedoreController;
@@ -15,6 +15,7 @@ use App\Http\Controllers\logoutController;
 use App\Http\Controllers\userController;
 use App\Http\Controllers\roleController;
 use App\Http\Controllers\profileController;
+use App\Http\Controllers\registrosanitarioController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,7 +34,7 @@ Route::get('/',[homeController::class, 'index'  ])->name('panel');
 Route::resources([
     'categorias' => categoriaController::class,
     'presentaciones' => PresentacioneController::class,
-    'marcas' => marcaController::class,
+    'registrosanitarios' => registrosanitarioController::class,
     'productos' => ProductoController::class,
     'clientes' => clienteController::class,
     'proveedores' => proveedoreController::class,

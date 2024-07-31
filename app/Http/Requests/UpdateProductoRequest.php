@@ -28,7 +28,7 @@ class UpdateProductoRequest extends FormRequest
             'descripcion' => 'nullable|max:255',
             'fecha_vencimiento' => 'nullable|date',
             'img_path' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
-            'marca_id' => 'required|integer|exists:marcas,id',
+            'registrosanitario_id' => 'required|integer|exists:registrosanitarios,id',
             'presentacione_id' => 'required|integer|exists:presentaciones,id',
             'categorias' => 'required'
         ];
@@ -36,7 +36,7 @@ class UpdateProductoRequest extends FormRequest
     public function attributes()
     {
         return[
-            'marca_id' => 'marca',
+            'registrosanitario_id' => 'registrosanitario',
             'presentacione_id' => 'presentacion'
         ];
     }

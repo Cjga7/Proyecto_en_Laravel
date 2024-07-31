@@ -49,7 +49,7 @@
                         <tr>
                             <th>Código</th>
                             <th>Nombre</th>
-                            <th>Marca</th>
+                            <th>Registro sanitario</th>
                             <th>Presentación</th>
                             <th>Categorías</th>
                             <th>Estado</th>
@@ -61,7 +61,7 @@
                             <tr>
                                 <td>{{ $item->codigo }}</td>
                                 <td>{{ $item->nombre }}</td>
-                                <td>{{ $item->marca->caracteristica->nombre }}</td>
+                                <td>{{ $item->registrosanitario->caracteristica->nombre }}</td>
                                 <td>{{ $item->presentacione->caracteristica->nombre }}</td>
                                 <td>
                                     @foreach ($item->categorias as $category)
