@@ -1,10 +1,13 @@
-<footer class="py-4 bg-light mt-auto">
-    <div class="container-fluid px-4">
-        <div class="d-flex align-items-center justify-content-between small">
-            <div class="text-muted">sis Basico</div>
-            <div>
-                <a href="https://github.com/Cjga7/Proyecto_en_Laravel/tree/nueva-rama">Cristian Garcia - 2023</a>
-                &middot;
+<footer class="footer">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                <script>document.write(new Date().getFullYear())</script> © Minible.
+            </div>
+            <div class="col-sm-6">
+                <div class="text-sm-end d-none d-sm-block">
+                    Crafted with <i class="mdi mdi-heart text-danger"></i> by <a href="https://themesbrand.com/" target="_blank" class="text-reset">Themesbrand</a>
+                </div>
             </div>
         </div>
     </div>

@@ -10,15 +10,22 @@
     <meta name="description" content="Sistema de Ventas lanago" />
     <meta name="author" content="Garcia Alanis" />
     <title>Sis Lanago - @yield('title')</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link href="{{ asset('css/template.css') }}" rel="stylesheet" />
-
+    @yield('css')
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico')}}">
+    <!-- Uncomment if necessary -->
+    <!--link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"-->
+    <!--link href="{{ asset('css/template.css') }}" rel="stylesheet" /-->
+    <link href="{{ asset('/assets/css/app.css')}}" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('/assets/css/bootstrap.css')}}" id="bootstrap-style" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="{{ asset('/assets/css/icons.css')}}" id="icons-style" rel="stylesheet" type="text/css" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     @stack('css')
 </head>
 
 @section('body')
-<body data-layout-mode="light" class="sb-nav-fixed">
+<body data-layout-mode="light" class="sb-nav-fixed"> <!-- Cambiado a tema oscuro por defecto -->
 @show
 
 @auth

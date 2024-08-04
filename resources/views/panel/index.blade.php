@@ -73,7 +73,7 @@
             </div>
 
             <!-- Compras -->
-            <div class="col-xl-3 col-md-6">
+            <!--div class="col-xl-3 col-md-6">
                 <div class="card bg-success text-white mb-4">
                     <div class="card-body">
                         <div class="row">
@@ -94,7 +94,7 @@
                         <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                     </div>
                 </div>
-            </div>
+            </div-->
 
             <!-- registro sanitario -->
             <div class="col-xl-3 col-md-6">
@@ -145,7 +145,7 @@
             </div>
 
             <!-- Productos -->
-            <div class="col-xl-3 col-md-6">
+            <!--div class="col-xl-3 col-md-6">
                 <div class="card bg-success text-white mb-4">
                     <div class="card-body">
                         <div class="row">
@@ -166,7 +166,7 @@
                         <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                     </div>
                 </div>
-            </div>
+            </div--->
 
             <!-- Proveedores -->
             <div class="col-xl-3 col-md-6">

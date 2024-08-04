@@ -11,8 +11,8 @@
                 <div class="col-lg-12">
                     <div class="text-center">
                         <a href="#" class="mb-6 d-block auth-logo">
-                            <img src="{{ URL::asset('/assets/images/Logo_lanago.png') }}" alt="" height="250"
-                                class="logo logo-dark">
+                            <!--img src="{{ URL::asset('/assets/images/Logo_lanago.png') }}" alt="" height="250"
+                                class="logo logo-dark"-->
                             <img src="{{ URL::asset('/assets/images/Logo_lanago.png') }}" alt="" height="250"
                                 class="logo logo-light">
                         </a>

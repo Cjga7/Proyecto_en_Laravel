@@ -5,6 +5,10 @@
 @push('css')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" type="text/css">
+    <!-- DataTables -->
+    <link href="{{ URL::asset('/assets/libs/datatables/datatables.min.css') }}" rel="stylesheet" type="text/css" />
+    <!-- Custom DataTables Styles -->
+    <link href="{{ URL::asset('/assets/css/custom-datatables.css') }}" rel="stylesheet" type="text/css" />
 @endpush
 
 @section('content')
@@ -29,7 +33,6 @@
         </script>
     @endif
 
-
     <div class="container-fluid px-4">
         <h1 class="mt-4 text-center">Clientes</h1>
         <ol class="breadcrumb mb-4">
@@ -47,7 +50,7 @@
                 Tabla Clientes
             </div>
             <div class="card-body">
-                <table id="datatablesSimple" class="table table-striped">
+                <table id="datatable-buttons" class="table table-striped">
                     <thead>
                         <tr>
                             <th>Nombre</th>
@@ -78,7 +81,7 @@
                                     @if ($item->persona->estado == 1)
                                         <span class="badge rounded-pill text-bg-success d-inline">Activo</span>
                                     @else
-                                    <span class="badge rounded-pill text-bg-danger d-inlinee">Eliminado</span>
+                                        <span class="badge rounded-pill text-bg-danger d-inline">Eliminado</span>
                                     @endif
                                 </td>
                                 <td>
@@ -88,9 +91,9 @@
                                         </form>
 
                                         @if ($item->persona->estado == 1)
-                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal-{{ $item->id }}">Eliminar</button>
+                                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal-{{ $item->id }}">Eliminar</button>
                                         @else
-                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal-{{ $item->id }}">Resturar</button>
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal-{{ $item->id }}">Restaurar</button>
                                         @endif
                                     </div>
                                 </td>
@@ -106,7 +109,7 @@
                                                 aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            {{ $item->persona->estado == 1 ? 'Seguro quieres eliminar este cliente?' : 'Seguro que quieres restaurar este cliente?' }}
+                                            {{ $item->persona->estado == 1 ? '¿Seguro que quieres eliminar este cliente?' : '¿Seguro que quieres restaurar este cliente?' }}
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary"
@@ -125,11 +128,13 @@
                 </table>
             </div>
         </div>
-
     </div>
 @endsection
 
 @push('js')
-    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" type="text/javascript"></script>
-    <script src="{{ asset('js/datatables-simple-demo.js') }}"></script>
+    <!-- DataTables -->
+    <script src="{{ URL::asset('/assets/libs/datatables/datatables.min.js') }}"></script>
+    <script src="{{ URL::asset('/assets/libs/jszip/jszip.min.js') }}"></script>
+    <script src="{{ URL::asset('/assets/libs/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ URL::asset('/assets/js/pages/datatables.init.js') }}"></script>
 @endpush

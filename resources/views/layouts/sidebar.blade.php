@@ -47,7 +47,7 @@
 
                 <!-- Compras -->
                 @can('ver-compra')
-                <li>
+                <!--li>
                     <a href="#" class="waves-effect" data-bs-toggle="collapse" data-bs-target="#collapseCompras"
                         aria-expanded="false" aria-controls="collapseCompras">
                         <i class="fa-solid fa-store"></i>
@@ -60,12 +60,12 @@
                             <li><a href="{{ route('compras.create') }}">Crear</a></li>
                         </ul>
                     </div>
-                </li>
+                </!--li-->
                 @endcan
 
                 <!-- Ventas -->
                 @can('ver-venta')
-                <li>
+                <!--li>
                     <a href="#" class="waves-effect" data-bs-toggle="collapse" data-bs-target="#collapseVentas"
                         aria-expanded="false" aria-controls="collapseVentas">
                         <i class="fa-solid fa-cart-shopping"></i>
@@ -78,7 +78,7 @@
                             <li><a href="{{ route('ventas.create') }}">Crear</a></li>
                         </ul>
                     </div>
-                </li>
+                </!--li-->
                 @endcan
 
                 <!-- Categorías -->
@@ -113,12 +113,12 @@
 
                 <!-- Productos -->
                 @can('ver-producto')
-                <li>
+                <!--li>
                     <a href="{{ route('productos.index') }}" class="waves-effect">
                         <i class="fa-solid fa-kit-medical"></i>
                         <span>Productos</span>
                     </a>
-                </li>
+                </!--li-->
                 @endcan
 
                 <!-- Clientes -->
