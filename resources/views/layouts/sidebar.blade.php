@@ -1,23 +1,23 @@
 <!-- ========== Left Sidebar Start ========== -->
-<div class="vertical-menu">
+<div class="vertical-menu bg-gradient-success">
 
     <!-- LOGO -->
-    <div class="navbar-brand-box">
+    <div class="navbar-brand-box bg-gradient-success">
         <a href="{{ route('panel') }}" class="logo logo-dark">
             <span class="logo-sm">
-                <img src="{{ URL::asset('/assets/images/logo-sm.png') }}" alt="" height="22">
+                <img src="{{ URL::asset('/assets/images/logo2_lanago.png') }}" alt="" height="58">
             </span>
             <span class="logo-lg">
-                <img src="{{ URL::asset('/assets/images/logo-dark.png') }}" alt="" height="20">
+                <img src="{{ URL::asset('/assets/images/logo2_lanago.png') }}" alt="" height="70">
             </span>
         </a>
 
         <a href="{{ route('panel') }}" class="logo logo-light">
             <span class="logo-sm">
-                <img src="{{ URL::asset('/assets/images/logo-sm.png') }}" alt="" height="22">
+                <img src="{{ URL::asset('/assets/images/logo2_lanago.png') }}" alt="" height="58">
             </span>
             <span class="logo-lg">
-                <img src="{{ URL::asset('/assets/images/logo-light.png') }}" alt="" height="20">
+                <img src="{{ URL::asset('/assets/images/logo2_lanago.png') }}" alt="" height="70">
             </span>
         </a>
     </div>
@@ -47,7 +47,7 @@
 
                 <!-- Compras -->
                 @can('ver-compra')
-                <!--li>
+                <li>
                     <a href="#" class="waves-effect" data-bs-toggle="collapse" data-bs-target="#collapseCompras"
                         aria-expanded="false" aria-controls="collapseCompras">
                         <i class="fa-solid fa-store"></i>
@@ -60,12 +60,12 @@
                             <li><a href="{{ route('compras.create') }}">Crear</a></li>
                         </ul>
                     </div>
-                </!--li-->
+                </li>
                 @endcan
 
                 <!-- Ventas -->
                 @can('ver-venta')
-                <!--li>
+                <li>
                     <a href="#" class="waves-effect" data-bs-toggle="collapse" data-bs-target="#collapseVentas"
                         aria-expanded="false" aria-controls="collapseVentas">
                         <i class="fa-solid fa-cart-shopping"></i>
@@ -78,7 +78,7 @@
                             <li><a href="{{ route('ventas.create') }}">Crear</a></li>
                         </ul>
                     </div>
-                </!--li-->
+                </li>
                 @endcan
 
                 <!-- Categorías -->
@@ -113,12 +113,12 @@
 
                 <!-- Productos -->
                 @can('ver-producto')
-                <!--li>
+                <li>
                     <a href="{{ route('productos.index') }}" class="waves-effect">
                         <i class="fa-solid fa-kit-medical"></i>
                         <span>Productos</span>
                     </a>
-                </!--li-->
+                </li>
                 @endcan
 
                 <!-- Clientes -->

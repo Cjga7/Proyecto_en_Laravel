@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
-
-use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class roleController extends Controller
 {
-
     function __construct()
     {
         $this->middleware('permission:ver-role|crear-role|editar-role|eliminar-role', ['only' => ['index']]);
@@ -90,20 +88,26 @@ class roleController extends Controller
             'name' => 'required|unique:roles,name,' . $role->id,
             'permission' => 'required'
         ]);
+
         try {
             DB::beginTransaction();
+
             //Actualizar rol
             Role::where('id', $role->id)
                 ->update([
                     'name' => $request->name
                 ]);
+
             //Actualizar permisos
             $role->syncPermissions($request->permission);
+
             DB::commit();
         } catch (Exception $e) {
+            dd($e);
             DB::rollBack();
         }
-        return redirect()->route('roles.index')->with('success', 'Rol editado');
+
+        return redirect()->route('roles.index')->with('success', 'rol editado');
     }
 
     /**
@@ -111,8 +115,10 @@ class roleController extends Controller
      */
     public function destroy(string $id)
     {
-        Role::where('id',$id)->delete();
+        Role::where('id', $id)->delete();
 
-        return redirect()->route('roles.index')->with('success', 'Rol eliminado');
+
+
+        return redirect()->route('roles.index')->with('success', 'rol eliminado');
     }
 }

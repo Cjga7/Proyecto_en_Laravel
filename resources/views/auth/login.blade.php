@@ -52,7 +52,7 @@
                                         </div>
                                         <label class="form-label" for="userpassword">Contraseña</label>
                                         <input type="password" class="form-control @error('password') is-invalid @enderror"
-                                               name="password" id="userpassword" placeholder="Ingrese su contraseña" required>
+                                            name="password" id="userpassword" placeholder="Ingrese su contraseña" required>
                                         @error('password')
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $message }}</strong>
@@ -107,7 +107,7 @@
                     </div>
 
                     <div class="mt-7 text-center">
-                        <p class="text-primary">© <script>
+                        <p class="text-white">© <script>
                                 document.write(new Date().getFullYear())
                             </script> Lanago <i class="mdi mdi-heart text-danger"></i> La naturaleza en una gota</p>
                     </div>

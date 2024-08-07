@@ -5,6 +5,10 @@
 @push('css')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" type="text/css">
+    <!-- DataTables -->
+    <link href="{{ URL::asset('/assets/libs/datatables/datatables.min.css') }}" rel="stylesheet" type="text/css" />
+    <!-- Custom DataTables Styles -->
+    <link href="{{ URL::asset('/assets/css/custom-datatables.css') }}" rel="stylesheet" type="text/css" />
 @endpush
 
 @section('content')
@@ -25,10 +29,9 @@
             Toast.fire({
                 icon: "success",
                 title: message
-            })
+            });
         </script>
     @endif
-
 
     <div class="container-fluid px-4">
         <h1 class="mt-4 text-center">Presentaciones</h1>
@@ -39,7 +42,8 @@
 
         <div class="mb-4">
             <a href="{{ route('presentaciones.create') }}">
-                <button type="button" class="btn btn-primary">Añadir un nuevo registro</button></a>
+                <button type="button" class="btn btn-primary">Añadir un nuevo registro</button>
+            </a>
         </div>
         <div class="card mb-4">
             <div class="card-header">
@@ -47,11 +51,11 @@
                 Tabla Presentaciones
             </div>
             <div class="card-body">
-                <table id="datatablesSimple" class="table table-striped">
+                <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap">
                     <thead>
                         <tr>
                             <th>Nombre</th>
-                            <th>Descripcion</th>
+                            <th>Descripción</th>
                             <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
@@ -59,12 +63,8 @@
                     <tbody>
                         @foreach ($presentaciones as $presentacione)
                             <tr>
-                                <td>
-                                    {{ $presentacione->caracteristica->nombre }}
-                                </td>
-                                <td>
-                                    {{ $presentacione->caracteristica->descripcion }}
-                                </td>
+                                <td>{{ $presentacione->caracteristica->nombre }}</td>
+                                <td>{{ $presentacione->caracteristica->descripcion }}</td>
                                 <td>
                                     @if ($presentacione->caracteristica->estado == 1)
                                         <span class="fw-bolder p-1 rounded bg-success text-white">Activo</span>
@@ -74,39 +74,32 @@
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                                        <form action="{{ route('presentaciones.edit', ['presentacione' => $presentacione]) }}"
-                                            method="get">
+                                        <form action="{{ route('presentaciones.edit', ['presentacione' => $presentacione]) }}" method="get">
                                             <button type="submit" class="btn btn-warning">Editar</button>
                                         </form>
 
                                         @if ($presentacione->caracteristica->estado == 1)
-                                            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                                data-bs-target="#confirModal-{{ $presentacione->id }}">Eliminar</button>
+                                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal-{{ $presentacione->id }}">Eliminar</button>
                                         @else
-                                            <button type="button" class="btn btn-success" data-bs-toggle="modal"
-                                                data-bs-target="#confirModal-{{ $presentacione->id }}">Restaurar</button>
+                                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmModal-{{ $presentacione->id }}">Restaurar</button>
                                         @endif
                                     </div>
                                 </td>
                             </tr>
-                            <!-- Modal -->
-                            <div class="modal fade" id="confirModal-{{ $presentacione->id }}" tabindex="-1"
-                                aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <!-- Modal de confirmación -->
+                            <div class="modal fade" id="confirmModal-{{ $presentacione->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Mensaje de confirmacion</h1>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Mensaje de confirmación</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            {{ $presentacione->caracteristica->estado == 1 ? 'Seguro quieres eliminar esta presentacion?' : 'Seguro que quieres restaurar esta categoria?' }}
+                                            {{ $presentacione->caracteristica->estado == 1 ? '¿Seguro que quieres eliminar esta presentación?' : '¿Seguro que quieres restaurar esta presentación?' }}
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">Cerrar</button>
-                                            <form action="{{ route('presentaciones.destroy', ['presentacione' => $presentacione->id]) }}"
-                                                method="post">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                            <form action="{{ route('presentaciones.destroy', ['presentacione' => $presentacione->id]) }}" method="post">
                                                 @method('DELETE')
                                                 @csrf
                                                 <button type="submit" class="btn btn-danger">Confirmar</button>
@@ -120,11 +113,13 @@
                 </table>
             </div>
         </div>
-
     </div>
 @endsection
 
 @push('js')
-    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" type="text/javascript"></script>
-    <script src="{{ asset('js/datatables-simple-demo.js') }}"></script>
+    <!-- DataTables -->
+    <script src="{{ URL::asset('/assets/libs/datatables/datatables.min.js') }}"></script>
+    <script src="{{ URL::asset('/assets/libs/jszip/jszip.min.js') }}"></script>
+    <script src="{{ URL::asset('/assets/libs/pdfmake/pdfmake.min.js') }}"></script>
+    <script src="{{ URL::asset('/assets/js/pages/datatables.init.js') }}"></script>
 @endpush

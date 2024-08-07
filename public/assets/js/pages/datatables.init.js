@@ -18,7 +18,7 @@
         buttons: [
           {
             extend: 'copy',
-            className: 'btn btn-success', // Clase Bootstrap para color verde
+            className: 'btn btn-warning', // Clase Bootstrap para color verde
             exportOptions: {
               columns: ':not(:last-child)' // Excluir la última columna (acciones) de la exportación
             }
@@ -32,14 +32,14 @@
           },
           {
             extend: 'pdf',
-            className: 'btn btn-success', // Clase Bootstrap para color verde
+            className: 'btn btn-danger', // Clase Bootstrap para color verde
             exportOptions: {
               columns: ':not(:last-child)' // Excluir la última columna (acciones) de la exportación
             }
           },
           {
             extend: 'colvis',
-            className: 'btn btn-success' // Clase Bootstrap para color verde
+            className: 'btn btn-primary' // Clase Bootstrap para color verde
           }
         ]
       });
