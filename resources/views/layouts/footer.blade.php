@@ -1,4 +1,4 @@
-<footer class="footer bg-soft-success">
+<footer class="footer">
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm-6">

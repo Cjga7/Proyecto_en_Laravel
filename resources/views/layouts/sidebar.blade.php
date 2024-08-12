@@ -1,8 +1,8 @@
 <!-- ========== Left Sidebar Start ========== -->
-<div class="vertical-menu bg-gradient-success">
+<div class="vertical-menu bg-soft-success">
 
     <!-- LOGO -->
-    <div class="navbar-brand-box bg-gradient-success">
+    <div class="navbar-brand-box bg-soft-success">
         <a href="{{ route('panel') }}" class="logo logo-dark">
             <span class="logo-sm">
                 <img src="{{ URL::asset('/assets/images/logo2_lanago.png') }}" alt="" height="58">
@@ -47,7 +47,7 @@
 
                 <!-- Compras -->
                 @can('ver-compra')
-                <li>
+                <!--li>
                     <a href="#" class="waves-effect" data-bs-toggle="collapse" data-bs-target="#collapseCompras"
                         aria-expanded="false" aria-controls="collapseCompras">
                         <i class="fa-solid fa-store"></i>
@@ -60,12 +60,12 @@
                             <li><a href="{{ route('compras.create') }}">Crear</a></li>
                         </ul>
                     </div>
-                </li>
+                </!--li-->
                 @endcan
 
                 <!-- Ventas -->
                 @can('ver-venta')
-                <li>
+                <!--li>
                     <a href="#" class="waves-effect" data-bs-toggle="collapse" data-bs-target="#collapseVentas"
                         aria-expanded="false" aria-controls="collapseVentas">
                         <i class="fa-solid fa-cart-shopping"></i>
@@ -78,7 +78,7 @@
                             <li><a href="{{ route('ventas.create') }}">Crear</a></li>
                         </ul>
                     </div>
-                </li>
+                </!--li-->
                 @endcan
 
                 <!-- Categorías -->
