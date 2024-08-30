@@ -29,15 +29,18 @@ class StoreProductoRequest extends FormRequest
             'img_path' => 'nullable|image|mimes:png,jpg,jpeg|max:2048',
             'registrosanitario_id' => 'required|integer|exists:registrosanitarios,id',
             'presentacione_id' => 'required|integer|exists:presentaciones,id',
-            'categorias' => 'required'
+            'categorias' => 'required',
+            'tipo_producto_id' => 'required|integer|exists:tipos_productos,id', // Nueva regla de validación
         ];
+
     }
 
     public function attributes()
     {
         return[
             'registrosanitario_id' => 'registrosanitario',
-            'presentacione_id' => 'presentacion'
+            'presentacione_id' => 'presentacion',
+            'tipo_producto_id' => 'tipo de producto'// Nombre personalizado para el atributo
         ];
     }
 }

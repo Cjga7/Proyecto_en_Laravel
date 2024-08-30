@@ -52,6 +52,7 @@
                             <th>Registro sanitario</th>
                             <th>Presentación</th>
                             <th>Categorías</th>
+                            <th>Tipo de Producto</th> <!-- Nueva columna -->
                             <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
@@ -68,6 +69,7 @@
                                         <span class="badge bg-secondary m-1">{{ $category->caracteristica->nombre }}</span>
                                     @endforeach
                                 </td>
+                                <td>{{ $item->tipoProducto->nombre }}</td> <!-- Muestra el nombre del tipo de producto -->
                                 <td>
                                     <span class="badge {{ $item->estado ? 'bg-success' : 'bg-danger' }}">
                                         {{ $item->estado ? 'ACTIVO' : 'ELIMINADO' }}
@@ -79,11 +81,10 @@
                                         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#verModal-{{ $item->id }}">Ver</button>
 
                                         @if ($item->estado == 1)
-                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal-{{ $item->id }}">Eliminar</button>
+                                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmModal-{{ $item->id }}">Eliminar</button>
                                         @else
-                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal-{{ $item->id }}">Resturar</button>
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmModal-{{ $item->id }}">Restaurar</button>
                                         @endif
-
                                     </div>
                                 </td>
                             </tr>
@@ -101,6 +102,9 @@
                                             </div>
                                             <div class="row mb-3">
                                                 <label><strong>Fecha de Vencimiento: </strong>{{ $item->fecha_vencimiento ?: 'No tiene' }}</label>
+                                            </div>
+                                            <div class="row mb-3">
+                                                <label><strong>Tipo de Producto: </strong>{{ $item->tipoProducto->nombre }}</label> <!-- Mostrar tipo de producto -->
                                             </div>
                                             <div class="row mb-3">
                                                 <label><strong>Stock: </strong>{{ $item->stock }}</label>
@@ -123,13 +127,13 @@
                                 </div>
                             </div>
 
-                            <!-- Modal de confirmacion-->
+                            <!-- Modal de confirmación-->
                             <div class="modal fade" id="confirmModal-{{ $item->id }}" tabindex="-1"
                                 aria-labelledby="exampleModalLabel" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Mensaje de confirmacion</h1>
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Mensaje de confirmación</h1>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                         </div>

@@ -22,7 +22,8 @@
             <li class="breadcrumb-item active">Editar Producto</li>
         </ol>
         <div class="container w-100 border border-3 border-primary rounded p-4 mt-3">
-            <form action="{{route ('productos.update',['producto'=>$producto])}}" method="post" enctype="multipart/form-data">
+            <form action="{{ route('productos.update', ['producto' => $producto]) }}" method="post"
+                enctype="multipart/form-data">
                 @method('PATCH')
                 @csrf
                 <div class="row g-3">
@@ -31,7 +32,7 @@
                     <div class="col-md-6 mb-2">
                         <label for="codigo" class="form-label">Codigo:</label>
                         <input type="text" name="codigo" id="codigo" class="form-control"
-                            value="{{ old('codigo',$producto->codigo) }}">
+                            value="{{ old('codigo', $producto->codigo) }}">
                         @error('codigo')
                             <small class="text-danger">{{ '*' . $message }}</small>
                         @enderror
@@ -41,7 +42,7 @@
                     <div class="col-md-6 mb-2">
                         <label for="nombre" class="form-label">Nombre:</label>
                         <input type="text" name="nombre" id="nombre" class="form-control"
-                            value="{{ old('nombre',$producto->nombre) }}">
+                            value="{{ old('nombre', $producto->nombre) }}">
                         @error('nombre')
                             <small class="text-danger">{{ '*' . $message }}</small>
                         @enderror
@@ -51,7 +52,8 @@
                     <!-----Descripcion---->
                     <div class="col-md-12 mb-2">
                         <label for="descripcion" class="form-label">Descripcion:</label>
-                        <textarea name="descripcion" id="descripcion" rows="3" class="form-control" {{ old('descripcion',$producto->descripcion) }}></textarea>
+                        <textarea name="descripcion" id="descripcion" rows="3" class="form-control"
+                            {{ old('descripcion', $producto->descripcion) }}></textarea>
                         @error('descripcion')
                             <small class="text-danger">{{ '*' . $message }}</small>
                         @enderror
@@ -61,7 +63,7 @@
                     <div class="col-md-6 mb-2">
                         <label for="fecha_vencimiento" class="form-label">Fecha de vencimiento:</label>
                         <input type="date" name="fecha_vencimiento" id="fecha_vencimiento" class="form-control"
-                            value="{{ old('fecha_vencimiento',$producto->fecha_vencimiento) }}">
+                            value="{{ old('fecha_vencimiento', $producto->fecha_vencimiento) }}">
                         @error('fecha_vencimiento')
                             <small class="text-danger">{{ '*' . $message }}</small>
                         @enderror
@@ -78,15 +80,19 @@
                     <!-----registrosanitario---->
                     <div class="col-md-6 mb-2">
                         <label for="registrosanitario_id" class="form-label">Registro sanitario:</label>
-                        <select data-size="4" title="Seleccione un registro sanitario" data-live-search="true" name="registrosanitario_id"
-                            id="registrosanitario_id" class="form-control selectpicker show-tick">
+                        <select data-size="4" title="Seleccione un registro sanitario" data-live-search="true"
+                            name="registrosanitario_id" id="registrosanitario_id"
+                            class="form-control selectpicker show-tick">
                             @foreach ($registrosanitarios as $item)
-                            @if ($producto->registrosanitario_id == $item->id)
-                            <option selected value="{{ $item->id }}"{{ old('registrosanitario_id') == $item->id ? 'selected' : '' }}>{{ $item->nombre }}</option>
-                            @else
-                            <option value="{{ $item->id }}"{{ old('registrosanitario_id') == $item->id ? 'selected' : '' }}>{{ $item->nombre }}</option>
-                            @endif
-
+                                @if ($producto->registrosanitario_id == $item->id)
+                                    <option selected
+                                        value="{{ $item->id }}"{{ old('registrosanitario_id') == $item->id ? 'selected' : '' }}>
+                                        {{ $item->nombre }}</option>
+                                @else
+                                    <option
+                                        value="{{ $item->id }}"{{ old('registrosanitario_id') == $item->id ? 'selected' : '' }}>
+                                        {{ $item->nombre }}</option>
+                                @endif
                             @endforeach
                         </select>
                         @error('registrosanitario_id')
@@ -100,11 +106,15 @@
                         <select data-size="4" title="Seleccione una presentacion" data-live-search="true"
                             name="presentacione_id" id="presentacione_id" class="form-control selectpicker show-tick">
                             @foreach ($presentaciones as $item)
-                            @if ($producto->presentacione_id == $item->id)
-                            <option selected value="{{ $item->id }}"{{ old('presentacione_id') == $item->id ? 'selected' : '' }}>{{ $item->nombre }}</option>
-                            @else
-                            <option value="{{ $item->id }}"{{ old('presentacione_id') == $item->id ? 'selected' : '' }}>{{ $item->nombre }}</option>
-                            @endif
+                                @if ($producto->presentacione_id == $item->id)
+                                    <option selected
+                                        value="{{ $item->id }}"{{ old('presentacione_id') == $item->id ? 'selected' : '' }}>
+                                        {{ $item->nombre }}</option>
+                                @else
+                                    <option
+                                        value="{{ $item->id }}"{{ old('presentacione_id') == $item->id ? 'selected' : '' }}>
+                                        {{ $item->nombre }}</option>
+                                @endif
                             @endforeach
                         </select>
                         @error('presentacione_id')
@@ -117,14 +127,34 @@
                         <select data-size="4" title="Seleccione una categoria" data-live-search="true" name="categorias[]"
                             id="categorias" class="form-control selectpicker show-tick" multiple>
                             @foreach ($categorias as $item)
-                            @if (in_array($item->id,$producto->categorias->pluck('id')->toArray()) )
-                            <option selected value="{{ $item->id }}"{{ (in_array($item->id , old('categorias',[]))) ? 'selected': '' }}>{{ $item->nombre }}</option>
-                            @else
-                            <option value="{{ $item->id }}"{{ (in_array($item->id , old('categorias',[]))) ? 'selected': '' }}>{{ $item->nombre }}</option>
-                            @endif
+                                @if (in_array($item->id, $producto->categorias->pluck('id')->toArray()))
+                                    <option selected
+                                        value="{{ $item->id }}"{{ in_array($item->id, old('categorias', [])) ? 'selected' : '' }}>
+                                        {{ $item->nombre }}</option>
+                                @else
+                                    <option
+                                        value="{{ $item->id }}"{{ in_array($item->id, old('categorias', [])) ? 'selected' : '' }}>
+                                        {{ $item->nombre }}</option>
+                                @endif
                             @endforeach
                         </select>
                         @error('categorias')
+                            <small class="text-danger">{{ '*' . $message }}</small>
+                        @enderror
+                    </div>
+
+                    <!-----Tipo de Producto---->
+                    <div class="col-md-6 mb-2">
+                        <label for="tipo_producto_id" class="form-label">Tipo de Producto:</label>
+                        <select data-size="4" title="Seleccione un tipo de producto" data-live-search="true"
+                            name="tipo_producto_id" id="tipo_producto_id" class="form-control selectpicker show-tick">
+                            @foreach ($tiposProductos as $item)
+                                <option value="{{ $item->id }}"
+                                    {{ $producto->tipo_producto_id == $item->id ? 'selected' : '' }}>{{ $item->nombre }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('tipo_producto_id')
                             <small class="text-danger">{{ '*' . $message }}</small>
                         @enderror
                     </div>

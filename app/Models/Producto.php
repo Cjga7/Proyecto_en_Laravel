@@ -27,8 +27,13 @@ class Producto extends Model
     public function presentacione(){
         return $this->belongsTo(Presentacione::class);
     }
+    public function tipoProducto()
+{
+    return $this->belongsTo(TipoProducto::class, 'tipo_producto_id');
+}
 
-    protected $fillable = ['codigo','nombre','descripcion','fecha_vencimiento','registrosanitario_id','presentacione_id','img_path'];
+
+    protected $fillable = ['codigo','nombre','descripcion','fecha_vencimiento','registrosanitario_id','presentacione_id','img_path','tipo_producto_id'];
 
     public function hanbleUploadImage($image){
         $file = $image;

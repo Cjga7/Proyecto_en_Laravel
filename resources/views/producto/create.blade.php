@@ -77,10 +77,13 @@
                     <!-----registrosanitario---->
                     <div class="col-md-6 mb-2">
                         <label for="registrosanitario_id" class="form-label">Registro sanitario:</label>
-                        <select data-size="4" title="Seleccione un registro sanitario" data-live-search="true" name="registrosanitario_id"
-                            id="registrosanitario_id" class="form-control selectpicker show-tick">
+                        <select data-size="4" title="Seleccione un registro sanitario" data-live-search="true"
+                            name="registrosanitario_id" id="registrosanitario_id"
+                            class="form-control selectpicker show-tick">
                             @foreach ($registrosanitarios as $item)
-                                <option value="{{ $item->id }}"{{ old('registrosanitario_id') == $item->id ? 'selected' : '' }}>{{ $item->nombre }}</option>
+                                <option
+                                    value="{{ $item->id }}"{{ old('registrosanitario_id') == $item->id ? 'selected' : '' }}>
+                                    {{ $item->nombre }}</option>
                             @endforeach
                         </select>
                         @error('registrosanitario_id')
@@ -94,7 +97,9 @@
                         <select data-size="4" title="Seleccione una presentacion" data-live-search="true"
                             name="presentacione_id" id="presentacione_id" class="form-control selectpicker show-tick">
                             @foreach ($presentaciones as $item)
-                                <option value="{{ $item->id }}"{{ old('presentacione_id') == $item->id ? 'selected' : '' }}>{{ $item->nombre }}</option>
+                                <option
+                                    value="{{ $item->id }}"{{ old('presentacione_id') == $item->id ? 'selected' : '' }}>
+                                    {{ $item->nombre }}</option>
                             @endforeach
                         </select>
                         @error('presentacione_id')
@@ -108,13 +113,32 @@
                         <select data-size="4" title="Seleccione una categoria" data-live-search="true" name="categorias[]"
                             id="categorias" class="form-control selectpicker show-tick" multiple>
                             @foreach ($categorias as $item)
-                                <option value="{{ $item->id }}"{{ (in_array($item->id , old('categorias',[]))) ? 'selected': '' }}>{{ $item->nombre }}</option>
+                                <option
+                                    value="{{ $item->id }}"{{ in_array($item->id, old('categorias', [])) ? 'selected' : '' }}>
+                                    {{ $item->nombre }}</option>
                             @endforeach
                         </select>
                         @error('categorias')
                             <small class="text-danger">{{ '*' . $message }}</small>
                         @enderror
                     </div>
+
+                    <!-----Tipo de Producto---->
+                    <div class="col-md-6 mb-2">
+                        <label for="tipo_producto_id" class="form-label">Tipo de Producto:</label>
+                        <select data-size="4" title="Seleccione un tipo de producto" data-live-search="true"
+                            name="tipo_producto_id" id="tipo_producto_id" class="form-control selectpicker show-tick">
+                            @foreach ($tiposProductos as $item)
+                                <option
+                                    value="{{ $item->id }}"{{ old('tipo_producto_id') == $item->id ? 'selected' : '' }}>
+                                    {{ $item->nombre }}</option>
+                            @endforeach
+                        </select>
+                        @error('tipo_producto_id')
+                            <small class="text-danger">{{ '*' . $message }}</small>
+                        @enderror
+                    </div>
+
 
                     <!-----botones---->
                     <div class="col-12 text-center">

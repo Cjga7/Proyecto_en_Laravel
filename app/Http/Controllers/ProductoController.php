@@ -9,6 +9,7 @@ use App\Models\Registrosanitario;
 use App\Models\Presentacione;
 use App\Models\Producto;
 use Exception;
+use App\Models\TipoProducto;
 use GuzzleHttp\Handler\Proxy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB; // Importar DB
@@ -30,7 +31,7 @@ class ProductoController extends Controller
      */
     public function index()
     {
-        $productos = Producto::with(['categorias.caracteristica', 'registrosanitario.caracteristica', 'presentacione.caracteristica'])->latest()->get();
+        $productos = Producto::with(['categorias.caracteristica', 'registrosanitario.caracteristica', 'presentacione.caracteristica', 'tipoProducto'])->latest()->get();
         return view('producto.index', compact('productos'));
     }
 
@@ -53,7 +54,11 @@ class ProductoController extends Controller
             ->select('categorias.id as id', 'c.nombre as nombre')
             ->where('c.estado', 1)
             ->get();
-        return view('producto.create', compact('registrosanitarios', 'presentaciones', 'categorias'));
+            $tiposProductos = TipoProducto::all(); // Obtener todos los tipos de productos
+
+            // Retornar la vista con todas las variables correctamente definidas
+            return view('producto.create', compact('registrosanitarios', 'presentaciones', 'categorias', 'tiposProductos'));
+
     }
 
     /**
@@ -71,6 +76,7 @@ class ProductoController extends Controller
                 $name = null;
             }
 
+
             $producto->fill([
                 'codigo' => $request->codigo,
                 'nombre' => $request->nombre,
@@ -78,7 +84,9 @@ class ProductoController extends Controller
                 'fecha_vencimiento' => $request->fecha_vencimiento,
                 'img_path' => $name,
                 'registrosanitario_id' => $request->registrosanitario_id,
-                'presentacione_id' => $request->presentacione_id
+                'presentacione_id' => $request->presentacione_id,
+                'tipo_producto_id' => $request->tipo_producto_id
+
             ]);
             $producto->save();
             //tabla categoria producto
@@ -122,7 +130,8 @@ class ProductoController extends Controller
             ->select('categorias.id as id', 'c.nombre as nombre')
             ->where('c.estado', 1)
             ->get();
-        return view('producto.edit', compact('producto', 'registrosanitarios', 'presentaciones', 'categorias'));
+        $tiposProductos = TipoProducto::all(); // Obtener todos los tipos de productos
+        return view('producto.edit', compact('producto', 'registrosanitarios', 'presentaciones', 'categorias', 'tiposProductos'));
     }
 
     /**
@@ -152,7 +161,8 @@ class ProductoController extends Controller
                 'fecha_vencimiento' => $request->fecha_vencimiento,
                 'img_path' => $name,
                 'registrosanitario_id' => $request->registrosanitario_id,
-                'presentacione_id' => $request->presentacione_id
+                'presentacione_id' => $request->presentacione_id,
+                'tipo_producto_id' => $request->tipo_producto_id
             ]);
             $producto->save();
             //tabla categoria producto
