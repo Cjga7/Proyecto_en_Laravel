@@ -11,7 +11,6 @@ class Compra extends Model
 
     protected $fillable = [
         'fecha_hora',
-        'impuesto',
         'numero_comprobante',
         'total',
         'comprobante_id',
@@ -26,6 +25,6 @@ class Compra extends Model
         return $this->belongsTo(Comprobante::class);
     }
     public function productos(){
-        return $this->belongsToMany(Producto::class)->withTimestamps()->withPivot('cantidad','precio_compra','precio_venta');
+        return $this->belongsToMany(Producto::class)->withTimestamps()->withPivot('cantidad','precio_compra');
     }
 }

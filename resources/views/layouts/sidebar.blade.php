@@ -47,38 +47,30 @@
 
                 <!-- Compras -->
                 @can('ver-compra')
-                <!--li>
-                    <a href="#" class="waves-effect" data-bs-toggle="collapse" data-bs-target="#collapseCompras"
-                        aria-expanded="false" aria-controls="collapseCompras">
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
                         <i class="fa-solid fa-store"></i>
                         <span>Compras</span>
-                        <i class="fas fa-angle-down"></i>
                     </a>
-                    <div class="collapse" id="collapseCompras" aria-labelledby="headingOne" data-bs-parent="#sidebar-menu">
-                        <ul class="list-unstyled">
-                            <li><a href="{{ route('compras.index') }}">Ver</a></li>
-                            <li><a href="{{ route('compras.create') }}">Crear</a></li>
-                        </ul>
-                    </div>
-                </!--li-->
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="{{ route('compras.index') }}">Ver</a></li>
+                        <li><a href="{{ route('compras.create') }}">Crear</a></li>
+                    </ul>
+                </li>
                 @endcan
 
                 <!-- Ventas -->
                 @can('ver-venta')
-                <!--li>
-                    <a href="#" class="waves-effect" data-bs-toggle="collapse" data-bs-target="#collapseVentas"
-                        aria-expanded="false" aria-controls="collapseVentas">
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
                         <i class="fa-solid fa-cart-shopping"></i>
                         <span>Ventas</span>
-                        <i class="fas fa-angle-down"></i>
                     </a>
-                    <div class="collapse" id="collapseVentas" aria-labelledby="headingOne" data-bs-parent="#sidebar-menu">
-                        <ul class="list-unstyled">
-                            <li><a href="{{ route('ventas.index') }}">Ver</a></li>
-                            <li><a href="{{ route('ventas.create') }}">Crear</a></li>
-                        </ul>
-                    </div>
-                </!--li-->
+                    <ul class="sub-menu" aria-expanded="false">
+                        <li><a href="{{ route('ventas.index') }}">Ver</a></li>
+                        <li><a href="{{ route('ventas.create') }}">Crear</a></li>
+                    </ul>
+                </li>
                 @endcan
 
                 <!-- Categorías -->
@@ -91,7 +83,7 @@
                 </li>
                 @endcan
 
-                <!-- registrosanitario -->
+                <!-- Registro sanitario -->
                 @can('ver-registrosanitario')
                 <li>
                     <a href="{{ route('registrosanitarios.index') }}" class="waves-effect">
@@ -160,7 +152,7 @@
                     </a>
                 </li>
                 @endcan
-                <!--div class="sidebar-footer">
+                  <!--div class="sidebar-footer">
                     <div class="small">Bienvenid@:</div>
                     {{ auth()->user()->name }}
                 </!--div-->
@@ -169,8 +161,5 @@
         </div>
         <!-- Sidebar -->
     </div>
-
-
-
 </div>
 <!-- Left Sidebar End -->

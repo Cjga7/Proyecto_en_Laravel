@@ -27,8 +27,7 @@ use App\Http\Controllers\registrosanitarioController;
 |
 */
 
-
-Route::get('/',[homeController::class, 'index'  ])->name('panel');
+Route::get('/', [homeController::class, 'index'])->name('panel');
 
 Route::resources([
     'categorias' => categoriaController::class,
@@ -41,22 +40,31 @@ Route::resources([
     'ventas' => ventaController::class,
     'users' => userController::class,
     'roles' => roleController::class,
-    'profile' => profileController::class
+    'profile' => profileController::class,
 ]);
 
+    Route::get('/ajustar-stock', [ProductoController::class, 'mostrarAjusteStock'])->name('productos.mostrarAjusteStock');
+    Route::post('/ajustar-stock', [ProductoController::class, 'ajustarStock'])->name('productos.ajustarStock');
 
 
-Route::get('/login',[loginController::class, 'index'  ])->name('login');
-Route::post('/login',[loginController::class, 'login'  ]);
-Route::get('/logout',[logoutController::class, 'logout'  ])->name('logout');
+
+
+// Rutas de autenticación
+Route::get('/login', [loginController::class, 'index'])->name('login');
+Route::post('/login', [loginController::class, 'login']);
+Route::get('/logout', [logoutController::class, 'logout'])->name('logout');
+
+// Vistas de error
 Route::get('/401', function () {
     return view('pages.401');
 });
-
 Route::get('/404', function () {
     return view('pages.404');
 });
-
 Route::get('/500', function () {
     return view('pages.500');
 });
+
+
+
+

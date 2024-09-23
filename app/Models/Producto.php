@@ -11,7 +11,7 @@ class Producto extends Model
     use HasFactory;
 
     public function compras(){
-        return $this->belongsToMany(Compra::class)->withTimestamps()->withPivot('cantidad','precio_compra','precio_venta');
+        return $this->belongsToMany(Compra::class)->withTimestamps()->withPivot('cantidad','precio_compra');
     }
 
     public function ventas(){

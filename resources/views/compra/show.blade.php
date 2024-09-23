@@ -18,7 +18,7 @@
 
     <div class="container w-100 border border-3 border-primary rounded p-4 mt-3">
 
-        <!---Tipp de comprobante-->
+        <!---Tipo de comprobante-->
         <div class="row mb-2">
             <div class="col-sm-4">
                 <div class="input-group mb-3">
@@ -30,7 +30,7 @@
                 <input disabled type="text" class="form-control" value="{{ $compra->comprobante->tipo_comprobante }}">
             </div>
         </div>
-        <!---numero de comprobante-->
+        <!---Numero de comprobante-->
         <div class="row mb-2">
             <div class="col-sm-4">
                 <div class="input-group mb-3">
@@ -43,11 +43,11 @@
             </div>
         </div>
 
-        <!---proveedor-->
+        <!---Proveedor-->
         <div class="row mb-2">
             <div class="col-sm-4">
                 <div class="input-group mb-3">
-                    <span class="input-group-text"><i class="fa-solid fa-user_tie"></i></span>
+                    <span class="input-group-text"><i class="fa-solid fa-user-tie"></i></span>
                     <input disabled type="text" class="form-control" value="Proveedor: ">
                 </div>
             </div>
@@ -57,12 +57,12 @@
             </div>
         </div>
 
-        <!---fecha  -->
+        <!---Fecha-->
         <div class="row mb-2">
             <div class="col-sm-4">
                 <div class="input-group mb-3">
                     <span class="input-group-text"><i class="fa-solid fa-calendar-days"></i></span>
-                    <input disabled type="text" class="form-control" value="fecha: ">
+                    <input disabled type="text" class="form-control" value="Fecha: ">
                 </div>
             </div>
             <div class="col-sm-8">
@@ -71,30 +71,17 @@
             </div>
         </div>
 
-        <!---hora  -->
+        <!---Hora-->
         <div class="row mb-2">
             <div class="col-sm-4">
                 <div class="input-group mb-3">
                     <span class="input-group-text"><i class="fa-solid fa-clock"></i></span>
-                    <input disabled type="text" class="form-control" value="hora: ">
+                    <input disabled type="text" class="form-control" value="Hora: ">
                 </div>
             </div>
             <div class="col-sm-8">
                 <input disabled type="text" class="form-control"
                     value="{{ \Carbon\Carbon::parse($compra->fecha_hora)->format('H:i') }}">
-            </div>
-        </div>
-
-        <!---impuesto  -->
-        <div class="row mb-2">
-            <div class="col-sm-4">
-                <div class="input-group mb-3">
-                    <span class="input-group-text"><i class="fa-solid fa-percent"></i></span>
-                    <input disabled type="text" class="form-control" value="impuesto: ">
-                </div>
-            </div>
-            <div class="col-sm-8">
-                <input id="input-impuesto" disabled type="text" class="form-control" value="{{ $compra->impuesto }}">
             </div>
         </div>
 
@@ -111,45 +98,22 @@
                             <th>Producto</th>
                             <th>Cantidad</th>
                             <th>Precio de compra</th>
-                            <th>Precio de venta</th>
-                            <th>subtotal</th>
+                            <th>Subtotal</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($compra->productos as $item)
                             <tr>
-                                <td>
-                                    {{ $item->nombre }}
-                                </td>
-                                <td>
-                                    {{ $item->pivot->cantidad }}
-                                </td>
-                                <td>
-                                    {{ $item->pivot->precio_compra }}
-                                </td>
-                                <td>
-                                    {{ $item->pivot->precio_venta }}
-                                </td>
-                                <td class="td-subtotal">
-                                    {{ $item->pivot->cantidad * $item->pivot->precio_compra }}
-                                </td>
+                                <td>{{ $item->nombre }}</td>
+                                <td>{{ $item->pivot->cantidad }}</td>
+                                <td>{{ $item->pivot->precio_compra }}</td>
+                                <td class="td-subtotal">{{ $item->pivot->cantidad * $item->pivot->precio_compra }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan="5"></th>
-                        </tr>
-                        <tr>
-                            <th colspan="4">Sumas:</th>
-                            <th id="th-suma"></th>
-                        </tr>
-                        <tr>
-                            <th colspan="4">IGV:</th>
-                            <th id="th-igv"></th>
-                        </tr>
-                        <tr>
-                            <th colspan="4">Total:</th>
+                            <th colspan="3">Total:</th>
                             <th id="th-total"></th>
                         </tr>
                     </tfoot>
@@ -161,25 +125,19 @@
 
 @push('js')
     <script>
-        //variables
+        // Variables
         let filasSubtotal = document.getElementsByClassName('td-subtotal');
-        let cont = 0;
-        let impuesto = $('#input-impuesto').val();
+        let total = 0;
 
         $(document).ready(function() {
-            calcularValores();
-
+            calcularTotal();
         });
 
-        function calcularValores() {
+        function calcularTotal() {
             for (let i = 0; i < filasSubtotal.length; i++) {
-                cont += parseFloat(filasSubtotal[i].innerHTML);
-
+                total += parseFloat(filasSubtotal[i].innerHTML);
             }
-            $('#th-suma').html(cont);
-            $('#th-igv').html(impuesto);
-            $('#th-total').html(cont+parseFloat (impuesto));
-
+            $('#th-total').html(total.toFixed(2));
         }
     </script>
 @endpush

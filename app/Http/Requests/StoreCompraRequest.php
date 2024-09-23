@@ -20,14 +20,13 @@ class StoreCompraRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-    {
-        return [
-            'proveedore_id' => 'required|exists:proveedores,id',
+{
+    return [
+      'proveedore_id' => 'required|exists:proveedores,id',
             'comprobante_id' => 'required|exists:comprobantes,id',
             'numero_comprobante' => 'required|unique:compras,numero_comprobante|max:255',
-            'impuesto' => 'required',
-            'fecha_hora' => 'required',
+             'fecha_hora' => 'required',
             'total' => 'required'
-        ];
-    }
+    ];
+}
 }

@@ -28,7 +28,7 @@
                 @csrf
                 <div class="row g-3">
 
-                    <!-----codigo---->
+                    <!-- Código -->
                     <div class="col-md-6 mb-2">
                         <label for="codigo" class="form-label">Codigo:</label>
                         <input type="text" name="codigo" id="codigo" class="form-control"
@@ -38,7 +38,7 @@
                         @enderror
                     </div>
 
-                    <!-----nombre---->
+                    <!-- Nombre -->
                     <div class="col-md-6 mb-2">
                         <label for="nombre" class="form-label">Nombre:</label>
                         <input type="text" name="nombre" id="nombre" class="form-control"
@@ -48,18 +48,16 @@
                         @enderror
                     </div>
 
-
-                    <!-----Descripcion---->
+                    <!-- Descripción -->
                     <div class="col-md-12 mb-2">
                         <label for="descripcion" class="form-label">Descripcion:</label>
-                        <textarea name="descripcion" id="descripcion" rows="3" class="form-control"
-                            {{ old('descripcion', $producto->descripcion) }}></textarea>
+                        <textarea name="descripcion" id="descripcion" rows="3" class="form-control">{{ old('descripcion', $producto->descripcion) }}</textarea>
                         @error('descripcion')
                             <small class="text-danger">{{ '*' . $message }}</small>
                         @enderror
                     </div>
 
-                    <!-----Fecha_Vencimiento---->
+                    <!-- Fecha de Vencimiento -->
                     <div class="col-md-6 mb-2">
                         <label for="fecha_vencimiento" class="form-label">Fecha de vencimiento:</label>
                         <input type="date" name="fecha_vencimiento" id="fecha_vencimiento" class="form-control"
@@ -69,30 +67,25 @@
                         @enderror
                     </div>
 
-                    <!-----imagen---->
+                    <!-- Imagen -->
                     <div class="col-md-6 mb-2">
                         <label for="img_path" class="form-label">Imagen:</label>
-                        <input type="file" name="img_path" id="img_path" class="form-control" accept="Image/*">
+                        <input type="file" name="img_path" id="img_path" class="form-control" accept="image/*">
                         @error('img_path')
                             <small class="text-danger">{{ '*' . $message }}</small>
                         @enderror
                     </div>
-                    <!-----registrosanitario---->
-                    <div class="col-md-6 mb-2">
+
+                    <!-- Registro Sanitario (no para materia prima) -->
+                    <div class="col-md-6 mb-2" id="registro_sanitario_container">
                         <label for="registrosanitario_id" class="form-label">Registro sanitario:</label>
                         <select data-size="4" title="Seleccione un registro sanitario" data-live-search="true"
                             name="registrosanitario_id" id="registrosanitario_id"
                             class="form-control selectpicker show-tick">
                             @foreach ($registrosanitarios as $item)
-                                @if ($producto->registrosanitario_id == $item->id)
-                                    <option selected
-                                        value="{{ $item->id }}"{{ old('registrosanitario_id') == $item->id ? 'selected' : '' }}>
-                                        {{ $item->nombre }}</option>
-                                @else
-                                    <option
-                                        value="{{ $item->id }}"{{ old('registrosanitario_id') == $item->id ? 'selected' : '' }}>
-                                        {{ $item->nombre }}</option>
-                                @endif
+                                <option value="{{ $item->id }}" {{ $producto->registrosanitario_id == $item->id ? 'selected' : '' }}>
+                                    {{ $item->nombre }}
+                                </option>
                             @endforeach
                         </select>
                         @error('registrosanitario_id')
@@ -100,42 +93,31 @@
                         @enderror
                     </div>
 
-                    <!-----Presentaciones---->
+                    <!-- Presentaciones -->
                     <div class="col-md-6 mb-2">
-                        <label for="presentacione_id" class="form-label">Presentacion:</label>
-                        <select data-size="4" title="Seleccione una presentacion" data-live-search="true"
+                        <label for="presentacione_id" class="form-label">Presentación:</label>
+                        <select data-size="4" title="Seleccione una presentación" data-live-search="true"
                             name="presentacione_id" id="presentacione_id" class="form-control selectpicker show-tick">
                             @foreach ($presentaciones as $item)
-                                @if ($producto->presentacione_id == $item->id)
-                                    <option selected
-                                        value="{{ $item->id }}"{{ old('presentacione_id') == $item->id ? 'selected' : '' }}>
-                                        {{ $item->nombre }}</option>
-                                @else
-                                    <option
-                                        value="{{ $item->id }}"{{ old('presentacione_id') == $item->id ? 'selected' : '' }}>
-                                        {{ $item->nombre }}</option>
-                                @endif
+                                <option value="{{ $item->id }}" {{ $producto->presentacione_id == $item->id ? 'selected' : '' }}>
+                                    {{ $item->nombre }}
+                                </option>
                             @endforeach
                         </select>
                         @error('presentacione_id')
                             <small class="text-danger">{{ '*' . $message }}</small>
                         @enderror
                     </div>
-                    <!-----Categorias---->
+
+                    <!-- Categorías -->
                     <div class="col-md-6 mb-2">
-                        <label for="categorias" class="form-label">Categoria:</label>
-                        <select data-size="4" title="Seleccione una categoria" data-live-search="true" name="categorias[]"
+                        <label for="categorias" class="form-label">Categoría:</label>
+                        <select data-size="4" title="Seleccione una categoría" data-live-search="true" name="categorias[]"
                             id="categorias" class="form-control selectpicker show-tick" multiple>
                             @foreach ($categorias as $item)
-                                @if (in_array($item->id, $producto->categorias->pluck('id')->toArray()))
-                                    <option selected
-                                        value="{{ $item->id }}"{{ in_array($item->id, old('categorias', [])) ? 'selected' : '' }}>
-                                        {{ $item->nombre }}</option>
-                                @else
-                                    <option
-                                        value="{{ $item->id }}"{{ in_array($item->id, old('categorias', [])) ? 'selected' : '' }}>
-                                        {{ $item->nombre }}</option>
-                                @endif
+                                <option value="{{ $item->id }}" {{ in_array($item->id, $producto->categorias->pluck('id')->toArray()) ? 'selected' : '' }}>
+                                    {{ $item->nombre }}
+                                </option>
                             @endforeach
                         </select>
                         @error('categorias')
@@ -143,14 +125,14 @@
                         @enderror
                     </div>
 
-                    <!-----Tipo de Producto---->
+                    <!-- Tipo de Producto -->
                     <div class="col-md-6 mb-2">
                         <label for="tipo_producto_id" class="form-label">Tipo de Producto:</label>
                         <select data-size="4" title="Seleccione un tipo de producto" data-live-search="true"
                             name="tipo_producto_id" id="tipo_producto_id" class="form-control selectpicker show-tick">
                             @foreach ($tiposProductos as $item)
-                                <option value="{{ $item->id }}"
-                                    {{ $producto->tipo_producto_id == $item->id ? 'selected' : '' }}>{{ $item->nombre }}
+                                <option value="{{ $item->id }}" {{ $producto->tipo_producto_id == $item->id ? 'selected' : '' }}>
+                                    {{ $item->nombre }}
                                 </option>
                             @endforeach
                         </select>
@@ -159,7 +141,17 @@
                         @enderror
                     </div>
 
-                    <!-----botones---->
+                    <!-- Precio de Venta (solo para productos terminados) -->
+                    <div class="col-md-6 mb-2" id="precio_venta_container" style="display: none;">
+                        <label for="precio_venta" class="form-label">Precio de Venta:</label>
+                        <input type="number" step="0.01" name="precio_venta" id="precio_venta" class="form-control"
+                            value="{{ old('precio_venta', $producto->precio_venta) }}">
+                        @error('precio_venta')
+                            <small class="text-danger">{{ '*' . $message }}</small>
+                        @enderror
+                    </div>
+
+                    <!-- Botón Guardar -->
                     <div class="col-12 text-center">
                         <button type="submit" class="btn btn-primary">Guardar</button>
                     </div>
@@ -173,4 +165,27 @@
 
 @push('js')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Mostrar/Ocultar el campo de precio de venta y registro sanitario según el tipo de producto
+            function toggleCampos() {
+                const tipoProducto = $('#tipo_producto_id').val();
+                if (tipoProducto == 1) {  // Cambia el valor '1' al ID correspondiente para 'producto terminado'
+                    $('#precio_venta_container').show();
+                    $('#registro_sanitario_container').show();
+                } else if (tipoProducto == 2) { // Cambia el valor '2' al ID correspondiente para 'materia prima'
+                    $('#precio_venta_container').hide();
+                    $('#registro_sanitario_container').hide();
+                }
+            }
+
+            // Inicializar cuando se cargue la página
+            toggleCampos();
+
+            // Cambiar dinámicamente cuando el usuario seleccione un tipo de producto
+            $('#tipo_producto_id').change(function () {
+                toggleCampos();
+            });
+        });
+    </script>
 @endpush

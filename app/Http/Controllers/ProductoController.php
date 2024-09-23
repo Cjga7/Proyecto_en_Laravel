@@ -10,15 +10,12 @@ use App\Models\Presentacione;
 use App\Models\Producto;
 use Exception;
 use App\Models\TipoProducto;
-use GuzzleHttp\Handler\Proxy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB; // Importar DB
 use Illuminate\Support\Facades\Storage;
-use PhpParser\Node\Stmt\TryCatch;
 
 class ProductoController extends Controller
 {
-
     function __construct()
     {
         $this->middleware('permission:ver-producto|crear-producto|editar-producto|eliminar-producto', ['only' => ['index']]);
@@ -26,6 +23,7 @@ class ProductoController extends Controller
         $this->middleware('permission:editar-producto', ['only' => ['edit', 'update']]);
         $this->middleware('permission:eliminar-producto', ['only' => ['destroy']]);
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -54,11 +52,10 @@ class ProductoController extends Controller
             ->select('categorias.id as id', 'c.nombre as nombre')
             ->where('c.estado', 1)
             ->get();
-            $tiposProductos = TipoProducto::all(); // Obtener todos los tipos de productos
+        $tiposProductos = TipoProducto::all(); // Obtener todos los tipos de productos
 
-            // Retornar la vista con todas las variables correctamente definidas
-            return view('producto.create', compact('registrosanitarios', 'presentaciones', 'categorias', 'tiposProductos'));
-
+        // Retornar la vista con todas las variables correctamente definidas
+        return view('producto.create', compact('registrosanitarios', 'presentaciones', 'categorias', 'tiposProductos'));
     }
 
     /**
@@ -68,7 +65,8 @@ class ProductoController extends Controller
     {
         try {
             DB::beginTransaction();
-            //tabla producto
+
+            // tabla producto
             $producto = new Producto();
             if ($request->hasFile('img_path')) {
                 $name = $producto->hanbleUploadImage($request->file('img_path'));
@@ -76,28 +74,32 @@ class ProductoController extends Controller
                 $name = null;
             }
 
-
             $producto->fill([
                 'codigo' => $request->codigo,
                 'nombre' => $request->nombre,
                 'descripcion' => $request->descripcion,
                 'fecha_vencimiento' => $request->fecha_vencimiento,
                 'img_path' => $name,
-                'registrosanitario_id' => $request->registrosanitario_id,
                 'presentacione_id' => $request->presentacione_id,
-                'tipo_producto_id' => $request->tipo_producto_id
-
+                'tipo_producto_id' => $request->tipo_producto_id,
             ]);
+
+            // Verificar si el producto es de tipo "producto terminado" antes de asignar el registro sanitario
+            if ($request->tipo_producto_id == 1) { // Cambia '1' por el ID real del tipo de producto terminado
+                $producto->registrosanitario_id = $request->registrosanitario_id;
+                $producto->precio_venta = $request->precio_venta;
+            }
+
             $producto->save();
-            //tabla categoria producto
+
+            // tabla categoria producto
             $categorias = $request->get('categorias');
             $producto->categorias()->attach($categorias);
-
-
 
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
+            // Manejar el error (opcional)
         }
 
         return redirect()->route('productos.index')->with('success', 'Producto Registrado');
@@ -142,39 +144,50 @@ class ProductoController extends Controller
         try {
             DB::beginTransaction();
 
-            //tabla producto
+            // Actualizar imagen si se proporciona
             if ($request->hasFile('img_path')) {
                 $name = $producto->hanbleUploadImage($request->file('img_path'));
-
-                //Eliminar imagen existente
-                if(Storage::disk('public')->exists('productos/'.$producto->img_path)){
-                    Storage::disk('public')->delete('productos/'.$producto->img_path);
+                // Eliminar imagen existente
+                if (Storage::disk('public')->exists('productos/' . $producto->img_path)) {
+                    Storage::disk('public')->delete('productos/' . $producto->img_path);
                 }
             } else {
-                $name = $producto->img_path;
+                $name = $producto->img_path; // Mantener la imagen existente
             }
 
+            // Asignar los valores del request al producto
             $producto->fill([
                 'codigo' => $request->codigo,
                 'nombre' => $request->nombre,
                 'descripcion' => $request->descripcion,
                 'fecha_vencimiento' => $request->fecha_vencimiento,
                 'img_path' => $name,
-                'registrosanitario_id' => $request->registrosanitario_id,
                 'presentacione_id' => $request->presentacione_id,
-                'tipo_producto_id' => $request->tipo_producto_id
+                'tipo_producto_id' => $request->tipo_producto_id,
             ]);
-            $producto->save();
-            //tabla categoria producto
-            //sync elimina las anteriores y despues anade
+
+            // Verificar el tipo de producto
+            if ($request->tipo_producto_id == 1) { // Si es producto terminado
+                $producto->registrosanitario_id = $request->registrosanitario_id;
+                $producto->precio_venta = $request->precio_venta; // Asignar precio
+            } else { // Si es materia prima
+                $producto->registrosanitario_id = null; // Quitar registro sanitario
+                $producto->precio_venta = null; // Materia prima no tiene precio de venta
+            }
+
+            $producto->save(); // Guardar los cambios
+
+            // Actualizar categorías
             $categorias = $request->get('categorias');
-            $producto->categorias()->sync($categorias);
+            $producto->categorias()->sync($categorias); // Sincronizar categorías
 
             DB::commit();
         } catch (Exception $e) {
-            DB::rollBack();
+            DB::rollback();
+            return redirect()->route('productos.index')->with('error', 'Error al actualizar el producto.');
         }
-        return redirect()->route('productos.index')->with('success','Producto Editado');
+
+        return redirect()->route('productos.index')->with('success', 'Producto Editado');
     }
 
     /**
@@ -199,5 +212,51 @@ class ProductoController extends Controller
         }
 
         return redirect()->route('productos.index')->with('success', $message);
+    }
+
+    /**
+     * Show the form for adjusting stock.
+     */
+    public function mostrarAjusteStock()
+    {
+        $productos = Producto::where('estado', 1)->get();
+        return view('producto.ajustarStock', compact('productos'));
+    }
+
+    /**
+     * Adjust the stock of a specified product.
+     */
+    public function ajustarStock(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $producto = Producto::findOrFail($request->producto_id);
+            $cantidad = $request->cantidad;
+
+            if ($cantidad) {
+                if ($request->tipo_ajuste == 'incrementar') {
+                    $producto->stock += $cantidad;
+                } else {
+                    $producto->stock -= $cantidad;
+                }
+
+                // Asegúrate de que el stock no sea negativo
+                if ($producto->stock < 0) {
+                    throw new Exception('El stock no puede ser negativo.');
+                }
+
+                // Guardar el cambio en el stock
+                $producto->save();
+
+                DB::commit();
+                return redirect()->route('productos.index')->with('success', 'Stock ajustado exitosamente.');
+            } else {
+                throw new Exception('La cantidad no puede estar vacía.');
+            }
+        } catch (Exception $e) {
+            DB::rollback();
+            return redirect()->route('productos.index')->with('error', 'Error al ajustar el stock: ' . $e->getMessage());
+        }
     }
 }
