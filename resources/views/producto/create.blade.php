@@ -8,7 +8,8 @@
             resize: none;
         }
     </style>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 @endpush
 
@@ -25,10 +26,27 @@
                 @csrf
                 <div class="row g-3">
 
+                    <!-- Tipo de Producto -->
+                    <div class="col-md-6 mb-2">
+                        <label for="tipo_producto_id" class="form-label">Tipo de Producto:</label>
+                        <select data-size="4" title="Seleccione un tipo de producto" data-live-search="true"
+                            name="tipo_producto_id" id="tipo_producto_id" class="form-control selectpicker show-tick">
+                            @foreach ($tiposProductos as $item)
+                                <option
+                                    value="{{ $item->id }}"{{ old('tipo_producto_id') == $item->id ? 'selected' : '' }}>
+                                    {{ $item->nombre }}</option>
+                            @endforeach
+                        </select>
+                        @error('tipo_producto_id')
+                            <small class="text-danger">{{ '*' . $message }}</small>
+                        @enderror
+                    </div>
+
                     <!-- Código -->
                     <div class="col-md-6 mb-2">
                         <label for="codigo" class="form-label">Código:</label>
-                        <input type="text" name="codigo" id="codigo" class="form-control" value="{{ old('codigo') }}">
+                        <input type="text" name="codigo" id="codigo" class="form-control"
+                            value="{{ old('codigo') }}">
                         @error('codigo')
                             <small class="text-danger">{{ '*' . $message }}</small>
                         @enderror
@@ -37,7 +55,8 @@
                     <!-- Nombre -->
                     <div class="col-md-6 mb-2">
                         <label for="nombre" class="form-label">Nombre:</label>
-                        <input type="text" name="nombre" id="nombre" class="form-control" value="{{ old('nombre') }}">
+                        <input type="text" name="nombre" id="nombre" class="form-control"
+                            value="{{ old('nombre') }}">
                         @error('nombre')
                             <small class="text-danger">{{ '*' . $message }}</small>
                         @enderror
@@ -55,7 +74,8 @@
                     <!-- Fecha de Vencimiento -->
                     <div class="col-md-6 mb-2">
                         <label for="fecha_vencimiento" class="form-label">Fecha de Vencimiento:</label>
-                        <input type="date" name="fecha_vencimiento" id="fecha_vencimiento" class="form-control" value="{{ old('fecha_vencimiento') }}">
+                        <input type="date" name="fecha_vencimiento" id="fecha_vencimiento" class="form-control"
+                            value="{{ old('fecha_vencimiento') }}">
                         @error('fecha_vencimiento')
                             <small class="text-danger">{{ '*' . $message }}</small>
                         @enderror
@@ -74,9 +94,11 @@
                     <div class="col-md-6 mb-2" id="registrosanitario_container" style="display: none;">
                         <label for="registrosanitario_id" class="form-label">Registro Sanitario:</label>
                         <select data-size="4" title="Seleccione un registro sanitario" data-live-search="true"
-                                name="registrosanitario_id" id="registrosanitario_id" class="form-control selectpicker show-tick">
+                            name="registrosanitario_id" id="registrosanitario_id"
+                            class="form-control selectpicker show-tick">
                             @foreach ($registrosanitarios as $item)
-                                <option value="{{ $item->id }}"{{ old('registrosanitario_id') == $item->id ? 'selected' : '' }}>
+                                <option
+                                    value="{{ $item->id }}"{{ old('registrosanitario_id') == $item->id ? 'selected' : '' }}>
                                     {{ $item->nombre }}</option>
                             @endforeach
                         </select>
@@ -89,9 +111,10 @@
                     <div class="col-md-6 mb-2">
                         <label for="presentacione_id" class="form-label">Presentación:</label>
                         <select data-size="4" title="Seleccione una presentación" data-live-search="true"
-                                name="presentacione_id" id="presentacione_id" class="form-control selectpicker show-tick">
+                            name="presentacione_id" id="presentacione_id" class="form-control selectpicker show-tick">
                             @foreach ($presentaciones as $item)
-                                <option value="{{ $item->id }}"{{ old('presentacione_id') == $item->id ? 'selected' : '' }}>
+                                <option
+                                    value="{{ $item->id }}"{{ old('presentacione_id') == $item->id ? 'selected' : '' }}>
                                     {{ $item->nombre }}</option>
                             @endforeach
                         </select>
@@ -104,9 +127,10 @@
                     <div class="col-md-6 mb-2">
                         <label for="categorias" class="form-label">Categoría:</label>
                         <select data-size="4" title="Seleccione una categoría" data-live-search="true" name="categorias[]"
-                                id="categorias" class="form-control selectpicker show-tick" multiple>
+                            id="categorias" class="form-control selectpicker show-tick" multiple>
                             @foreach ($categorias as $item)
-                                <option value="{{ $item->id }}"{{ in_array($item->id, old('categorias', [])) ? 'selected' : '' }}>
+                                <option
+                                    value="{{ $item->id }}"{{ in_array($item->id, old('categorias', [])) ? 'selected' : '' }}>
                                     {{ $item->nombre }}</option>
                             @endforeach
                         </select>
@@ -115,25 +139,12 @@
                         @enderror
                     </div>
 
-                    <!-- Tipo de Producto -->
-                    <div class="col-md-6 mb-2">
-                        <label for="tipo_producto_id" class="form-label">Tipo de Producto:</label>
-                        <select data-size="4" title="Seleccione un tipo de producto" data-live-search="true"
-                                name="tipo_producto_id" id="tipo_producto_id" class="form-control selectpicker show-tick">
-                            @foreach ($tiposProductos as $item)
-                                <option value="{{ $item->id }}"{{ old('tipo_producto_id') == $item->id ? 'selected' : '' }}>
-                                    {{ $item->nombre }}</option>
-                            @endforeach
-                        </select>
-                        @error('tipo_producto_id')
-                            <small class="text-danger">{{ '*' . $message }}</small>
-                        @enderror
-                    </div>
 
                     <!-- Precio de Venta (oculto por defecto) -->
                     <div class="col-md-6 mb-2" id="precio_venta_container" style="display: none;">
                         <label for="precio_venta" class="form-label">Precio de Venta:</label>
-                        <input type="number" name="precio_venta" id="precio_venta" class="form-control" value="{{ old('precio_venta') }}" step="0.01" min="0">
+                        <input type="number" name="precio_venta" id="precio_venta" class="form-control"
+                            value="{{ old('precio_venta') }}" step="0.01" min="0">
                         @error('precio_venta')
                             <small class="text-danger">{{ '*' . $message }}</small>
                         @enderror
