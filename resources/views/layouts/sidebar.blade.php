@@ -118,7 +118,29 @@
                         @endcan
                     </ul>
                 </li>
-
+                <!-- Reportes -->
+                <li>
+                    <a href="javascript: void(0);" class="has-arrow waves-effect">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Reportes</span>
+                    </a>
+                    <ul class="sub-menu" aria-expanded="false">
+                        <!-- Ventas -->
+                        <li>
+                            <a href="{{ route('reportes.ventas.index') }}" class="waves-effect">
+                                <i class="fa-solid fa-file-invoice-dollar"></i>
+                                <span>Reportes de Ventas</span>
+                            </a>
+                        </li>
+                        <!-- Productos -->
+                        <li>
+                            <a href="{{ route('reportes.productos.index') }}" class="waves-effect">
+                                <i class="fa-solid fa-box"></i>
+                                <span>Reportes de Productos</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 <!-- Clientes -->
                 @can('ver-cliente')
                     <li>

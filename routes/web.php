@@ -15,6 +15,7 @@ use App\Http\Controllers\userController;
 use App\Http\Controllers\roleController;
 use App\Http\Controllers\profileController;
 use App\Http\Controllers\registrosanitarioController;
+use App\Http\Controllers\ReporteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,6 +43,26 @@ Route::resources([
     'roles' => roleController::class,
     'profile' => profileController::class,
 ]);
+
+// Rutas para reportes
+// Rutas para los reportes de ventas
+// Rutas para reportes
+// Rutas para reportes
+Route::prefix('reportes')->group(function () {
+    Route::get('ventas', [ReporteController::class, 'indexVentas'])->name('reportes.ventas.index');
+    Route::get('reportes/ventas/totales', [ReporteController::class, 'ventasTotales'])->name('reportes.ventas.totales');
+
+    Route::get('ventas/producto', [ReporteController::class, 'ventasPorProducto'])->name('reportes.ventas.producto');
+    Route::get('ventas/cliente', [ReporteController::class, 'ventasPorCliente'])->name('reportes.ventas.cliente');
+    Route::get('ventas/usuario', [ReporteController::class, 'ventasPorUsuario'])->name('reportes.ventas.usuario');
+
+    Route::get('productos', [ReporteController::class, 'indexProductos'])->name('reportes.productos.index');
+    Route::get('productos/inventario', [ReporteController::class, 'inventarioActual'])->name('reportes.productos.inventario');
+    Route::get('productos/mas-vendidos', [ReporteController::class, 'productosMasVendidos'])->name('reportes.productos.mas_vendidos');
+    Route::get('productos/bajo-stock', [ReporteController::class, 'bajoStock'])->name('reportes.productos.bajo_stock');
+    Route::get('productos/historial/{id}', [ReporteController::class, 'historialVentas'])->name('reportes.productos.historial');
+});
+
 
     Route::get('/ajustar-stock', [ProductoController::class, 'mostrarAjusteStock'])->name('productos.mostrarAjusteStock');
     Route::post('/ajustar-stock', [ProductoController::class, 'ajustarStock'])->name('productos.ajustarStock');

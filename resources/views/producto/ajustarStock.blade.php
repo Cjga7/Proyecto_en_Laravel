@@ -31,13 +31,29 @@
                         <select name="producto_id" id="producto_id" class="form-control selectpicker show-tick" required>
                             <option value="">Seleccione un producto</option>
                             @foreach ($productos as $producto)
-                                <option value="{{ $producto->id }}" data-stock="{{ $producto->stock }}">{{ $producto->nombre }}</option>
+                                <option value="{{ $producto->id }}"
+                                        data-stock="{{ $producto->stock }}"
+                                        data-tipo="{{ $producto->tipoProducto->nombre }}">
+                                    {{ $producto->nombre }}
+                                </option>
                             @endforeach
                         </select>
                         <input type="hidden" id="stock_actual" name="stock_actual">
                         @error('producto_id')
                             <small class="text-danger">{{ '*' . $message }}</small>
                         @enderror
+                    </div>
+
+                    <!-- Stock actual -->
+                    <div class="col-md-6 mb-2">
+                        <label for="stock_display" class="form-label">Stock Actual:</label>
+                        <input type="text" id="stock_display" class="form-control" value="Seleccione un producto" readonly>
+                    </div>
+
+                    <!-- Tipo de producto -->
+                    <div class="col-md-6 mb-2">
+                        <label for="tipo_producto_display" class="form-label">Tipo de Producto:</label>
+                        <input type="text" id="tipo_producto_display" class="form-control" value="Seleccione un producto" readonly>
                     </div>
 
                     <!-- Cantidad -->
@@ -85,10 +101,14 @@
 
     <script>
         $(document).ready(function() {
-            // Al cambiar el producto, actualizar el stock actual
+            // Al cambiar el producto, actualizar el stock actual y el tipo de producto
             $('#producto_id').change(function() {
                 var stock = $(this).find('option:selected').data('stock') || 0;
+                var tipoProducto = $(this).find('option:selected').data('tipo') || 'N/A';
+
                 $('#stock_actual').val(stock);
+                $('#stock_display').val(stock + ' unidades');
+                $('#tipo_producto_display').val(tipoProducto);
             });
 
             // Validación al enviar el formulario

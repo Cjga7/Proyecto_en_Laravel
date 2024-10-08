@@ -34,7 +34,7 @@
                             <!-------Producto---->
                             <div class="col-md-12 mb-2">
                                 <select name="producto_id" id="producto_id" class="form-control selectpicker "
-                                    data-live-search="true" data-size='1' title="Busque un producto">
+                                    data-live-search="true" data-size='3' title="Busque un producto">
                                     @foreach ($productos as $item)
                                         <option value="{{ $item->id }}-{{ $item->stock }}-{{ $item->precio_venta }}">
                                             {{ $item->codigo . ' ' . $item->nombre }}
