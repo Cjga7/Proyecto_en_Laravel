@@ -21,7 +21,7 @@
                         <div class="form-group">
                             <label for="mes" class="mr-2">Mes:</label>
                             <select name="mes" id="mes" class="form-control mr-3">
-                                <option value="">Seleccione un mes</option>
+                                <option value="">Todos</option>
                                 @foreach(range(1, 12) as $month)
                                     <option value="{{ $month }}" {{ request('mes') == $month ? 'selected' : '' }}>
                                         {{ ucfirst(\Carbon\Carbon::create()->month($month)->locale('es')->translatedFormat('F')) }}

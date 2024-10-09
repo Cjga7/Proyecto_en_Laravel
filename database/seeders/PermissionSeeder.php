@@ -76,7 +76,12 @@ class PermissionSeeder extends Seeder
 
             //Perfil
             'ver-perfil',
-            'editar-perfil'
+            'editar-perfil',
+
+
+            //Reportes
+            'ver-reporte'
+
         ];
 
         foreach($permisos as $permiso){

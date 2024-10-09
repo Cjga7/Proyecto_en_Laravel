@@ -14,28 +14,59 @@
     <div class="row mb-4">
         <div class="col-lg-12">
             <div class="card">
-                <div class="card-header">Historial de Ventas del Producto ID: {{ $productoId }}</div>
+                <div class="card-header">Historial de Ventas del Producto
+                    @if ($productoId === 'all')
+                        (Todos los productos)
+                    @else
+                        ID: {{ $productoId }}
+                    @endif
+                </div>
                 <div class="card-body">
+
+                    <!-- Formulario para filtrar por fechas -->
+                    <form action="{{ route('reportes.productos.historial', $productoId) }}" method="GET">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="fecha_inicio" class="form-label">Fecha de Inicio</label>
+                                <input type="date" name="fecha_inicio" class="form-control" value="{{ request('fecha_inicio') }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="fecha_fin" class="form-label">Fecha de Fin</label>
+                                <input type="date" name="fecha_fin" class="form-control" value="{{ request('fecha_fin') }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label d-block">&nbsp;</label>
+                                <button type="submit" class="btn btn-primary">Filtrar</button>
+                            </div>
+                        </div>
+                    </form>
+
                     @if ($historial->isEmpty())
-                        <p>No hay ventas registradas para este producto.</p>
+                        <p>No hay ventas registradas para este producto en el rango de fechas seleccionado.</p>
                     @else
                         <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>ID Venta</th>
                                     <th>Fecha de Venta</th>
+                                    <th>Producto</th>
                                     <th>Cantidad Vendida</th>
                                     <th>Precio de Venta</th>
+                                    <th>Total Venta</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($historial as $venta)
-                                    <tr>
-                                        <td>{{ $venta->id }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($venta->fecha_hora)->formatLocalized('%d %B %Y %H:%M') }}</td>
-                                        <td>{{ $venta->productos->firstWhere('id', $productoId)->pivot->cantidad ?? 'N/A' }}</td>
-                                        <td>{{ number_format($venta->productos->firstWhere('id', $productoId)->pivot->precio_venta, 2) }} Bs</td>
-                                    </tr>
+                                    @foreach($venta->productos as $producto)
+                                        <tr>
+                                            <td>{{ $venta->id }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($venta->fecha_hora)->isoFormat('D [de] MMMM [de] YYYY, H:mm') }}</td>
+                                            <td>{{ $producto->nombre }}</td>
+                                            <td>{{ $producto->pivot->cantidad }}</td>
+                                            <td>{{ number_format($producto->pivot->precio_venta, 2) }} Bs</td>
+                                            <td>{{ number_format($producto->pivot->cantidad * $producto->pivot->precio_venta, 2) }} Bs</td>
+                                        </tr>
+                                    @endforeach
                                 @endforeach
                             </tbody>
                         </table>

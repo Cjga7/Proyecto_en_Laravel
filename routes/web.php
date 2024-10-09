@@ -45,9 +45,6 @@ Route::resources([
 ]);
 
 // Rutas para reportes
-// Rutas para los reportes de ventas
-// Rutas para reportes
-// Rutas para reportes
 Route::prefix('reportes')->group(function () {
     Route::get('ventas', [ReporteController::class, 'indexVentas'])->name('reportes.ventas.index');
     Route::get('reportes/ventas/totales', [ReporteController::class, 'ventasTotales'])->name('reportes.ventas.totales');

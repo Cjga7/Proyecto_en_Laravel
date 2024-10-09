@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Exports\VentasTotalesExport;
 use Maatwebsite\Excel\Facades\Excel;
-
+use Spatie\Permission\Models\Role;
 use App\Models\Categoria;
 use App\Models\Registrosanitario;
 use App\Models\Presentacione;
@@ -17,6 +17,12 @@ use App\Models\TipoProducto;
 
 class ReporteController extends Controller
 {
+    function __construct()
+{
+    // Aplicar el middleware solo para la acción 'index'
+    $this->middleware('permission:ver-reporte', ['only' => ['index', 'indexVentas', 'ventasTotales', 'ventasPorProducto', 'ventasPorCliente', 'ventasPorUsuario'
+    ,'indexProductos', 'inventarioActual']]);
+}
     public function indexVentas()
     {
         // Cálculo real de los totales
@@ -76,12 +82,12 @@ class ReporteController extends Controller
             $pdf = PDF::loadView('reportes.ventas.ventas_totales_pdf', compact('ventasDelMesSeleccionado', 'anio', 'mesSeleccionado', 'labels', 'datosVentas', 'colores'));
 
             // Cambiar de download() a stream() para que se previsualice el PDF
-            return $pdf->stream('reporte_ventas_'.$mesSeleccionado.'_'.$anio.'.pdf');
+            return $pdf->stream('reporte_ventas_' . $mesSeleccionado . '_' . $anio . '.pdf');
         }
-         // Verificar si la petición es para generar un archivo Excel
-    if ($request->input('excel') == '1') {
-        return Excel::download(new VentasTotalesExport($ventasDelMesSeleccionado, $anio, $mesSeleccionado), 'reporte_ventas_'.$mesSeleccionado.'_'.$anio.'.xlsx');
-    }
+        // Verificar si la petición es para generar un archivo Excel
+        if ($request->input('excel') == '1') {
+            return Excel::download(new VentasTotalesExport($ventasDelMesSeleccionado, $anio, $mesSeleccionado), 'reporte_ventas_' . $mesSeleccionado . '_' . $anio . '.xlsx');
+        }
 
         return view('reportes.ventas.ventas_totales', compact('ventasDelMesSeleccionado', 'anio', 'mesSeleccionado', 'labels', 'datosVentas', 'colores'));
     }
@@ -264,11 +270,44 @@ class ReporteController extends Controller
 
     public function historialVentas(Request $request, $productoId)
     {
-        $historial = Venta::whereHas('productos', function ($query) use ($productoId) {
-            $query->where('producto_id', $productoId);
-        })->with('productos') // Asegúrate de incluir la relación con el modelo Producto
-            ->get();
+        // Obtén las fechas de filtrado, si están presentes en la solicitud
+        $fechaInicio = $request->input('fecha_inicio');
+        $fechaFin = $request->input('fecha_fin');
 
-        return view('reportes.productos.historial_ventas', compact('historial', 'productoId'));
+        // Verifica si se está solicitando el historial de todos los productos
+        if ($productoId === 'all') {
+            // Obtener todas las ventas sin filtrar por producto, aplicando filtro de fechas si existen
+            $historial = Venta::with('productos')
+                ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
+                    $query->whereBetween('fecha_hora', [$fechaInicio, $fechaFin]);
+                })
+                ->get();
+        } else {
+            // Consulta el historial de ventas del producto específico, aplicando filtro de fechas si existen
+            $historial = Venta::whereHas('productos', function ($query) use ($productoId) {
+                    $query->where('producto_id', $productoId);
+                })
+                ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
+                    $query->whereBetween('fecha_hora', [$fechaInicio, $fechaFin]);
+                })
+                ->with(['productos' => function ($query) use ($productoId) {
+                    // Filtra solo el producto específico en la relación de productos
+                    $query->where('producto_id', $productoId);
+                }])
+                ->get();
+        }
+
+        // Verifica si hay ventas registradas
+        if ($historial->isEmpty()) {
+            return redirect()->back()->with('message', 'No hay historial de ventas para este producto en el rango de fechas seleccionado.');
+        }
+
+        // Obtiene información del producto (si no es "all")
+        $producto = ($productoId !== 'all') ? Producto::find($productoId) : null;
+
+        // Devuelve la vista con el historial, el ID del producto y la información del producto
+        return view('reportes.productos.historial_ventas', compact('historial', 'productoId', 'producto'));
     }
+
+
 }

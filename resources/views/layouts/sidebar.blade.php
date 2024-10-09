@@ -119,6 +119,7 @@
                     </ul>
                 </li>
                 <!-- Reportes -->
+                @can('ver-reporte')
                 <li>
                     <a href="javascript: void(0);" class="has-arrow waves-effect">
                         <i class="fa-solid fa-chart-line"></i>
@@ -141,6 +142,7 @@
                         </li>
                     </ul>
                 </li>
+                @endcan
                 <!-- Clientes -->
                 @can('ver-cliente')
                     <li>
