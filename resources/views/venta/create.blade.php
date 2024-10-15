@@ -148,8 +148,14 @@
                                 <select name="cliente_id" id="cliente_id" class="form-control selectpicker show-tick"
                                     data-live-search="true" title="Selecciona" data-size='2'>
                                     @foreach ($clientes as $item)
-                                        <option value="{{ $item->id }}">{{ $item->persona->razon_social }}</option>
-                                    @endforeach
+                                    <option value="{{ $item->id }}">
+                                        {{ $item->persona->nombre }} {{ $item->persona->primer_apellido }}
+                                        @if($item->persona->razon_social)
+                                            ({{ $item->persona->razon_social }})
+                                        @endif
+                                    </option>
+                                @endforeach
+
                                 </select>
                                 @error('cliente_id')
                                     <small class="text-danger">{{ '*' . $message }}</small>

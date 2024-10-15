@@ -24,14 +24,16 @@ class VentasTotalesExport implements FromCollection, WithHeadings, WithStyles, W
 
     // Generar la colección de datos
     public function collection()
-    {
-        return $this->ventasDelMesSeleccionado->map(function ($venta) {
-            return [
-                'dia' => $venta->dia,
-                'total' => $venta->total, // Ya no uso number_format aquí
-            ];
-        });
-    }
+{
+    return collect($this->ventasDelMesSeleccionado)->map(function ($venta) {
+        return [
+            'dia' => $venta['dia'],  // Acceder como arreglo
+            'total' => $venta['total'], // Acceder como arreglo
+        ];
+    });
+}
+
+
 
     // Encabezados de las columnas
     public function headings(): array

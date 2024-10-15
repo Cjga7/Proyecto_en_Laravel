@@ -23,10 +23,14 @@ class UpdateClienteRequest extends FormRequest
     {
         $cliente = $this->route('cliente');
         return [
-            'razon_social' => 'required|max:80',
+            'nombre' => 'required|max:50',  // Siempre requerido
+            'primer_apellido' => 'required|max:50',  // Siempre requerido
+            'segundo_apellido' => 'nullable|max:50',
+            'razon_social' => 'nullable|max:80|required_if:tipo_persona,juridica',
             'direccion' => 'required|max:80',
             'documento_id' => 'required|integer|exists:documentos,id',
-            'numero_documento' => 'required|max:20|unique:personas,numero_documento,'.$cliente->persona->id
+            'numero_documento' => 'required|max:20|unique:personas,numero_documento,' . $cliente->persona->id,
+            'tipo_persona' => 'required|string',
         ];
     }
 }

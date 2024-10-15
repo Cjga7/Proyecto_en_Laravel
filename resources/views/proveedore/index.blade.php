@@ -56,6 +56,9 @@
                         <thead>
                             <tr>
                                 <th>Nombre</th>
+                                <th>Primer Apellido</th>
+                                <th>Segundo Apellido</th>
+                                <th>Razón Social</th>
                                 <th>Dirección</th>
                                 <th>Documento</th>
                                 <th>Tipo de persona</th>
@@ -66,10 +69,13 @@
                         <tbody>
                             @foreach ($proveedores as $item)
                                 <tr>
-                                    <td>{{ $item->persona->razon_social }}</td>
+                                    <td>{{ $item->persona->nombre ?? '' }}</td>
+                                    <td>{{ $item->persona->primer_apellido ?? '' }}</td>
+                                    <td>{{ $item->persona->segundo_apellido ?? '' }}</td>
+                                    <td>{{ $item->persona->razon_social ?? '' }}</td>
                                     <td>{{ $item->persona->direccion }}</td>
                                     <td>
-                                        <p class="fw-normal mb-1">{{ $item->persona->documento->tipo_documeto }}</p>
+                                        <p class="fw-normal mb-1">{{ $item->persona->documento->tipo_documento }}</p>
                                         <p class="text-muted mb-0">{{ $item->persona->numero_documento }}</p>
                                     </td>
                                     <td>{{ $item->persona->tipo_persona }}</td>

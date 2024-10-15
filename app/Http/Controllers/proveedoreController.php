@@ -28,7 +28,7 @@ class proveedoreController extends Controller
     {
         $proveedores = Proveedore::with('persona.documento')->get();
 
-        return view('proveedore.index',compact('proveedores'));
+        return view('proveedore.index', compact('proveedores'));
     }
 
     /**
@@ -37,7 +37,7 @@ class proveedoreController extends Controller
     public function create()
     {
         $documentos = Documento::all();
-        return view('proveedore.create',compact('documentos'));
+        return view('proveedore.create', compact('documentos'));
     }
 
     /**
@@ -45,56 +45,68 @@ class proveedoreController extends Controller
      */
     public function store(StorePersonaRequest $request)
     {
-        try{
+        try {
             DB::beginTransaction();
-            $persona = Persona::create($request->validated());
+
+            // Crear la persona
+            $data = $request->validated();
+
+            // Si es una persona natural, eliminar razon_social de los datos.
+            if ($data['tipo_persona'] === 'natural') {
+                unset($data['razon_social']); // Eliminar razon_social si es persona natural
+            }
+
+            $persona = Persona::create($data);
+
+            // Crear el proveedor
             $persona->proveedore()->create([
                 'persona_id' => $persona->id
             ]);
-            DB::commit();
-        }catch (Exception $e){
-            DB::rollback();
-        }
 
-        return redirect()->route('proveedores.index')->with('success', 'Proveedor registrado');
+            DB::commit();
+
+            return redirect()->route('proveedores.index')->with('success', 'Proveedor registrado');
+        } catch (Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withErrors('Error al registrar el proveedor: ' . $e->getMessage());
+        }
     }
+
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-
-    }
+    public function show(string $id) {}
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(Proveedore $proveedore)
     {
-        $proveedore->load('persona','documento');
+        $proveedore->load('persona', 'documento');
         $documento = Documento::all();
-        return view('proveedore.edit',compact('proveedore',  'documento'));
+        return view('proveedore.edit', compact('proveedore',  'documento'));
     }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(UpdateProveedoreRequest $request, Proveedore $proveedore)
-    {
-        try{
-            DB::beginTransaction();
+{
+    try {
+        DB::beginTransaction();
 
-            Persona::where('id',$proveedore->persona->id)
+        Persona::where('id', $proveedore->persona->id)
             ->update($request->validated());
 
-            DB::commit();
-        }catch(Exception $e){
-
-                DB::rollBack();
-        }
-        return redirect()->route('proveedores.index')->with('success','Proveedor Editado');
+        DB::commit();
+        return redirect()->route('proveedores.index')->with('success', 'Proveedor Editado');
+    } catch (Exception $e) {
+        DB::rollBack();
+        return redirect()->back()->withErrors(['error' => 'Error al editar el proveedor.'])->withInput();
     }
+}
+
 
     /**
      * Remove the specified resource from storage.

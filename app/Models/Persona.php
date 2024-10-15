@@ -21,5 +21,15 @@ class Persona extends Model
         return $this->hasOne(Cliente::class);
     }
 
-    protected $fillable = ['razon_social','direccion','tipo_persona','documento_id','numero_documento'];
+    // Añadir los nuevos campos 'nombre', 'primer_apellido' y 'segundo_apellido'
+    protected $fillable = [
+        'razon_social',
+        'nombre',
+        'primer_apellido',
+        'segundo_apellido',
+        'direccion',
+        'tipo_persona',
+        'documento_id',
+        'numero_documento'
+    ];
 }

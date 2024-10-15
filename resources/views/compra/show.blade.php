@@ -1,143 +1,125 @@
 @extends('layouts.master')
-
-@section('title', 'Ver compra')
-
-@push('css')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-@endpush
-
-@section('content')
-    <div class="container-fluid px-4">
-        <h1 class="mt-4 text-center">Ver compra</h1>
-        <ol class="breadcrumb mb-4">
-            <li class="breadcrumb-item active"><a href="{{ route('panel') }}">Inicio</a></li>
-            <li class="breadcrumb-item active"><a href="{{ route('compras.index') }}">Compra</a></li>
-            <li class="breadcrumb-item active">Ver Compra</li>
-        </ol>
-    </div>
-
-    <div class="container w-100 border border-3 border-primary rounded p-4 mt-3">
-
-        <!---Tipo de comprobante-->
-        <div class="row mb-2">
-            <div class="col-sm-4">
-                <div class="input-group mb-3">
-                    <span class="input-group-text"><i class="fa-solid fa-file"></i></span>
-                    <input disabled type="text" class="form-control" value="Tipo de comprobante: ">
-                </div>
-            </div>
-            <div class="col-sm-8">
-                <input disabled type="text" class="form-control" value="{{ $compra->comprobante->tipo_comprobante }}">
-            </div>
-        </div>
-        <!---Numero de comprobante-->
-        <div class="row mb-2">
-            <div class="col-sm-4">
-                <div class="input-group mb-3">
-                    <span class="input-group-text"><i class="fa-solid fa-hashtag"></i></span>
-                    <input disabled type="text" class="form-control" value="Numero de comprobante: ">
-                </div>
-            </div>
-            <div class="col-sm-8">
-                <input disabled type="text" class="form-control" value="{{ $compra->numero_comprobante }}">
-            </div>
-        </div>
-
-        <!---Proveedor-->
-        <div class="row mb-2">
-            <div class="col-sm-4">
-                <div class="input-group mb-3">
-                    <span class="input-group-text"><i class="fa-solid fa-user-tie"></i></span>
-                    <input disabled type="text" class="form-control" value="Proveedor: ">
-                </div>
-            </div>
-            <div class="col-sm-8">
-                <input disabled type="text" class="form-control"
-                    value="{{ $compra->proveedore->persona->razon_social }}">
-            </div>
-        </div>
-
-        <!---Fecha-->
-        <div class="row mb-2">
-            <div class="col-sm-4">
-                <div class="input-group mb-3">
-                    <span class="input-group-text"><i class="fa-solid fa-calendar-days"></i></span>
-                    <input disabled type="text" class="form-control" value="Fecha: ">
-                </div>
-            </div>
-            <div class="col-sm-8">
-                <input disabled type="text" class="form-control"
-                    value="{{ \Carbon\Carbon::parse($compra->fecha_hora)->format('d-m-y') }}">
-            </div>
-        </div>
-
-        <!---Hora-->
-        <div class="row mb-2">
-            <div class="col-sm-4">
-                <div class="input-group mb-3">
-                    <span class="input-group-text"><i class="fa-solid fa-clock"></i></span>
-                    <input disabled type="text" class="form-control" value="Hora: ">
-                </div>
-            </div>
-            <div class="col-sm-8">
-                <input disabled type="text" class="form-control"
-                    value="{{ \Carbon\Carbon::parse($compra->fecha_hora)->format('H:i') }}">
-            </div>
-        </div>
-
-        <!---Tabla--->
-        <div class="card mb-4">
-            <div class="card-header">
-                <i class="fas fa-table me-1"></i>
-                Tabla de detalle de la compra
-            </div>
-            <div class="card-body table-responsive">
-                <table class="table table-striped">
-                    <thead class="bg-primary text-white">
-                        <tr>
-                            <th>Producto</th>
-                            <th>Cantidad</th>
-                            <th>Precio de compra</th>
-                            <th>Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($compra->productos as $item)
-                            <tr>
-                                <td>{{ $item->nombre }}</td>
-                                <td>{{ $item->pivot->cantidad }}</td>
-                                <td>{{ $item->pivot->precio_compra }}</td>
-                                <td class="td-subtotal">{{ $item->pivot->cantidad * $item->pivot->precio_compra }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="3">Total:</th>
-                            <th id="th-total"></th>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        </div>
-    </div>
+@section('title')
+    Detalle de Compra
 @endsection
 
-@push('js')
-    <script>
-        // Variables
-        let filasSubtotal = document.getElementsByClassName('td-subtotal');
-        let total = 0;
+@section('content')
+    @component('common-components.breadcrumb')
+        @slot('pagetitle') Compras @endslot
+        @slot('title') Detalle de Compra @endslot
+    @endcomponent
 
-        $(document).ready(function() {
-            calcularTotal();
-        });
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <!-- Título de la compra -->
+                    <div class="invoice-title">
+                        <h4 class="float-end font-size-16">Compra #{{ $compra->numero_comprobante }} <span
+                                class="badge bg-success font-size-12 ms-2">{{ $compra->estado }}</span></h4>
+                        <div class="mb-4">
+                            <img src="{{ URL::asset('/assets/images/Logo_lanago.png') }}" alt="logo" height="200" />
+                        </div>
 
-        function calcularTotal() {
-            for (let i = 0; i < filasSubtotal.length; i++) {
-                total += parseFloat(filasSubtotal[i].innerHTML);
-            }
-            $('#th-total').html(total.toFixed(2));
-        }
-    </script>
-@endpush
+                        <div class="text-muted">
+                            <p class="mb-1">Calle Ficticia 123, Ciudad de Ejemplo</p>
+                            <p class="mb-1"><i class="uil uil-envelope-alt me-1"></i> contacto@lanago.com</p>
+                            <p><i class="uil uil-phone me-1"></i> +1 800 123 4567</p>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Información de facturación -->
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="text-muted">
+                                <h5 class="font-size-16 mb-3">Detalle a:</h5>
+                                <h5 class="font-size-15 mb-2">{{ $compra->proveedore->persona->nombre }} {{ $compra->proveedore->persona->primer_apellido }} {{ $compra->proveedore->persona->segundo_apellido ?? '' }}</h5>
+                                <p class="mb-1">{{ $compra->proveedore->persona->direccion }}</p>
+                                <p class="mb-1">{{ $compra->proveedore->persona->razon_social ?? 'N/A' }}</p>
+                                <p>{{ $compra->proveedore->persona->numero_documento }}</p>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="text-muted text-sm-end">
+                                <div>
+                                    <h5 class="font-size-16 mb-1">Número de Compra:</h5>
+                                    <p>#{{ $compra->numero_comprobante }}</p>
+                                </div>
+                                <div class="mt-4">
+                                    <h5 class="font-size-16 mb-1">Fecha de Compra:</h5>
+                                    <p>{{ \Carbon\Carbon::parse($compra->fecha_hora)->format('d M, Y') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resumen del pedido -->
+                    <div class="py-2">
+                        <h5 class="font-size-15">Resumen de la compra</h5>
+
+                        <div class="table-responsive">
+                            <table class="table table-nowrap table-centered mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 70px;">No.</th>
+                                        <th>Producto</th>
+                                        <th>Precio</th>
+                                        <th>Cantidad</th>
+                                        <th class="text-end" style="width: 120px;">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($compra->productos as $key => $producto)
+                                    <tr>
+                                        <th scope="row">{{ $key + 1 }}</th>
+                                        <td>
+                                            <h5 class="font-size-15 mb-1">{{ $producto->nombre }}</h5>
+                                            <ul class="list-inline mb-0">
+                                                <li class="list-inline-item">Descripción: <span class="fw-medium">{{ $producto->descripcion }}</span></li>
+                                            </ul>
+                                        </td>
+                                        <td>Bs.{{ $producto->pivot->precio_compra }}</td>
+                                        <td>{{ $producto->pivot->cantidad }}</td>
+                                        <td class="text-end">Bs.{{ $producto->pivot->precio_compra * $producto->pivot->cantidad }}</td>
+                                    </tr>
+                                    @endforeach
+
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">Subtotal</th>
+                                        <td class="text-end">Bs.{{ $compra->productos->sum(function($producto) { return $producto->pivot->cantidad * $producto->pivot->precio_compra; }) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" colspan="4" class="border-0 text-end">Descuento:</th>
+                                        <td class="border-0 text-end">- Bs.{{ $compra->descuento ?? '0.00' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" colspan="4" class="border-0 text-end">Impuesto:</th>
+                                        <td class="border-0 text-end">Bs.{{ $compra->impuesto ?? '0.00' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" colspan="4" class="border-0 text-end">Total:</th>
+                                        <td class="border-0 text-end">
+                                            <h4 class="m-0">Bs.{{ $compra->total }}</h4>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-print-none mt-4">
+                            <div class="float-end">
+                                <a href="javascript:window.print()" class="btn btn-success waves-effect waves-light me-1">
+                                    <i class="fa fa-print"></i> Imprimir
+                                </a>
+                                <a href="#" class="btn btn-primary w-md waves-effect waves-light">Enviar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end row -->
+
+@endsection

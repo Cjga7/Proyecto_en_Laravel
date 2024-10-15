@@ -29,7 +29,7 @@
             Toast.fire({
                 icon: "success",
                 title: message
-            })
+            });
         </script>
     @endif
 
@@ -42,7 +42,8 @@
 
         <div class="mb-4">
             <a href="{{ route('clientes.create') }}">
-                <button type="button" class="btn btn-primary">Añadir un nuevo registro</button></a>
+                <button type="button" class="btn btn-primary">Añadir un nuevo registro</button>
+            </a>
         </div>
         <div class="card mb-4">
             <div class="card-header">
@@ -54,8 +55,11 @@
                     <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap">
                         <thead>
                             <tr>
-                                <th>Nombre</th>
-                                <th>Direccion</th>
+                                <th>Nombres</th>
+                                <th>Primer Apellido</th>
+                                <th>Segundo Apellido</th>
+                                <th>Razón Social</th>
+                                <th>Dirección</th>
                                 <th>Documento</th>
                                 <th>Tipo de persona</th>
                                 <th>Estado</th>
@@ -65,10 +69,13 @@
                         <tbody>
                             @foreach ($clientes as $item)
                                 <tr>
-                                    <td>{{ $item->persona->razon_social }}</td>
+                                    <td>{{ $item->persona->nombre ?? '' }}</td>
+                                    <td>{{ $item->persona->primer_apellido ?? '' }}</td>
+                                    <td>{{ $item->persona->segundo_apellido ?? '' }}</td>
+                                    <td>{{ $item->persona->razon_social ?? '' }}</td>
                                     <td>{{ $item->persona->direccion }}</td>
                                     <td>
-                                        <p class="fw-normal mb-1">{{ $item->persona->documento->tipo_documeto }}</p>
+                                        <p class="fw-normal mb-1">{{ $item->persona->documento->tipo_documento }}</p>
                                         <p class="text-muted mb-0">{{ $item->persona->numero_documento }}</p>
                                     </td>
                                     <td>{{ $item->persona->tipo_persona }}</td>
@@ -92,22 +99,19 @@
                                         </div>
                                     </td>
                                 </tr>
-                                <!-- Modal de confirmacion-->
-                                <div class="modal fade" id="confirmModal-{{ $item->id }}" tabindex="-1"
-                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <!-- Modal de confirmación -->
+                                <div class="modal fade" id="confirmModal-{{ $item->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h1 class="modal-title fs-5" id="exampleModalLabel">Mensaje de confirmacion</h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
+                                                <h1 class="modal-title fs-5" id="exampleModalLabel">Mensaje de confirmación</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
                                                 {{ $item->persona->estado == 1 ? '¿Seguro que quieres eliminar este cliente?' : '¿Seguro que quieres restaurar este cliente?' }}
                                             </div>
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">Cerrar</button>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                                                 <form action="{{ route('clientes.destroy', ['cliente'=> $item->persona->id]) }}" method="post">
                                                     @method('DELETE')
                                                     @csrf

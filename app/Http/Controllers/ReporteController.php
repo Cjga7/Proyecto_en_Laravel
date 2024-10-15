@@ -87,6 +87,7 @@ class ReporteController extends Controller
         // Verificar si la petición es para generar un archivo Excel
         if ($request->input('excel') == '1') {
             return Excel::download(new VentasTotalesExport($ventasDelMesSeleccionado, $anio, $mesSeleccionado), 'reporte_ventas_' . $mesSeleccionado . '_' . $anio . '.xlsx');
+
         }
 
         return view('reportes.ventas.ventas_totales', compact('ventasDelMesSeleccionado', 'anio', 'mesSeleccionado', 'labels', 'datosVentas', 'colores'));

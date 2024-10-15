@@ -1,197 +1,123 @@
 @extends('layouts.master')
-
-@section('title', 'Ver venta')
-
-@push('css')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-@endpush
-
-@section('content')
-    <div class="container-fluid px-4">
-        <h1 class="mt-4 text-center">Ver venta</h1>
-        <ol class="breadcrumb mb-4">
-            <li class="breadcrumb-item active"><a href="{{ route('panel') }}">Inicio</a></li>
-            <li class="breadcrumb-item active"><a href="{{ route('ventas.index') }}">Venta</a></li>
-            <li class="breadcrumb-item active">Ver venta</li>
-        </ol>
-    </div>
-
-    <div class="container w-100 border border-3 border-primary rounded p-4 mt-3">
-
-        <!---Tipp de comprobante-->
-        <div class="row mb-2">
-            <div class="col-sm-4">
-                <div class="input-group mb-3">
-                    <span class="input-group-text"><i class="fa-solid fa-file"></i></span>
-                    <input disabled type="text" class="form-control" value="Tipo de comprobante: ">
-                </div>
-            </div>
-            <div class="col-sm-8">
-                <input disabled type="text" class="form-control" value="{{ $venta->comprobante->tipo_comprobante }}">
-            </div>
-        </div>
-        <!---numero de comprobante-->
-        <div class="row mb-2">
-            <div class="col-sm-4">
-                <div class="input-group mb-3">
-                    <span class="input-group-text"><i class="fa-solid fa-hashtag"></i></span>
-                    <input disabled type="text" class="form-control" value="Numero de comprobante: ">
-                </div>
-            </div>
-            <div class="col-sm-8">
-                <input disabled type="text" class="form-control" value="{{ $venta->numero_comprobante }}">
-            </div>
-        </div>
-
-        <!---cliente-->
-        <div class="row mb-2">
-            <div class="col-sm-4">
-                <div class="input-group mb-3">
-                    <span class="input-group-text"><i class="fa-solid fa-user-tie"></i></span>
-                    <input disabled type="text" class="form-control" value="Cliente: ">
-                </div>
-            </div>
-            <div class="col-sm-8">
-                <input disabled type="text" class="form-control" value="{{ $venta->cliente->persona->razon_social }}">
-            </div>
-        </div>
-
-        <!---User-->
-        <div class="row mb-2">
-            <div class="col-sm-4">
-                <div class="input-group mb-3">
-                    <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-                    <input disabled type="text" class="form-control" value="Vendedor: ">
-                </div>
-            </div>
-            <div class="col-sm-8">
-                <input disabled type="text" class="form-control" value="{{ $venta->user->name }}">
-            </div>
-        </div>
-
-        <!---fecha  -->
-        <div class="row mb-2">
-            <div class="col-sm-4">
-                <div class="input-group mb-3">
-                    <span class="input-group-text"><i class="fa-solid fa-calendar-days"></i></span>
-                    <input disabled type="text" class="form-control" value="fecha: ">
-                </div>
-            </div>
-            <div class="col-sm-8">
-                <input disabled type="text" class="form-control"
-                    value="{{ \Carbon\Carbon::parse($venta->fecha_hora)->format('d-m-y') }}">
-            </div>
-        </div>
-
-        <!---hora  -->
-        <div class="row mb-2">
-            <div class="col-sm-4">
-                <div class="input-group mb-3">
-                    <span class="input-group-text"><i class="fa-solid fa-clock"></i></span>
-                    <input disabled type="text" class="form-control" value="hora: ">
-                </div>
-            </div>
-            <div class="col-sm-8">
-                <input disabled type="text" class="form-control"
-                    value="{{ \Carbon\Carbon::parse($venta->fecha_hora)->format('H:i') }}">
-            </div>
-        </div>
-
-        <!---impuesto  -->
-        <div class="row mb-2">
-            <div class="col-sm-4">
-                <div class="input-group mb-3">
-                    <span class="input-group-text"><i class="fa-solid fa-percent"></i></span>
-                    <input disabled type="text" class="form-control" value="impuesto: ">
-                </div>
-            </div>
-            <div class="col-sm-8">
-                <input id="input-impuesto" disabled type="text" class="form-control" value="{{ $venta->impuesto }}">
-            </div>
-        </div>
-
-        <!---Tabla--->
-        <div class="card mb-4">
-            <div class="card-header">
-                <i class="fas fa-table me-1"></i>
-                Tabla de detalle de la venta
-            </div>
-            <div class="card-body table-responsive">
-                <table class="table table-striped">
-                    <thead class="bg-primary text-white">
-                        <tr>
-                            <th>Producto</th>
-                            <th>Cantidad</th>
-                            <th>Precio de venta</th>
-                            <th>Descuento</th>
-                            <th>subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($venta->productos as $item)
-                            <tr>
-                                <td>
-                                    {{ $item->nombre }}
-                                </td>
-                                <td>
-                                    {{ $item->pivot->cantidad }}
-                                </td>
-                                <td>
-                                    {{ $item->pivot->precio_venta }}
-                                </td>
-                                <td>
-                                    {{ $item->pivot->descuento }}
-                                </td>
-                                <td class="td-subtotal">
-                                    {{ $item->pivot->cantidad * $item->pivot->precio_venta - $item->pivot->descuento }}
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <th colspan="5"></th>
-                        </tr>
-                        <tr>
-                            <th colspan="4">Sumas:</th>
-                            <th id="th-suma"></th>
-                        </tr>
-                        <tr>
-                            <th colspan="4">IGV:</th>
-                            <th id="th-igv"></th>
-                        </tr>
-                        <tr>
-                            <th colspan="4">Total:</th>
-                            <th id="th-total"></th>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        </div>
-    </div>
+@section('title')
+    Ver Venta
 @endsection
 
-@push('js')
-    <script>
-        //variables
-        let filasSubtotal = document.getElementsByClassName('td-subtotal');
-        let cont = 0;
-        let impuesto = $('#input-impuesto').val();
+@section('content')
+    @component('common-components.breadcrumb')
+        @slot('pagetitle') Ventas @endslot
+        @slot('title') Ver Venta @endslot
+    @endcomponent
 
-        $(document).ready(function() {
-            calcularValores();
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <!-- Título de la venta -->
+                    <div class="invoice-title">
+                        <h4 class="float-end font-size-16">Venta #{{ $venta->numero_comprobante }} <span
+                                class="badge bg-success font-size-12 ms-2">{{ $venta->estado }}</span></h4>
+                        <div class="mb-4">
+                            <img src="{{ URL::asset('/assets/images/Logo_lanago.png') }}" alt="logo" height="200" />
+                        </div>
+                        <div class="text-muted">
+                            <p class="mb-1">Calle Ficticia 123, Ciudad de Ejemplo</p>
+                            <p class="mb-1"><i class="uil uil-envelope-alt me-1"></i> contacto@lanago.com</p>
+                            <p><i class="uil uil-phone me-1"></i> +1 800 123 4567</p>
+                        </div>
+                    </div>
 
-        });
+                    <hr class="my-4">
 
-        function calcularValores() {
-            for (let i = 0; i < filasSubtotal.length; i++) {
-                cont += parseFloat(filasSubtotal[i].innerHTML);
+                    <!-- Información del cliente -->
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="text-muted">
 
-            }
-            $('#th-suma').html(cont);
-            $('#th-igv').html(impuesto);
-            $('#th-total').html(cont + parseFloat(impuesto));
+                                    <h5 class="font-size-16 mb-3">Detalle a:</h5>
+                                    <h5 class="font-size-15 mb-2">{{ $venta->cliente->persona->nombre }} {{ $venta->cliente->persona->primer_apellido }} {{ $venta->cliente->persona->segundo_apellido ?? '' }}</h5>
+                                    <p class="mb-1">{{ $venta->cliente->persona->direccion }}</p>
+                                    <p class="mb-1">{{ $venta->cliente->persona->razon_social ?? 'N/A' }}</p>
+                                    <p>{{ $venta->cliente->persona->numero_documento }}</p>
 
-        }
-    </script>
-@endpush
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="text-muted text-sm-end">
+                                <div>
+                                    <h5 class="font-size-16 mb-1">Número de Venta:</h5>
+                                    <p>#{{ $venta->numero_comprobante }}</p>
+                                </div>
+                                <div class="mt-4">
+                                    <h5 class="font-size-16 mb-1">Fecha de Venta:</h5>
+                                    <p>{{ \Carbon\Carbon::parse($venta->fecha_hora)->format('d M, Y') }}</p>
+                                </div>
+                                <div>
+                                    <h5 class="font-size-16 mb-1">Vendedor:</h5>
+                                    <p>{{ $venta->user->name }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resumen de la venta -->
+                    <div class="py-2">
+                        <h5 class="font-size-15">Resumen de la venta</h5>
+
+                        <div class="table-responsive">
+                            <table class="table table-nowrap table-centered mb-0">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 70px;">No.</th>
+                                        <th>Producto</th>
+                                        <th>Cantidad</th>
+                                        <th>Precio de Venta</th>
+                                        <th class="text-end" style="width: 120px;">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($venta->productos as $key => $item)
+                                    <tr>
+                                        <th scope="row">{{ $key + 1 }}</th>
+                                        <td>
+                                            <h5 class="font-size-15 mb-1">{{ $item->nombre }}</h5>
+                                        </td>
+                                        <td>{{ $item->pivot->cantidad }}</td>
+                                        <td>Bs.{{ $item->pivot->precio_venta }}</td>
+                                        <td class="text-end">Bs.{{ $item->pivot->cantidad * $item->pivot->precio_venta - $item->pivot->descuento }}</td>
+                                    </tr>
+                                    @endforeach
+
+                                    <tr>
+                                        <th scope="row" colspan="4" class="text-end">Subtotal</th>
+                                        <td class="text-end">Bs.{{ $venta->productos->sum(function($producto) { return $producto->pivot->cantidad * $producto->pivot->precio_venta - $producto->pivot->descuento; }) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" colspan="4" class="border-0 text-end">Impuesto:</th>
+                                        <td class="border-0 text-end">Bs.{{ $venta->impuesto ?? '0.00' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row" colspan="4" class="border-0 text-end">Total:</th>
+                                        <td class="border-0 text-end">
+                                            <h4 class="m-0">Bs.{{ $venta->total }}</h4>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-print-none mt-4">
+                            <div class="float-end">
+                                <a href="javascript:window.print()" class="btn btn-success waves-effect waves-light me-1">
+                                    <i class="fa fa-print"></i> Imprimir
+                                </a>
+                                <a href="#" class="btn btn-primary w-md waves-effect waves-light">Enviar</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end row -->
+
+@endsection

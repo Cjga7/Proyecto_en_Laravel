@@ -5,96 +5,155 @@
 @endsection
 
 @section('content')
-    <div class="account-pages my-5 pt-sm-5" style="background-image: url('{{ asset('assets/fondo3.png') }}'); background-size: cover; background-position: center;">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="text-center">
-                        <a href="#" class="mb-5 d-block auth-logo">
-                            <img src="{{ URL::asset('/assets/images/Logo_lanago.png') }}" alt="" height="250" class="logo logo-light">
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="row align-items-center justify-content-center">
-                <div class="col-md-8 col-lg-6 col-xl-5">
-                    <div class="card shadow-lg rounded-lg" style="background-color: rgba(0, 0, 0, 0.7); border: none;">
-
-                        <div class="card-body p-5">
-                            <div class="text-center mt-2">
-                                <h5 class="text-white">¡Bienvenid@!</h5>
-                                <p class="text-white-50">Inicia sesión con tu cuenta.</p>
-                            </div>
-                            <div class="p-2 mt-4">
-                                <form method="POST" action="{{ route('login') }}">
-                                    @csrf
-
-                                    <div class="mb-4">
-                                        <label class="form-label text-white" for="email">Correo</label>
-                                        <input type="email" class="form-control bg-dark text-white border-0 @error('email') is-invalid @enderror"
-                                            name="email" value="{{ old('email') }}" id="email"
-                                            placeholder="Ingrese su correo electrónico" required autofocus>
-                                        @error('email')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-
-                                    <div class="mb-4">
-                                        <div class="float-end">
-                                            @if (Route::has('password.request'))
-                                                <a href="{{ route('password.request') }}" class="text-white-50">¿Olvidaste tu contraseña?</a>
-                                            @endif
-                                        </div>
-                                        <label class="form-label text-white" for="userpassword">Contraseña</label>
-                                        <input type="password" class="form-control bg-dark text-white border-0 @error('password') is-invalid @enderror"
-                                            name="password" id="userpassword" placeholder="Ingrese su contraseña" required>
-                                        @error('password')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
-                                    </div>
-
-                                    <div class="form-check">
-                                        <input type="checkbox" class="form-check-input" id="auth-remember-check"
-                                            name="remember" {{ old('remember') ? 'checked' : '' }}>
-                                        <label class="form-check-label text-white" for="auth-remember-check">Recordar dispositivo</label>
-                                    </div>
-
-                                    <div class="mt-4 text-end">
-                                        <button class="btn btn-outline-light w-100 waves-effect waves-light" type="submit">Iniciar sesión</button>
-                                    </div>
-
-                                    <div class="mt-4 text-center">
-                                        <p class="mb-0 text-white-50">¿No tienes una cuenta? <a href="{{ url('register') }}" class="fw-medium text-light"> Regístrate ahora </a></p>
-                                    </div>
-                                </form>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="mt-5 text-center">
-                        <p class="text-white">© <script>document.write(new Date().getFullYear())</script> Lanago. <i class="mdi mdi-heart text-danger"></i> La naturaleza en una gota</p>
-                    </div>
-
-                </div>
+<div class="contenedor__todo">
+    <!-- Contenedor que agrupa el formulario y el cuadro del logo -->
+    <div class="contenedor__central">
+        <!-- Cuadro con el logo y el fondo -->
+        <div class="caja__logo">
+            <div class="caja__logo-container">
+                <img src="{{ URL::asset('/assets/images/Logo_lanago.png') }}" alt="" height="150" class="logo logo-light animate__animated animate__fadeInDown">
             </div>
         </div>
+
+        <!-- Contenedor para el formulario de login -->
+        <div class="contenedor__login">
+            <form method="POST" action="{{ route('login') }}" class="formulario__login">
+                @csrf
+                <h2>Iniciar Sesión</h2>
+
+                <div class="mb-4">
+                    <label class="form-label text-dark" for="email">Correo</label>
+                    <input type="email" class="form-control bg-light text-dark border-0 shadow-sm @error('email') is-invalid @enderror"
+                        name="email" value="{{ old('email') }}" id="email"
+                        placeholder="Ingrese su correo electrónico" required autofocus>
+                    @error('email')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                    @enderror
+                </div>
+
+                <div class="mb-4">
+                    <div class="float-end">
+                        @if (Route::has('password.request'))
+                            <a href="{{ route('password.request') }}" class="text-muted">¿Olvidaste tu contraseña?</a>
+                        @endif
+                    </div>
+                    <label class="form-label text-dark" for="userpassword">Contraseña</label>
+                    <input type="password" class="form-control bg-light text-dark border-0 shadow-sm @error('password') is-invalid @enderror"
+                        name="password" id="userpassword" placeholder="Ingrese su contraseña" required>
+                    @error('password')
+                        <span class="invalid-feedback" role="alert">
+                            <strong>{{ $message }}</strong>
+                        </span>
+                    @enderror
+                </div>
+
+                <!--div class="form-check mb-4">
+                    <input type="checkbox" class="form-check-input" id="auth-remember-check"
+                        name="remember" {{ old('remember') ? 'checked' : '' }}>
+                    <label class="form-check-label text-dark" for="auth-remember-check">Recordar dispositivo</label>
+                </!--div-->
+
+                <div class="mt-4 text-end">
+                    <button class="btn btn-primary w-100 shadow-sm" type="submit">Iniciar sesión</button>
+                </div>
+
+                <div class="mt-4 text-center">
+                    <p class="mb-0 text-muted">¿No tienes una cuenta? Contacta con el administrador para más detalles.</p>
+                </div>
+            </form>
+        </div>
     </div>
+</div>
 
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- SweetAlert2 para mensajes de error -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    @if(session('error'))
-    <script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: '{{ session('error') }}',
-        });
-    </script>
-    @endif
+@if(session('error'))
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: '{{ session('error') }}',
+    });
+</script>
+@endif
+
+<!-- CSS integrado en la vista -->
+<style>
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #f5f5f5;
+    }
+
+    .contenedor__todo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: rgba(102, 153, 102, 0.7); /* Fondo verde transparente */
+    }
+
+    .contenedor__central {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0px 0px 20px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .caja__logo {
+        background-image: url('{{ asset('assets/fondo3.png') }}');
+        background-size: cover;
+        background-position: center;
+        width: 400px;
+        height: 400px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 10px;
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .contenedor__login {
+        width: 400px;
+        padding: 30px;
+    }
+
+    .formulario__login h2 {
+        margin-bottom: 20px;
+        color: #333;
+        text-align: center;
+    }
+
+    .formulario__login input {
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 100%;
+    }
+
+    .formulario__login button {
+        padding: 10px;
+        background-color: #333;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    .olvidoContraseña {
+        margin-top: 10px;
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .form-check-input {
+        margin-right: 5px;
+    }
+</style>
 @endsection

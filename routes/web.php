@@ -16,6 +16,8 @@ use App\Http\Controllers\roleController;
 use App\Http\Controllers\profileController;
 use App\Http\Controllers\registrosanitarioController;
 use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,8 +30,18 @@ use App\Http\Controllers\ReporteController;
 |
 */
 
-Route::get('/', [homeController::class, 'index'])->name('panel');
 
+
+    Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+
+
+
+
+Route::get('/', [homeController::class, 'index'])->name('panel');
+Route::middleware(['auth', 'no-cache'])->group(function () {
 Route::resources([
     'categorias' => categoriaController::class,
     'presentaciones' => PresentacioneController::class,
@@ -65,12 +77,15 @@ Route::prefix('reportes')->group(function () {
     Route::post('/ajustar-stock', [ProductoController::class, 'ajustarStock'])->name('productos.ajustarStock');
 
 
-
+});
 
 // Rutas de autenticación
 Route::get('/login', [loginController::class, 'index'])->name('login');
 Route::post('/login', [loginController::class, 'login']);
 Route::get('/logout', [logoutController::class, 'logout'])->name('logout');
+
+
+
 
 // Vistas de error
 Route::get('/401', function () {
