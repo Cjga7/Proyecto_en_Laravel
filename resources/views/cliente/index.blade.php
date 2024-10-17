@@ -60,6 +60,8 @@
                                 <th>Segundo Apellido</th>
                                 <th>Razón Social</th>
                                 <th>Dirección</th>
+                                <th>Teléfono</th> <!-- Nueva columna -->
+                                <th>Correo Electrónico</th> <!-- Nueva columna -->
                                 <th>Documento</th>
                                 <th>Tipo de persona</th>
                                 <th>Estado</th>
@@ -74,6 +76,8 @@
                                     <td>{{ $item->persona->segundo_apellido ?? '' }}</td>
                                     <td>{{ $item->persona->razon_social ?? '' }}</td>
                                     <td>{{ $item->persona->direccion }}</td>
+                                    <td>{{ $item->persona->telefono ?? '' }}</td> <!-- Mostrar teléfono -->
+                                    <td>{{ $item->persona->correo_electronico ?? '' }}</td> <!-- Mostrar correo electrónico -->
                                     <td>
                                         <p class="fw-normal mb-1">{{ $item->persona->documento->tipo_documento }}</p>
                                         <p class="text-muted mb-0">{{ $item->persona->numero_documento }}</p>

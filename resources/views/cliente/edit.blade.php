@@ -81,6 +81,26 @@
                         @enderror
                     </div>
 
+                    <!------Correo---->
+                    <div class="col-md-6 mb-2">
+                        <label for="correo_electronico" class="form-label">Correo Electrónico</label>
+                        <input type="email" name="correo_electronico" id="correo_electronico" class="form-control"
+                            value="{{ old('correo_electronico', $cliente->persona->correo_electronico) }}">
+                        @error('correo')
+                            <small class="text-danger">{{ '*' . $message }}</small>
+                        @enderror
+                    </div>
+
+                    <!------Teléfono---->
+                    <div class="col-md-6 mb-2">
+                        <label for="telefono" class="form-label">Teléfono</label>
+                        <input type="text" name="telefono" id="telefono" class="form-control"
+                            value="{{ old('telefono', $cliente->persona->telefono) }}">
+                        @error('telefono')
+                            <small class="text-danger">{{ '*' . $message }}</small>
+                        @enderror
+                    </div>
+
                     <!------Tipo de Documento---->
                     <div class="col-md-6">
                         <label for="documento_id" class="form-label">Tipo de Documento:</label>

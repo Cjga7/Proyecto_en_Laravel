@@ -19,9 +19,9 @@
                 @csrf
                 <div class="row g-3">
 
-                    <!------Tipo de proveedor---->
+                    <!------Tipo de proveedore---->
                     <div class="col-md-6 mb-2">
-                        <label for="tipo_persona" class="form-label">Tipo de Proveedor</label>
+                        <label for="tipo_persona" class="form-label">Tipo de proveedor</label>
                         <select class="form-select" name="tipo_persona" id="tipo_persona">
                             <option value="natural" {{ $proveedore->persona->tipo_persona == 'natural' ? 'selected' : '' }}>Natural</option>
                             <option value="juridica" {{ $proveedore->persona->tipo_persona == 'juridica' ? 'selected' : '' }}>Jurídica</option>
@@ -31,7 +31,7 @@
                         @enderror
                     </div>
 
-                    <!------Nombres y apellidos---->
+                    <!------Nombres---->
                     <div class="col-md-6 mb-2">
                         <label for="nombre" class="form-label">Nombre</label>
                         <input type="text" name="nombre" id="nombre" class="form-control"
@@ -41,6 +41,7 @@
                         @enderror
                     </div>
 
+                    <!------Primer Apellido---->
                     <div class="col-md-6 mb-2">
                         <label for="primer_apellido" class="form-label">Primer Apellido</label>
                         <input type="text" name="primer_apellido" id="primer_apellido" class="form-control"
@@ -50,6 +51,7 @@
                         @enderror
                     </div>
 
+                    <!------Segundo Apellido---->
                     <div class="col-md-6 mb-2">
                         <label for="segundo_apellido" class="form-label">Segundo Apellido</label>
                         <input type="text" name="segundo_apellido" id="segundo_apellido" class="form-control"
@@ -59,9 +61,9 @@
                         @enderror
                     </div>
 
-                    <!------Razón social---->
+                    <!------Razón Social (Solo para persona jurídica)---->
                     <div class="col-md-12 mb-2" id="box-razon-social" style="display: {{ $proveedore->persona->tipo_persona == 'juridica' ? 'block' : 'none' }};">
-                        <label id="label-razon-social" for="razon_social" class="form-label">Razón Social</label>
+                        <label for="razon_social" class="form-label">Razón Social</label>
                         <input type="text" name="razon_social" id="razon_social" class="form-control"
                             value="{{ old('razon_social', $proveedore->persona->razon_social) }}">
                         @error('razon_social')
@@ -79,7 +81,27 @@
                         @enderror
                     </div>
 
-                    <!------Documento---->
+                    <!------Correo---->
+                    <div class="col-md-6 mb-2">
+                        <label for="correo_electronico" class="form-label">Correo Electrónico</label>
+                        <input type="email" name="correo_electronico" id="correo_electronico" class="form-control"
+                            value="{{ old('correo_electronico', $proveedore->persona->correo_electronico) }}">
+                        @error('correo')
+                            <small class="text-danger">{{ '*' . $message }}</small>
+                        @enderror
+                    </div>
+
+                    <!------Teléfono---->
+                    <div class="col-md-6 mb-2">
+                        <label for="telefono" class="form-label">Teléfono</label>
+                        <input type="text" name="telefono" id="telefono" class="form-control"
+                            value="{{ old('telefono', $proveedore->persona->telefono) }}">
+                        @error('telefono')
+                            <small class="text-danger">{{ '*' . $message }}</small>
+                        @enderror
+                    </div>
+
+                    <!------Tipo de Documento---->
                     <div class="col-md-6">
                         <label for="documento_id" class="form-label">Tipo de Documento:</label>
                         <select class="form-select" name="documento_id" id="documento_id">
@@ -95,6 +117,7 @@
                         @enderror
                     </div>
 
+                    <!------Número de Documento---->
                     <div class="col-md-6 mb-2">
                         <label for="numero_documento" class="form-label">Número de Documento</label>
                         <input type="text" name="numero_documento" id="numero_documento" class="form-control"
@@ -114,25 +137,25 @@
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const tipoPersonaSelect = document.getElementById('tipo_persona');
-        const razonSocialBox = document.getElementById('box-razon-social');
-        const razonSocialInput = document.getElementById('razon_social');
+        document.addEventListener('DOMContentLoaded', function() {
+            const tipoPersonaSelect = document.getElementById('tipo_persona');
+            const razonSocialBox = document.getElementById('box-razon-social');
+            const razonSocialInput = document.getElementById('razon_social');
 
-        function toggleRazonSocial() {
-            if (tipoPersonaSelect.value === 'juridica') {
-                razonSocialBox.style.display = 'block';
-            } else {
-                razonSocialBox.style.display = 'none';
-                razonSocialInput.value = ''; // Limpia el campo de razón social
+            function toggleRazonSocial() {
+                if (tipoPersonaSelect.value === 'juridica') {
+                    razonSocialBox.style.display = 'block';
+                } else {
+                    razonSocialBox.style.display = 'none';
+                    razonSocialInput.value = ''; // Limpia el campo de razón social si no es jurídico
+                }
             }
-        }
 
-        toggleRazonSocial(); // Inicializa el estado
+            toggleRazonSocial(); // Inicializa el estado
 
-        tipoPersonaSelect.addEventListener('change', toggleRazonSocial);
-    });
-    </script>
+            tipoPersonaSelect.addEventListener('change', toggleRazonSocial);
+        });
+        </script>
 @endsection
 
 @push('js')
