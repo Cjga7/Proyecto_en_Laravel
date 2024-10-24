@@ -1,8 +1,9 @@
 @extends('layouts.master')
 
-@section('title','Perfil')
+@section('title', 'Perfil')
 
 @push('css')
+<!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @endpush
 
@@ -27,78 +28,69 @@
     })
 </script>
 @endif
+
 <div class="container-fluid">
-    <h1 class="mt-4 mb-4 text-center">Configurar perfil</h1>
-
-    <div class="card">
-        <div class="card-header">
-            <p class="lead">Configure y personalize su perfil</p>
-        </div>
-        <div class="card-body">
-            <div class="">
-                @if ($errors->any())
-                @foreach ($errors->all() as $item)
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {{$item}}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                @endforeach
-                @endif
+    <div class="page-title-box">
+        <div class="row align-items-center">
+            <div class="col-sm-6">
+                <h4 class="mb-4">Configurar Perfil</h4>
             </div>
-
-            <form action="{{route('profile.update',['profile' => $user ])}}" method="POST">
-                @method('PATCH')
-                @csrf
-                <!----Nombre---->
-                <div class="row mb-4">
-                    <div class="col-sm-4">
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fa-solid fa-square-check"></i></span>
-                            <input  type="text" class="form-control" value="Nombres">
-                        </div>
-                    </div>
-                    <div class="col-sm-8">
-                        <input  type="text" name="name" id="name" class="form-control" value="{{old('name',$user->name)}}">
-                    </div>
-                </div>
-
-                <!----Email---->
-                <div class="row mb-4">
-                    <div class="col-sm-4">
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fa-solid fa-square-check"></i></span>
-                            <input type="text" class="form-control" value="Email">
-                        </div>
-                    </div>
-                    <div class="col-sm-8">
-                        <input type="email" name="email" id="email" class="form-control" value="{{old('email',$user->email)}}">
-                    </div>
-                </div>
-
-                <!----Password--->
-                <div class="row mb-4">
-                    <div class="col-sm-4">
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fa-solid fa-square-check"></i></span>
-                            <input type="text" class="form-control" value="Contraseña">
-                        </div>
-                    </div>
-                    <div class="col-sm-8">
-                        <input  type="password" name="password" id="password" class="form-control">
-                    </div>
-                </div>
-
-                <div class="col text-center">
-                    <input class="btn btn-success" type="submit" value="Guardar cambios">
-                </div>
-
-            </form>
         </div>
     </div>
 
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Configuración de Perfil</h5>
+        </div>
+        <div class="card-body">
+            @if ($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+
+            <form action="{{ route('profile.update', ['profile' => $user]) }}" method="POST">
+                @method('PATCH')
+                @csrf
+
+                <!-- Nombre -->
+                <div class="mb-3 row">
+                    <label for="name" class="col-md-3 col-form-label">Nombres</label>
+                    <div class="col-md-9">
+                        <input type="text" class="form-control" name="name" id="name" value="{{ old('name', $user->name) }}" placeholder="Ingrese su nombre completo">
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div class="mb-3 row">
+                    <label for="email" class="col-md-3 col-form-label">Email</label>
+                    <div class="col-md-9">
+                        <input type="email" class="form-control" name="email" id="email" value="{{ old('email', $user->email) }}" placeholder="Ingrese su correo electrónico">
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="mb-3 row">
+                    <label for="password" class="col-md-3 col-form-label">Contraseña</label>
+                    <div class="col-md-9">
+                        <input type="password" class="form-control" name="password" id="password" placeholder="Ingrese una nueva contraseña">
+                    </div>
+                </div>
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-success">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 @endsection
 
 @push('js')
-
+<!-- Scripts adicionales aquí -->
 @endpush

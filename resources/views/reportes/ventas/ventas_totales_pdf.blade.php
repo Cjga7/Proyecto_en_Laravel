@@ -8,81 +8,91 @@
         body {
             font-family: Arial, Helvetica, sans-serif;
             font-size: 12px;
-            margin: 0;
-            padding: 0;
+            margin: 20px;
             background-color: #f9f9f9;
-        }
-        .container {
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: white;
-            border: 1px solid #ccc;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1, h2, h3 {
-            text-align: center;
-            margin: 0;
             color: #333;
         }
-        .header {
-            margin-bottom: 20px;
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
             border-bottom: 2px solid #4CAF50;
             padding-bottom: 10px;
+        }
+        header img {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100px;
+        }
+        header h1 {
+            margin: 0;
+            color: #4CAF50;
+            font-size: 24px;
+        }
+        header h2 {
+            margin: 0;
+            color: #777;
+            font-size: 18px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 10px;
+            color: #777;
+        }
+        .page-number:after {
+            content: counter(page);
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
+            background-color: #fff;
         }
         table, th, td {
             border: 1px solid #ddd;
         }
         th, td {
-            padding: 10px;
+            padding: 12px;
             text-align: center;
         }
         th {
             background-color: #4CAF50;
             color: white;
         }
-        .totales-mes {
-            margin-top: 30px;
+        tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
         }
         .totales-mes h3 {
             margin-top: 20px;
+            color: #4CAF50;
         }
         .totales-mes table {
-            border: 1px solid #000;
+            width: 100%;
+            border-collapse: collapse;
         }
         .totales-mes th {
             background-color: #4CAF50;
             color: white;
         }
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 12px;
-            color: #555;
-        }
-        img.logo {
-            display: block;
-            margin: 0 auto 10px auto;
-            width: 150px; /* Cambiar según el tamaño del logotipo */
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Encabezado del Reporte -->
-        <div class="header">
-            <img src="ruta/del/logo.png" alt="Logo Lanago" class="logo"> <!-- Reemplaza con la ruta de tu logo -->
+        <header>
+            <img src="assets/images/Logo_lanago.png" alt="Logo Lanago" class="logo">
             <h1>Reporte de Ventas</h1>
             <h2>Mes: {{ \Carbon\Carbon::create()->month($mesSeleccionado)->translatedFormat('F') }} - Año: {{ $anio }}</h2>
-        </div>
+            <p>Fecha de impresión: {{ \Carbon\Carbon::now()->format('d/m/Y') }}</p>
+        </header>
 
-        <!-- Tabla de ventas del mes seleccionado -->
         <h3>Ventas del Mes Seleccionado</h3>
         <table>
             <thead>
@@ -105,7 +115,6 @@
             </tbody>
         </table>
 
-        <!-- Totales por mes en una tabla resumen -->
         <div class="totales-mes">
             <h3>Resumen Total de Ventas por Mes</h3>
             <table>
@@ -126,11 +135,11 @@
             </table>
         </div>
 
-        <!-- Pie de página -->
-        <div class="footer">
+        <footer>
             <p>Lanago - Ventas Naturales</p>
             <p>Contacto: info@lanago.com | Teléfono: +591 123 456 789</p>
-        </div>
+            Página <span class="page-number"></span>
+        </footer>
     </div>
 </body>
 </html>

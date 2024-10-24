@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Editar proveedor')
+@section('title', 'Editar Proveedor')
 
 @push('css')
 @endpush
@@ -19,7 +19,7 @@
                 @csrf
                 <div class="row g-3">
 
-                    <!------Tipo de proveedore---->
+                    <!------Tipo de proveedor---->
                     <div class="col-md-6 mb-2">
                         <label for="tipo_persona" class="form-label">Tipo de proveedor</label>
                         <select class="form-select" name="tipo_persona" id="tipo_persona">
@@ -86,7 +86,7 @@
                         <label for="correo_electronico" class="form-label">Correo Electrónico</label>
                         <input type="email" name="correo_electronico" id="correo_electronico" class="form-control"
                             value="{{ old('correo_electronico', $proveedore->persona->correo_electronico) }}">
-                        @error('correo')
+                        @error('correo_electronico')
                             <small class="text-danger">{{ '*' . $message }}</small>
                         @enderror
                     </div>
@@ -155,7 +155,7 @@
 
             tipoPersonaSelect.addEventListener('change', toggleRazonSocial);
         });
-        </script>
+    </script>
 @endsection
 
 @push('js')

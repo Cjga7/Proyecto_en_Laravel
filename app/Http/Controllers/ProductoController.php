@@ -30,7 +30,11 @@ class ProductoController extends Controller
     public function index()
     {
         $productos = Producto::with(['categorias.caracteristica', 'registrosanitario.caracteristica', 'presentacione.caracteristica', 'tipoProducto'])->latest()->get();
-        return view('producto.index', compact('productos'));
+
+        $umbral = 5; // Define el umbral de stock bajo
+        $productosBajoStock = Producto::where('stock', '<', $umbral)->get(); // Filtrar productos con bajo stock
+
+        return view('producto.index', compact('productos', 'productosBajoStock'));
     }
 
     /**

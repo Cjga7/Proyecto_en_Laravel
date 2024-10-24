@@ -28,6 +28,26 @@
         </script>
     @endif
 
+    <!-- Modal de alerta para productos con bajo stock -->
+    @if ($productosBajoStock->isNotEmpty())
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Productos con bajo stock',
+                    html: `<ul>
+                      @foreach ($productosBajoStock as $producto)
+                          <li>{{ $producto->nombre }} (Stock: {{ $producto->stock }})</li>
+                      @endforeach
+                  </ul>`,
+                    showCloseButton: true,
+                    focusConfirm: false,
+                    confirmButtonText: 'Aceptar'
+                });
+            });
+        </script>
+    @endif
+
     <div class="container-fluid px-4">
         <h1 class="mt-4 text-center">Productos</h1>
         <ol class="breadcrumb mb-4">
@@ -68,7 +88,8 @@
                                     <td>{{ $item->presentacione->caracteristica->nombre ?? 'No disponible' }}</td>
                                     <td>
                                         @foreach ($item->categorias as $category)
-                                            <span class="badge bg-secondary m-1">{{ $category->caracteristica->nombre ?? 'No disponible' }}</span>
+                                            <span
+                                                class="badge bg-secondary m-1">{{ $category->caracteristica->nombre ?? 'No disponible' }}</span>
                                         @endforeach
                                     </td>
                                     <td>{{ $item->tipoProducto->nombre }}</td>
@@ -176,10 +197,10 @@
         </div>
 
 
-      <!-- Enlace para ajustar stock -->
-      <div class="mb-3 text-end">
-        <a href="{{ route('productos.ajustarStock') }}" class="btn btn-primary">Ajustar Stock</a>
-    </div>
+        <!-- Enlace para ajustar stock -->
+        <div class="mb-3 text-end">
+            <a href="{{ route('productos.ajustarStock') }}" class="btn btn-primary">Ajustar Stock</a>
+        </div>
         <div class="card mb-4">
             <div class="card-header">
                 <i class="fas fa-table me-1"></i> Productos Terminados
@@ -208,7 +229,8 @@
                                     <td>{{ $item->presentacione->caracteristica->nombre ?? 'No disponible' }}</td>
                                     <td>
                                         @foreach ($item->categorias as $category)
-                                            <span class="badge bg-secondary m-1">{{ $category->caracteristica->nombre ?? 'No disponible' }}</span>
+                                            <span
+                                                class="badge bg-secondary m-1">{{ $category->caracteristica->nombre ?? 'No disponible' }}</span>
                                         @endforeach
                                     </td>
                                     <td>{{ $item->tipoProducto->nombre }}</td>
@@ -286,7 +308,8 @@
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h1 class="modal-title fs-5" id="exampleModalLabel">Mensaje de confirmación
+                                                <h1 class="modal-title fs-5" id="exampleModalLabel">Mensaje de
+                                                    confirmación
                                                 </h1>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
@@ -320,9 +343,11 @@
 @push('js')
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
-        integrity="sha384-oBqDVmMz4fnFO9gyb3qELFZ3hU4vZx7h1WwOa3A6A/5o7dCAWeW9BqxDjtR8tFbF" crossorigin="anonymous"></script>
+        integrity="sha384-oBqDVmMz4fnFO9gyb3qELFZ3hU4vZx7h1WwOa3A6A/5o7dCAWeW9BqxDjtR8tFbF" crossorigin="anonymous">
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
-        integrity="sha384-QD3B1QpI3C8RxIUI1R0zQzIwxKYvvR2/qX2hPaI9Um3jsptzFJxEe7/jG67M5JXl" crossorigin="anonymous"></script>
+        integrity="sha384-QD3B1QpI3C8RxIUI1R0zQzIwxKYvvR2/qX2hPaI9Um3jsptzFJxEe7/jG67M5JXl" crossorigin="anonymous">
+    </script>
     <script>
         // Simple Datatables initialization
         const dataTable = new DataTable("#datatablesSimple");

@@ -1,22 +1,22 @@
 @extends('layouts.master')
 
-@section('title', 'Ventas Totales')
+@section('title', 'Compras Totales')
 
 @section('content')
     <div class="container-fluid px-4">
-        <h1 class="mt-4 text-center">Ventas Totales por Día/Mes/Año</h1>
+        <h1 class="mt-4 text-center">Compras Totales por Día/Mes/Año</h1>
         <ol class="breadcrumb mb-4">
             <li class="breadcrumb-item"><a href="{{ route('panel') }}">Inicio</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('reportes.ventas.index') }}">Reportes de Ventas</a></li>
-            <li class="breadcrumb-item active">Ventas Totales</li>
+            <li class="breadcrumb-item"><a href="{{ route('reportes.compras.index') }}">Reportes de Compras</a></li>
+            <li class="breadcrumb-item active">Compras Totales</li>
         </ol>
         <!-- Formulario de selección de mes y año -->
         <div class="row mb-4">
             <div class="col-lg-12">
                 <div class="card">
-                    <div class="card-header">Filtrar Ventas por Mes y Año</div>
+                    <div class="card-header">Filtrar Compras por Mes y Año</div>
                     <div class="card-body">
-                        <form action="{{ route('reportes.ventas.totales') }}" method="GET">
+                        <form action="{{ route('reportes.compras.totales') }}" method="GET">
                             <div class="row">
                                 <div class="col-md-6">
                                     <label for="mes" class="form-label">Mes:</label>
@@ -43,14 +43,12 @@
                                 <div class="col-md-12 d-flex align-items-end mt-2">
                                     <button type="submit" class="btn btn-primary">Filtrar</button>
                                     <!-- Enlace para previsualizar y luego imprimir el PDF -->
-                                    <a href="{{ route('reportes.ventas.totales', ['mes' => request('mes'), 'anio' => request('anio'), 'pdf' => 1]) }}"
+                                    <a href="{{ route('reportes.compras.totales', ['mes' => request('mes'), 'anio' => request('anio'), 'pdf' => 1]) }}"
                                         class="btn btn-success ms-2" onclick="previsualizarPDF(event, this.href)">
                                         <i class="fa fa-print"></i> Previsualizar PDF
                                     </a>
-
-
+                                    <a href="{{ route('reportes.compras.totales', ['mes' => request('mes'), 'anio' => request('anio'), 'excel' => 1]) }}" class="btn btn-success ms-2">Descargar Excel</a>
                                 </div>
-
                             </div>
                         </form>
                     </div>
@@ -58,27 +56,27 @@
             </div>
         </div>
 
-        <!-- Mostrar la tabla de ventas solo del mes seleccionado -->
-        @if ($ventasDelMesSeleccionado->count() > 0)
+        <!-- Mostrar la tabla de compras solo del mes seleccionado -->
+        @if ($comprasDelMesSeleccionado->count() > 0)
             <div class="row mb-4">
                 <div class="col-lg-12">
                     <div class="card">
-                        <div class="card-header">Reporte de Ventas para
+                        <div class="card-header">Reporte de Compras para
                             {{ \Carbon\Carbon::create()->month($mesSeleccionado)->translatedFormat('F') }}
-                            {{ $anio }}</div>
+                            {{ $anioSeleccionado }}</div>
                         <div class="card-body">
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
                                         <th>Día</th>
-                                        <th>Total Ventas (Bs.)</th>
+                                        <th>Total Compras (Bs.)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($ventasDelMesSeleccionado as $venta)
+                                    @foreach ($comprasDelMesSeleccionado as $compra)
                                         <tr>
-                                            <td>{{ $venta->dia }}</td>
-                                            <td>{{ number_format($venta->total, 2) }} Bs.</td>
+                                            <td>{{ $compra->dia }}</td>
+                                            <td>{{ number_format($compra->total, 2) }} Bs.</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -88,14 +86,14 @@
                 </div>
             </div>
 
-            <!-- Mostrar el gráfico de barras con los totales de ventas por mes -->
+            <!-- Mostrar el gráfico de barras con los totales de compras por mes -->
             <div class="row mb-4">
                 <div class="col-lg-12">
                     <div class="card">
-                        <div class="card-header">Gráfico de Ventas por Mes (Resaltando
+                        <div class="card-header">Gráfico de Compras por Mes (Resaltando
                             {{ \Carbon\Carbon::create()->month($mesSeleccionado)->translatedFormat('F') }})</div>
                         <div class="card-body">
-                            <canvas id="ventasTotalesPorMesChart" width="400" height="200"></canvas>
+                            <canvas id="comprasTotalesPorMesChart" width="400" height="200"></canvas>
                         </div>
                     </div>
                 </div>
@@ -104,25 +102,25 @@
             <!-- Script para el gráfico -->
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <script>
-                const ctx = document.getElementById('ventasTotalesPorMesChart').getContext('2d');
+                const ctx = document.getElementById('comprasTotalesPorMesChart').getContext('2d');
 
                 // Etiquetas con los nombres de los meses
                 const labels = @json($labels);
 
-                // Totales de ventas por mes
-                const datosVentas = @json($datosVentas);
+                // Totales de compras por mes
+                const datosCompras = @json($datosCompras);
 
                 // Colores para resaltar el mes seleccionado
                 const colores = @json($colores);
 
                 // Crear el gráfico
-                const ventasTotalesPorMesChart = new Chart(ctx, {
+                const comprasTotalesPorMesChart = new Chart(ctx, {
                     type: 'bar',
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Total Ventas (Bs.)',
-                            data: datosVentas,
+                            label: 'Total Compras (Bs.)',
+                            data: datosCompras,
                             backgroundColor: colores,
                             borderColor: 'rgba(0, 0, 0, 0.1)',
                             borderWidth: 1
@@ -141,7 +139,7 @@
             <div class="row mb-4">
                 <div class="col-lg-12">
                     <div class="alert alert-info">
-                        No se encontraron ventas para el mes seleccionado.
+                        No se encontraron compras para el mes seleccionado.
                     </div>
                 </div>
             </div>
@@ -162,6 +160,5 @@
             };
         }
     </script>
-
 
 @endsection

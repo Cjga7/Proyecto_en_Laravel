@@ -33,8 +33,16 @@
                     <input type="number" name="anio" id="anio" value="{{ request('anio', date('Y')) }}" class="form-control" placeholder="Año">
                 </div>
             </div>
-            <div class="col-md-2 align-self-end">
+
+            <!-- Botones de Filtrar y Previsualizar PDF -->
+            <div class="col-md-12 d-flex align-items-end mt-2">
                 <button type="submit" class="btn btn-primary">Filtrar</button>
+
+                <!-- Enlace para previsualizar y luego imprimir el PDF -->
+                <a href="{{ route('reportes.ventas.cliente', ['mes' => request('mes'), 'anio' => request('anio'), 'pdf' => 1]) }}"
+                   class="btn btn-success ms-2" onclick="previsualizarPDF(event, this.href)">
+                    <i class="fa fa-print"></i> Previsualizar PDF
+                </a>
             </div>
         </div>
     </form>
@@ -72,4 +80,13 @@
         </div>
     </div>
 </div>
+
+<!-- Script para previsualizar el PDF -->
+<script>
+    function previsualizarPDF(event, href) {
+        event.preventDefault();
+        window.open(href, '_blank');
+    }
+</script>
+
 @endsection

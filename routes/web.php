@@ -32,51 +32,55 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 
 
 
-    Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
-    Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
-    Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-    Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 
 
 
 Route::get('/', [homeController::class, 'index'])->name('panel');
 Route::middleware(['auth', 'no-cache'])->group(function () {
-Route::resources([
-    'categorias' => categoriaController::class,
-    'presentaciones' => PresentacioneController::class,
-    'registrosanitarios' => registrosanitarioController::class,
-    'productos' => ProductoController::class,
-    'clientes' => clienteController::class,
-    'proveedores' => proveedoreController::class,
-    'compras' => compraController::class,
-    'ventas' => ventaController::class,
-    'users' => userController::class,
-    'roles' => roleController::class,
-    'profile' => profileController::class,
-]);
+    Route::resources([
+        'categorias' => categoriaController::class,
+        'presentaciones' => PresentacioneController::class,
+        'registrosanitarios' => registrosanitarioController::class,
+        'productos' => ProductoController::class,
+        'clientes' => clienteController::class,
+        'proveedores' => proveedoreController::class,
+        'compras' => compraController::class,
+        'ventas' => ventaController::class,
+        'users' => userController::class,
+        'roles' => roleController::class,
+        'profile' => profileController::class,
+    ]);
 
-// Rutas para reportes
-Route::prefix('reportes')->group(function () {
-    Route::get('ventas', [ReporteController::class, 'indexVentas'])->name('reportes.ventas.index');
-    Route::get('reportes/ventas/totales', [ReporteController::class, 'ventasTotales'])->name('reportes.ventas.totales');
+    // Rutas para reportes
+    Route::prefix('reportes')->group(function () {
+        Route::get('ventas', [ReporteController::class, 'indexVentas'])->name('reportes.ventas.index');
+        Route::get('reportes/ventas/totales', [ReporteController::class, 'ventasTotales'])->name('reportes.ventas.totales');
 
-    Route::get('ventas/producto', [ReporteController::class, 'ventasPorProducto'])->name('reportes.ventas.producto');
-    Route::get('ventas/cliente', [ReporteController::class, 'ventasPorCliente'])->name('reportes.ventas.cliente');
-    Route::get('ventas/usuario', [ReporteController::class, 'ventasPorUsuario'])->name('reportes.ventas.usuario');
+        Route::get('ventas/producto', [ReporteController::class, 'ventasPorProducto'])->name('reportes.ventas.producto');
+        Route::get('ventas/cliente', [ReporteController::class, 'ventasPorCliente'])->name('reportes.ventas.cliente');
+        Route::get('ventas/usuario', [ReporteController::class, 'ventasPorUsuario'])->name('reportes.ventas.usuario');
 
-    Route::get('productos', [ReporteController::class, 'indexProductos'])->name('reportes.productos.index');
-    Route::get('productos/inventario', [ReporteController::class, 'inventarioActual'])->name('reportes.productos.inventario');
-    Route::get('productos/mas-vendidos', [ReporteController::class, 'productosMasVendidos'])->name('reportes.productos.mas_vendidos');
-    Route::get('productos/bajo-stock', [ReporteController::class, 'bajoStock'])->name('reportes.productos.bajo_stock');
-    Route::get('productos/historial/{id}', [ReporteController::class, 'historialVentas'])->name('reportes.productos.historial');
-});
+        Route::get('productos', [ReporteController::class, 'indexProductos'])->name('reportes.productos.index');
+        Route::get('productos/inventario', [ReporteController::class, 'inventarioActual'])->name('reportes.productos.inventario');
+        Route::get('productos/mas-vendidos', [ReporteController::class, 'productosMasVendidos'])->name('reportes.productos.mas_vendidos');
+        Route::get('productos/bajo-stock', [ReporteController::class, 'bajoStock'])->name('reportes.productos.bajo_stock');
+        Route::get('productos/historial/{id}', [ReporteController::class, 'historialVentas'])->name('reportes.productos.historial');
+
+        // Rutas para reportes de compras
+        Route::get('compras', [ReporteController::class, 'indexCompras'])->name('reportes.compras.index');
+        Route::get('compras/totales', [ReporteController::class, 'comprasTotales'])->name('reportes.compras.totales');
+        Route::get('compras/producto', [ReporteController::class, 'comprasPorProducto'])->name('reportes.compras.producto');
+        Route::get('compras/proveedor', [ReporteController::class, 'comprasPorProveedor'])->name('reportes.compras.proveedor');
+    });
 
 
     Route::get('/ajustar-stock', [ProductoController::class, 'mostrarAjusteStock'])->name('productos.mostrarAjusteStock');
     Route::post('/ajustar-stock', [ProductoController::class, 'ajustarStock'])->name('productos.ajustarStock');
-
-
 });
 
 // Rutas de autenticación
@@ -97,7 +101,3 @@ Route::get('/404', function () {
 Route::get('/500', function () {
     return view('pages.500');
 });
-
-
-
-

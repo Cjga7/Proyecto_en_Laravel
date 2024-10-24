@@ -1,8 +1,8 @@
 <!-- ========== Left Sidebar Start ========== -->
-<div class="vertical-menu bg-soft-success">
+<div class="vertical-menu bg-success-subtle">
 
     <!-- LOGO -->
-    <div class="navbar-brand-box bg-soft-success">
+    <div class="navbar-brand-box bg-success-subtle">
         <a href="{{ route('panel') }}" class="logo logo-dark">
             <span class="logo-sm">
                 <img src="{{ URL::asset('/assets/images/logo2_lanago.png') }}" alt="" height="58">
@@ -120,28 +120,35 @@
                 </li>
                 <!-- Reportes -->
                 @can('ver-reporte')
-                <li>
-                    <a href="javascript: void(0);" class="has-arrow waves-effect">
-                        <i class="fa-solid fa-chart-line"></i>
-                        <span>Reportes</span>
-                    </a>
-                    <ul class="sub-menu" aria-expanded="false">
-                        <!-- Ventas -->
-                        <li>
-                            <a href="{{ route('reportes.ventas.index') }}" class="waves-effect">
-                                <i class="fa-solid fa-file-invoice-dollar"></i>
-                                <span>Reportes de Ventas</span>
-                            </a>
-                        </li>
-                        <!-- Productos -->
-                        <li>
-                            <a href="{{ route('reportes.productos.index') }}" class="waves-effect">
-                                <i class="fa-solid fa-box"></i>
-                                <span>Reportes de Productos</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                    <li>
+                        <a href="javascript: void(0);" class="has-arrow waves-effect">
+                            <i class="fa-solid fa-chart-line"></i>
+                            <span>Reportes</span>
+                        </a>
+                        <ul class="sub-menu" aria-expanded="false">
+                            <!-- Ventas -->
+                            <li>
+                                <a href="{{ route('reportes.ventas.index') }}" class="waves-effect">
+                                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                                    <span>Reportes de Ventas</span>
+                                </a>
+                            </li>
+                            <!-- Productos -->
+                            <li>
+                                <a href="{{ route('reportes.productos.index') }}" class="waves-effect">
+                                    <i class="fa-solid fa-box"></i>
+                                    <span>Reportes de Productos</span>
+                                </a>
+                            </li>
+                            <!-- Ventas -->
+                            <li>
+                                <a href="{{ route('reportes.compras.index') }}" class="waves-effect">
+                                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                                    <span>Reportes de Compras</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
                 @endcan
                 <!-- Clientes -->
                 @can('ver-cliente')

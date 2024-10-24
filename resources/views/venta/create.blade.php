@@ -148,13 +148,13 @@
                                 <select name="cliente_id" id="cliente_id" class="form-control selectpicker show-tick"
                                     data-live-search="true" title="Selecciona" data-size='2'>
                                     @foreach ($clientes as $item)
-                                    <option value="{{ $item->id }}">
-                                        {{ $item->persona->nombre }} {{ $item->persona->primer_apellido }}
-                                        @if($item->persona->razon_social)
-                                            ({{ $item->persona->razon_social }})
-                                        @endif
-                                    </option>
-                                @endforeach
+                                        <option value="{{ $item->id }}">
+                                            {{ $item->persona->nombre }} {{ $item->persona->primer_apellido }}
+                                            @if ($item->persona->razon_social)
+                                                ({{ $item->persona->razon_social }})
+                                            @endif
+                                        </option>
+                                    @endforeach
 
                                 </select>
                                 @error('cliente_id')
@@ -238,50 +238,72 @@
 @endsection
 
 @push('js')
-<script>
-    function calcularTotal() {
-        let total = 0;
-        let filas = $("#tabla_detalle tbody tr");
-        filas.each(function() {
-            // Asegurarse de que el valor sea un número válido. Si no lo es, se considera 0.
-            let subtotal = parseFloat($(this).find("td").eq(5).text()) || 0;
-            total += subtotal;
+    <script>
+        function calcularTotal() {
+            let total = 0;
+            let filas = $("#tabla_detalle tbody tr");
+            filas.each(function() {
+                // Asegurarse de que el valor sea un número válido. Si no lo es, se considera 0.
+                let subtotal = parseFloat($(this).find("td").eq(5).text()) || 0;
+                total += subtotal;
+            });
+
+            $("#sumas").text(total.toFixed(2));
+            $("#total").text(total.toFixed(2));
+            $("#inputTotal").val(total.toFixed(2));
+        }
+
+        $("#producto_id").change(function(e) {
+            let productoSeleccionado = $(this).val();
+            if (productoSeleccionado != null) {
+                let productoInfo = productoSeleccionado.split("-");
+                let stock = productoInfo[1];
+                let precioVenta = productoInfo[2];
+                $("#stock").val(stock);
+                $("#precio_venta").val(precioVenta);
+            } else {
+                $("#stock").val('');
+                $("#precio_venta").val('');
+            }
         });
 
-        $("#sumas").text(total.toFixed(2));
-        $("#total").text(total.toFixed(2));
-        $("#inputTotal").val(total.toFixed(2));
-    }
+        let stockOriginal = {}; // Almacenamos el stock original aquí
 
-    $("#producto_id").change(function(e) {
-        let productoSeleccionado = $(this).val();
-        if (productoSeleccionado != null) {
-            let productoInfo = productoSeleccionado.split("-");
-            let stock = productoInfo[1];
-            let precioVenta = productoInfo[2];
-            $("#stock").val(stock);
-            $("#precio_venta").val(precioVenta);
-        } else {
-            $("#stock").val('');
-            $("#precio_venta").val('');
-        }
-    });
+        $("#producto_id").change(function(e) {
+            let productoSeleccionado = $(this).val();
+            if (productoSeleccionado != null) {
+                let productoInfo = productoSeleccionado.split("-");
+                let productoId = productoInfo[0];
+                let stock = productoInfo[1];
+                let precioVenta = productoInfo[2];
 
-    $("#btn_agregar").click(function(e) {
-    let productoSeleccionado = $("#producto_id").val();
-    if (productoSeleccionado != null) {
-        let productoInfo = productoSeleccionado.split("-");
-        let productoId = productoInfo[0];
-        let stock = parseInt(productoInfo[1]);
-        let precioVenta = parseFloat(productoInfo[2]);
+                // Guardar el stock original si aún no está guardado
+                if (!stockOriginal[productoId]) {
+                    stockOriginal[productoId] = parseInt(stock);
+                }
 
-        let cantidad = parseInt($("#cantidad").val()) || 0; // Asegurarse de que sea un número válido
-        let descuento = parseFloat($("#descuento").val()) || 0; // Asegurarse de que sea un número válido
+                $("#stock").val(stockOriginal[productoId]);
+                $("#precio_venta").val(precioVenta);
+            } else {
+                $("#stock").val('');
+                $("#precio_venta").val('');
+            }
+        });
 
-        if (cantidad <= stock && cantidad > 0) {
-            let subtotal = (precioVenta * cantidad) - descuento;
+        $("#btn_agregar").click(function(e) {
+            let productoSeleccionado = $("#producto_id").val();
+            if (productoSeleccionado != null) {
+                let productoInfo = productoSeleccionado.split("-");
+                let productoId = productoInfo[0];
+                let stock = parseInt($("#stock").val());
+                let cantidad = parseInt($("#cantidad").val()) || 0; // Asegurarse de que sea un número válido
+                let precioVenta = parseFloat(productoInfo[2]);
+                let descuento = parseFloat($("#descuento").val()) || 0;
 
-            let fila = `
+                if (cantidad <= stock && cantidad > 0) {
+                    let subtotal = (precioVenta * cantidad) - descuento;
+
+                    let fila = `
             <tr>
                 <td>${productoId}</td>
                 <td>${$("#producto_id option:selected").text()}</td>
@@ -290,42 +312,68 @@
                 <td>${descuento.toFixed(2)}</td>
                 <td>${subtotal.toFixed(2)}</td>
                 <td><button class="btn btn-danger btn-sm btnEliminar">Eliminar</button></td>
-                <!-- Inputs ocultos para enviar al backend -->
                 <input type="hidden" name="arrayidproducto[]" value="${productoId}">
                 <input type="hidden" name="arraycantidad[]" value="${cantidad}">
                 <input type="hidden" name="arraydescuento[]" value="${descuento}">
             </tr>
             `;
 
-            $("#tabla_detalle tbody").append(fila);
+                    $("#tabla_detalle tbody").append(fila);
 
-            // Limpiar los campos después de agregar el producto
-            $("#producto_id").val('');
-            $("#cantidad").val('');
-            $("#precio_venta").val('');
-            $("#descuento").val('');
-            $("#stock").val('');
-            $("#producto_id").selectpicker('refresh');
+                    // Restar la cantidad del stock temporal
+                    stockOriginal[productoId] -= cantidad;
+                    $("#stock").val(stockOriginal[productoId]);
 
+                    // Limpiar los campos después de agregar el producto
+                    $("#producto_id").val('');
+                    $("#cantidad").val('');
+                    $("#precio_venta").val('');
+                    $("#descuento").val('');
+                    $("#stock").val('');
+                    select.selectpicker('val', '');
+
+
+                    calcularTotal();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'La cantidad no puede exceder el stock o ser menor o igual a 0.',
+                    });
+                }
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: 'Seleccione un producto.',
+                });
+            }
+        });
+
+        // Al eliminar el producto de la tabla, se debe regresar el stock
+        $(document).on("click", ".btnEliminar", function() {
+            let fila = $(this).closest("tr");
+            let productoId = fila.find('input[name="arrayidproducto[]"]').val();
+            let cantidad = parseInt(fila.find('input[name="arraycantidad[]"]').val());
+
+            // Devolver la cantidad eliminada al stock temporal
+            stockOriginal[productoId] += cantidad;
+
+            fila.remove();
             calcularTotal();
-        } else {
-            alert("Cantidad no válida o insuficiente.");
-        }
-    } else {
-        alert("Seleccione un producto.");
-    }
-});
+        });
 
 
-    $(document).on("click", ".btnEliminar", function() {
-        $(this).closest("tr").remove();
-        calcularTotal();
-    });
 
-    $("#btnCancelarVenta").click(function(e) {
-        window.location.reload();
-    });
-</script>
+        $(document).on("click", ".btnEliminar", function() {
+            $(this).closest("tr").remove();
+            calcularTotal();
+        });
+
+        $("#btnCancelarVenta").click(function(e) {
+            window.location.reload();
+        });
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
 @endpush

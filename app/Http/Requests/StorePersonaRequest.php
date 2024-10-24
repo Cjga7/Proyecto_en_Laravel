@@ -29,7 +29,7 @@ class StorePersonaRequest extends FormRequest
             'direccion' => 'required|max:80',
             'tipo_persona' => 'required|string',
             'documento_id' => 'required|integer|exists:documentos,id',
-            'numero_documento' => 'required|max:20|unique:personas,numero_documento',
+            'numero_documento' => 'required|min:8|max:20|unique:personas,numero_documento',
             'telefono' => 'nullable|integer', // Validación para el teléfono
             'correo_electronico' => 'nullable|email|max:100|unique:personas,correo_electronico' // Validación para el correo electrónico
         ];

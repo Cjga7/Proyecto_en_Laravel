@@ -1,18 +1,18 @@
 @extends('layouts.master')
 
-@section('title', 'Ventas por Usuario')
+@section('title', 'Compras por Proveedor')
 
 @section('content')
 <div class="container-fluid px-4">
-    <h1 class="mt-4 text-center">Ventas por Usuario</h1>
+    <h1 class="mt-4 text-center">Compras por Proveedor</h1>
     <ol class="breadcrumb mb-4">
         <li class="breadcrumb-item"><a href="{{ route('panel') }}">Inicio</a></li>
-        <li class="breadcrumb-item"><a href="{{ route('reportes.ventas.index') }}">Reportes de Ventas</a></li>
-        <li class="breadcrumb-item active">Ventas por Usuario</li>
+        <li class="breadcrumb-item"><a href="{{ route('reportes.compras.index') }}">Reportes de Compras</a></li>
+        <li class="breadcrumb-item active">Compras por Proveedor</li>
     </ol>
 
     <!-- Formulario de filtro por mes y año -->
-    <form action="{{ route('reportes.ventas.usuario') }}" method="GET" class="mb-4">
+    <form action="{{ route('reportes.compras.proveedor') }}" method="GET" class="mb-4">
         <div class="row">
             <div class="col-md-3">
                 <div class="form-group">
@@ -33,43 +33,33 @@
                     <input type="number" name="anio" id="anio" value="{{ request('anio', date('Y')) }}" class="form-control" placeholder="Año">
                 </div>
             </div>
-
-            <!-- Botones de Filtrar y Previsualizar PDF -->
-            <div class="col-md-12 d-flex align-items-end mt-2">
+            <div class="col-md-2 align-self-end">
                 <button type="submit" class="btn btn-primary">Filtrar</button>
-
-                <!-- Enlace para previsualizar y luego imprimir el PDF -->
-                <a href="{{ route('reportes.ventas.usuario', ['mes' => request('mes'), 'anio' => request('anio'), 'pdf' => 1]) }}"
-                   class="btn btn-success ms-2" onclick="previsualizarPDF(event, this.href)">
-                    <i class="fa fa-print"></i> Previsualizar PDF
-                </a>
             </div>
         </div>
     </form>
 
-    <!-- Tabla de ventas por usuario -->
+    <!-- Tabla de compras por proveedor -->
     <div class="row mb-4">
         <div class="col-lg-12">
             <div class="card">
-                <div class="card-header">Reporte de Ventas por Usuario</div>
+                <div class="card-header">Reporte de Compras por Proveedor</div>
                 <div class="card-body">
-                    @if($ventas->isEmpty())
-                        <p>No se encontraron ventas para los criterios seleccionados.</p>
+                    @if($compras->isEmpty())
+                        <p>No se encontraron compras para los criterios seleccionados.</p>
                     @else
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
-                                    <th>Usuario</th>
-                                    <th>Total Productos Vendidos</th>
-                                    <th>Total Ingresos (Bs.)</th>
+                                    <th>Proveedor</th>
+                                    <th>Total Compras (Bs.)</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($ventas as $venta)
+                                @foreach($compras as $compra)
                                     <tr>
-                                        <td>{{ $venta->usuario }}</td>
-                                        <td>{{ $venta->total_productos_vendidos }}</td>
-                                        <td>{{ number_format($venta->total_ingresos, 2) }} Bs.</td>
+                                        <td>{{ $compra->proveedor }}</td>
+                                        <td>{{ number_format($compra->total_compras, 2) }} Bs.</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -80,13 +70,4 @@
         </div>
     </div>
 </div>
-
-<!-- Script para previsualizar el PDF -->
-<script>
-    function previsualizarPDF(event, href) {
-        event.preventDefault();
-        window.open(href, '_blank');
-    }
-</script>
-
 @endsection

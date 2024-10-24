@@ -26,7 +26,7 @@ class UpdateProveedoreRequest extends FormRequest
             'nombre' => 'required|max:50',
             'primer_apellido' => 'required|max:50',
             'segundo_apellido' => 'nullable|max:50',
-            'razon_social' => 'max:80|unique:personas,razon_social,' . $proveedore->persona->id . '|required_if:tipo_persona,juridica',
+            'razon_social' => 'nullable|max:80|unique:personas,razon_social,' . $proveedore->persona->id . '|required_if:tipo_persona,juridica',
             'direccion' => 'required|max:80',
             'documento_id' => 'required|integer|exists:documentos,id',
             'numero_documento' => 'required|min:8|max:20|unique:personas,numero_documento,' . $proveedore->persona->id,

@@ -18,11 +18,20 @@ use App\Models\TipoProducto;
 class ReporteController extends Controller
 {
     function __construct()
-{
-    // Aplicar el middleware solo para la acción 'index'
-    $this->middleware('permission:ver-reporte', ['only' => ['index', 'indexVentas', 'ventasTotales', 'ventasPorProducto', 'ventasPorCliente', 'ventasPorUsuario'
-    ,'indexProductos', 'inventarioActual']]);
-}
+    {
+        // Aplicar el middleware solo para la acción 'index'
+        $this->middleware('permission:ver-reporte', ['only' => [
+            'index',
+            'indexVentas',
+            'ventasTotales',
+            'ventasPorProducto',
+            'ventasPorCliente',
+            'ventasPorUsuario',
+            'indexProductos',
+            'inventarioActual',
+            'indexCompras'
+        ]]);
+    }
     public function indexVentas()
     {
         // Cálculo real de los totales
@@ -84,15 +93,10 @@ class ReporteController extends Controller
             // Cambiar de download() a stream() para que se previsualice el PDF
             return $pdf->stream('reporte_ventas_' . $mesSeleccionado . '_' . $anio . '.pdf');
         }
-        // Verificar si la petición es para generar un archivo Excel
-        if ($request->input('excel') == '1') {
-            return Excel::download(new VentasTotalesExport($ventasDelMesSeleccionado, $anio, $mesSeleccionado), 'reporte_ventas_' . $mesSeleccionado . '_' . $anio . '.xlsx');
 
-        }
 
         return view('reportes.ventas.ventas_totales', compact('ventasDelMesSeleccionado', 'anio', 'mesSeleccionado', 'labels', 'datosVentas', 'colores'));
     }
-
 
 
 
@@ -102,6 +106,7 @@ class ReporteController extends Controller
         $mes = $request->input('mes');
         $anio = $request->input('anio');
 
+        // Consulta para obtener las ventas por producto
         $query = DB::table('producto_venta')
             ->join('productos', 'producto_venta.producto_id', '=', 'productos.id')
             ->join('ventas', 'producto_venta.venta_id', '=', 'ventas.id')
@@ -120,33 +125,37 @@ class ReporteController extends Controller
             $query->whereYear('ventas.fecha_hora', $anio);
         }
 
+        // Obtener los resultados de la consulta
         $ventas = $query->get();
 
-        return view('reportes.ventas.ventas_producto', compact('ventas'));
+        // Verificar si se está solicitando un PDF
+        if ($request->input('pdf') == '1') {
+            $pdf = PDF::loadView('reportes.ventas.ventas_producto_pdf', compact('ventas', 'mes', 'anio'));
+            return $pdf->stream('reporte_ventas_producto_' . $mes . '_' . $anio . '.pdf');
+        }
+
+        return view('reportes.ventas.ventas_producto', compact('ventas', 'mes', 'anio'));
     }
 
 
 
     public function ventasPorCliente(Request $request)
     {
-
-
-
         // Obtener los filtros de mes y año del request
         $mes = $request->input('mes');
         $anio = $request->input('anio');
 
-        // Construir la consulta para obtener ventas por cliente
+        // Consulta para obtener ventas por cliente
         $query = DB::table('ventas')
             ->join('clientes', 'ventas.cliente_id', '=', 'clientes.id')
             ->join('personas', 'clientes.persona_id', '=', 'personas.id') // Relación cliente -> persona
             ->join('producto_venta', 'ventas.id', '=', 'producto_venta.venta_id')
             ->select(
-                'personas.razon_social as cliente', // Usar razon_social en lugar de nombre
+                DB::raw("CONCAT_WS(' ', personas.nombre, personas.primer_apellido, personas.segundo_apellido, personas.razon_social) as cliente"),
                 DB::raw('SUM(producto_venta.cantidad) as total_comprado'),
                 DB::raw('SUM(producto_venta.cantidad * producto_venta.precio_venta) as total_ingresos')
             )
-            ->groupBy('personas.razon_social'); // Agrupar por razon_social
+            ->groupBy('personas.nombre', 'personas.primer_apellido', 'personas.segundo_apellido', 'personas.razon_social');
 
         // Aplicar los filtros de mes y año si están presentes
         if (!empty($mes) && !empty($anio)) {
@@ -159,20 +168,23 @@ class ReporteController extends Controller
         // Obtener los resultados de la consulta
         $ventas = $query->get();
 
-        // Retornar la vista con los datos de las ventas por cliente
+        // Verificar si se está solicitando un PDF
+        if ($request->input('pdf') == '1') {
+            $pdf = PDF::loadView('reportes.ventas.ventas_cliente_pdf', compact('ventas', 'mes', 'anio'));
+            return $pdf->stream('reporte_ventas_cliente_' . $mes . '_' . $anio . '.pdf');
+        }
+
         return view('reportes.ventas.ventas_cliente', compact('ventas', 'mes', 'anio'));
     }
 
 
     public function ventasPorUsuario(Request $request)
     {
-
-
         // Obtener los filtros de mes y año del request
         $mes = $request->input('mes');
         $anio = $request->input('anio');
 
-        // Construir la consulta para obtener ventas por usuario
+        // Consulta para obtener ventas por usuario
         $query = DB::table('ventas')
             ->join('users', 'ventas.user_id', '=', 'users.id')
             ->join('producto_venta', 'ventas.id', '=', 'producto_venta.venta_id')
@@ -194,9 +206,16 @@ class ReporteController extends Controller
         // Obtener los resultados de la consulta
         $ventas = $query->get();
 
-        // Retornar la vista con los datos de las ventas por usuario
+        // Verificar si se está solicitando un PDF
+        if ($request->input('pdf') == '1') {
+            $pdf = PDF::loadView('reportes.ventas.ventas_usuario_pdf', compact('ventas', 'mes', 'anio'));
+            return $pdf->stream('reporte_ventas_usuario_' . $mes . '_' . $anio . '.pdf');
+        }
+
+
         return view('reportes.ventas.ventas_usuario', compact('ventas', 'mes', 'anio'));
     }
+
 
 
     public function indexProductos()
@@ -257,12 +276,6 @@ class ReporteController extends Controller
     }
 
 
-
-
-
-
-
-
     public function bajoStock()
     {
         $productos = Producto::where('stock', '<', 5)->get();
@@ -286,8 +299,8 @@ class ReporteController extends Controller
         } else {
             // Consulta el historial de ventas del producto específico, aplicando filtro de fechas si existen
             $historial = Venta::whereHas('productos', function ($query) use ($productoId) {
-                    $query->where('producto_id', $productoId);
-                })
+                $query->where('producto_id', $productoId);
+            })
                 ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
                     $query->whereBetween('fecha_hora', [$fechaInicio, $fechaFin]);
                 })
@@ -310,5 +323,158 @@ class ReporteController extends Controller
         return view('reportes.productos.historial_ventas', compact('historial', 'productoId', 'producto'));
     }
 
+    public function indexCompras()
+    {
+        // Cálculo de compras totales
+        $comprasTotales = DB::table('compras')->sum('total');
 
+        // Obtener los totales de compras por producto
+        $comprasPorProducto = DB::table('compra_producto')
+            ->join('productos', 'compra_producto.producto_id', '=', 'productos.id')
+            ->select('productos.nombre as producto', DB::raw('SUM(compra_producto.cantidad) as total_comprado'))
+            ->groupBy('productos.nombre')
+            ->get();
+
+        // Obtener compras por proveedor
+        $comprasPorProveedor = DB::table('compras')
+            ->join('proveedores', 'compras.proveedore_id', '=', 'proveedores.id') // Aquí está el cambio
+            ->join('personas', 'proveedores.persona_id', '=', 'personas.id')
+            ->select('personas.razon_social as proveedor', DB::raw('SUM(compras.total) as total_compras'))
+            ->groupBy('personas.razon_social')
+            ->get();
+
+        return view('reportes.compras.index', compact('comprasTotales', 'comprasPorProducto', 'comprasPorProveedor'));
+    }
+
+
+
+    public function comprasTotales(Request $request)
+    {
+        // Filtros de año y mes
+        $anioSeleccionado = $request->input('anio', date('Y')); // Usar el año actual como predeterminado
+        $mesSeleccionado = $request->input('mes', date('m'));  // Usar el mes actual como predeterminado
+
+        // Obtener el total de compras por día del mes seleccionado
+        $query = DB::table('compras')
+            ->select(
+                DB::raw('SUM(total) as total'),
+                DB::raw('DAY(fecha_hora) as dia')
+            )
+            ->groupBy('dia');
+
+        // Aplicar filtros si están presentes
+        if (!empty($anioSeleccionado)) {
+            $query->whereYear('fecha_hora', $anioSeleccionado);
+        }
+        if (!empty($mesSeleccionado)) {
+            $query->whereMonth('fecha_hora', $mesSeleccionado);
+        }
+
+        $comprasDelMesSeleccionado = $query->get();
+
+        // Datos para el gráfico
+        $labels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        $datosCompras = array_fill(0, 12, 0); // Inicializar un arreglo con 12 meses
+        $totalesPorMes = DB::table('compras')
+            ->select(
+                DB::raw('MONTH(fecha_hora) as mes'),
+                DB::raw('SUM(total) as total')
+            )
+            ->whereYear('fecha_hora', $anioSeleccionado)
+            ->groupBy('mes')
+            ->orderBy('mes')
+            ->pluck('total', 'mes')
+            ->toArray();
+
+        // Rellenar el arreglo de datos con los totales de compras para cada mes
+        foreach ($totalesPorMes as $mes => $total) {
+            $datosCompras[$mes - 1] = $total; // El índice del arreglo es el mes - 1
+        }
+
+        // Colores para resaltar el mes seleccionado en el gráfico
+        $colores = array_fill(0, 12, 'rgba(75, 192, 192, 0.2)');
+        $colores[$mesSeleccionado - 1] = 'rgba(255, 99, 132, 0.2)'; // Resaltar el mes seleccionado
+
+        // Generar PDF si es solicitado
+        if ($request->input('pdf') == '1') {
+            $pdf = PDF::loadView('reportes.compras.compras_totales_pdf', compact('comprasDelMesSeleccionado', 'anioSeleccionado', 'mesSeleccionado'));
+            return $pdf->stream('compras_totales_' . $mesSeleccionado . '_' . $anioSeleccionado . '.pdf');
+        }
+
+        // Pasar las variables a la vista
+        return view('reportes.compras.compras_totales', compact('comprasDelMesSeleccionado', 'anioSeleccionado', 'mesSeleccionado', 'labels', 'datosCompras', 'colores'));
+    }
+
+
+
+
+    public function comprasPorProducto(Request $request)
+    {
+        // Filtros de mes y año
+        $mes = $request->input('mes', date('m')); // Usar el mes actual como predeterminado
+        $anio = $request->input('anio', date('Y')); // Usar el año actual como predeterminado
+
+        // Construcción de la consulta para obtener las compras por producto
+        $query = DB::table('compra_producto')
+            ->join('productos', 'compra_producto.producto_id', '=', 'productos.id')
+            ->join('compras', 'compra_producto.compra_id', '=', 'compras.id')
+            ->select(
+                'productos.nombre as producto',
+                DB::raw('SUM(compra_producto.cantidad) as total_comprado'),
+                DB::raw('SUM(compra_producto.cantidad * compra_producto.precio_compra) as total_gasto')
+            )
+            ->where('compras.estado', '=', 1) // Solo considerar las compras activas
+            ->groupBy('productos.nombre');
+
+        // Aplicar filtros por año y mes si están presentes
+        if (!empty($anio)) {
+            $query->whereYear('compras.fecha_hora', $anio);
+        }
+        if (!empty($mes)) {
+            $query->whereMonth('compras.fecha_hora', $mes);
+        }
+
+        $compras = $query->get();
+
+        // Datos para el gráfico
+        $labels = $compras->pluck('producto')->toArray();
+        $datosCompras = $compras->pluck('total_comprado')->toArray();
+        $datosGastos = $compras->pluck('total_gasto')->toArray();
+
+        // Pasar las variables a la vista
+        return view('reportes.compras.compras_producto', compact('compras', 'mes', 'anio', 'labels', 'datosCompras', 'datosGastos'));
+    }
+
+
+
+    public function comprasPorProveedor(Request $request)
+    {
+        // Filtros de mes y año
+        $mes = $request->input('mes');
+        $anio = $request->input('anio');
+
+        // Consulta con joins a las tablas correspondientes
+        $query = DB::table('compras')
+            ->join('proveedores', 'compras.proveedore_id', '=', 'proveedores.id')
+            ->join('personas', 'proveedores.persona_id', '=', 'personas.id')
+            ->select(
+                DB::raw("CONCAT_WS(' ', personas.nombre, personas.primer_apellido, personas.segundo_apellido, personas.razon_social) as proveedor"),
+                DB::raw('SUM(compras.total) as total_compras')
+            )
+            ->groupBy('personas.nombre', 'personas.primer_apellido', 'personas.segundo_apellido', 'personas.razon_social');
+
+        // Aplicar filtros de fecha
+        if (!empty($anio)) {
+            $query->whereYear('compras.fecha_hora', $anio);
+        }
+        if (!empty($mes)) {
+            $query->whereMonth('compras.fecha_hora', $mes);
+        }
+
+        // Obtener los resultados
+        $compras = $query->get();
+
+        // Retornar la vista con los datos de compras por proveedor
+        return view('reportes.compras.compras_proveedor', compact('compras', 'mes', 'anio'));
+    }
 }

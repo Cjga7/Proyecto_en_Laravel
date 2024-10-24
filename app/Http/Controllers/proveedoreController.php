@@ -92,20 +92,23 @@ class proveedoreController extends Controller
      * Update the specified resource in storage.
      */
     public function update(UpdateProveedoreRequest $request, Proveedore $proveedore)
-{
-    try {
-        DB::beginTransaction();
+    {
+        try{
+            DB::beginTransaction();
 
-        Persona::where('id', $proveedore->persona->id)
+            Persona::where('id',$proveedore->persona->id)
             ->update($request->validated());
 
-        DB::commit();
-        return redirect()->route('proveedores.index')->with('success', 'Proveedor Editado');
-    } catch (Exception $e) {
-        DB::rollBack();
-        return redirect()->back()->withErrors(['error' => 'Error al editar el proveedor.'])->withInput();
+            DB::commit();
+        }catch(Exception $e){
+
+                DB::rollBack();
+        }
+        return redirect()->route('proveedores.index')->with('success','Proveedor Editado');
     }
-}
+
+
+
 
 
     /**
