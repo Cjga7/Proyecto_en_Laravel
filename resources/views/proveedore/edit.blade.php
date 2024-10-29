@@ -23,8 +23,10 @@
                     <div class="col-md-6 mb-2">
                         <label for="tipo_persona" class="form-label">Tipo de proveedor</label>
                         <select class="form-select" name="tipo_persona" id="tipo_persona">
-                            <option value="natural" {{ $proveedore->persona->tipo_persona == 'natural' ? 'selected' : '' }}>Natural</option>
-                            <option value="juridica" {{ $proveedore->persona->tipo_persona == 'juridica' ? 'selected' : '' }}>Jurídica</option>
+                            <option value="natural" {{ $proveedore->persona->tipo_persona == 'natural' ? 'selected' : '' }}>
+                                Natural</option>
+                            <option value="juridica"
+                                {{ $proveedore->persona->tipo_persona == 'juridica' ? 'selected' : '' }}>Jurídica</option>
                         </select>
                         @error('tipo_persona')
                             <small class="text-danger">{{ '*' . $message }}</small>
@@ -61,14 +63,24 @@
                         @enderror
                     </div>
 
-                    <!------Razón Social (Solo para persona jurídica)---->
-                    <div class="col-md-12 mb-2" id="box-razon-social" style="display: {{ $proveedore->persona->tipo_persona == 'juridica' ? 'block' : 'none' }};">
-                        <label for="razon_social" class="form-label">Razón Social</label>
-                        <input type="text" name="razon_social" id="razon_social" class="form-control"
-                            value="{{ old('razon_social', $proveedore->persona->razon_social) }}">
-                        @error('razon_social')
-                            <small class="text-danger">{{ '*' . $message }}</small>
-                        @enderror
+                    <!-- Razón Social (Solo para persona jurídica) -->
+                    <div class="col-md-12 mb-2" id="box-razon-social"
+                        style="display: {{ $proveedore->persona->tipo_persona == 'juridica' ? 'block' : 'none' }};">
+                        <label for="razon_social" class="form-label">Nombre de la Empresa</label>
+                        <div id="razon-social-fields">
+                            @foreach (old('razones_sociales', $proveedore->persona->razones_sociales ?? []) as $key => $razon_social)
+                                <input type="text" name="razones_sociales[]" class="form-control mb-2"
+                                    placeholder="Razón Social" value="{{ $razon_social }}">
+                                @if ($errors->has('razones_sociales.' . $key))
+                                    <small
+                                        class="text-danger">{{ '*' . $errors->first('razones_sociales.' . $key) }}</small>
+                                @endif
+                            @endforeach
+                        </div>
+
+                        <!-- Botón para agregar más razones sociales -->
+                        <button type="button" class="btn btn-secondary mb-2" id="add-razon-social">Agregar otra razón
+                            social</button>
                     </div>
 
                     <!------Dirección---->
@@ -140,20 +152,50 @@
         document.addEventListener('DOMContentLoaded', function() {
             const tipoPersonaSelect = document.getElementById('tipo_persona');
             const razonSocialBox = document.getElementById('box-razon-social');
-            const razonSocialInput = document.getElementById('razon_social');
+            const addRazonSocialButton = document.getElementById('add-razon-social');
+            const razonSocialFields = document.getElementById('razon-social-fields');
 
             function toggleRazonSocial() {
                 if (tipoPersonaSelect.value === 'juridica') {
                     razonSocialBox.style.display = 'block';
                 } else {
                     razonSocialBox.style.display = 'none';
-                    razonSocialInput.value = ''; // Limpia el campo de razón social si no es jurídico
+                    // Limpiar los campos de razón social si el tipo es 'natural'
+                    while (razonSocialFields.firstChild) {
+                        razonSocialFields.removeChild(razonSocialFields.firstChild);
+                    }
+                    addRazonSocialField(); // Añade un campo vacío por defecto
                 }
             }
 
-            toggleRazonSocial(); // Inicializa el estado
+            function addRazonSocialField(value = '') {
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.name = 'razones_sociales[]';
+                input.classList.add('form-control', 'mb-2');
+                input.placeholder = 'Razón Social';
+                input.value = value;
+                razonSocialFields.appendChild(input);
+            }
+
+            addRazonSocialButton.addEventListener('click', function() {
+                addRazonSocialField();
+            });
+
+            toggleRazonSocial(); // Inicializa el estado de acuerdo al tipo de persona
 
             tipoPersonaSelect.addEventListener('change', toggleRazonSocial);
+
+            // Obtener razones sociales previas y agregarlas al formulario
+            const razonesSocialesAnteriores = @json(old('razones_sociales', $proveedore->persona->razones_sociales ?? []));
+            if (razonesSocialesAnteriores.length > 0) {
+                razonesSocialesAnteriores.forEach(function(razonSocial) {
+                    addRazonSocialField(razonSocial);
+                });
+            } else {
+                // Agrega al menos un campo de razón social si no hay valores previos
+                addRazonSocialField();
+            }
         });
     </script>
 @endsection

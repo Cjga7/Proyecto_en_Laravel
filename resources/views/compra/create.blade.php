@@ -118,18 +118,18 @@
                     </div>
                     <div class="p-3 border border-3 border-success">
                         <div class="row">
-                            <!-------Proveedor---->
-                            <div class="col-md-12 mb-2">
+                             <!-------Proveedor---->
+                             <div class="col-md-12 mb-2">
                                 <label for="proveedore_id" class="form-label">Proveedor:</label>
                                 <select name="proveedore_id" id="proveedore_id" class="form-control selectpicker show-tick"
                                     data-live-search="true" title="Selecciona" data-size='2'>
                                     @foreach ($proveedores as $item)
-                                    <option value="{{ $item->id }}">
-                                        {{ $item->persona->nombre }} {{ $item->persona->primer_apellido }}
-                                        @if($item->persona->razon_social)
-                                            ({{ $item->persona->razon_social }})
-                                        @endif
-                                    </option>
+                                        <option value="{{ $item->id }}">
+                                            {{ $item->persona->nombre }} {{ $item->persona->primer_apellido }}
+                                            @if ($item->persona->razonesSociales && $item->persona->razonesSociales->isNotEmpty())
+                                                ({{ $item->persona->razonesSociales->pluck('razon_social')->join(', ') }})
+                                            @endif
+                                        </option>
                                     @endforeach
                                 </select>
                                 @error('proveedore_id')

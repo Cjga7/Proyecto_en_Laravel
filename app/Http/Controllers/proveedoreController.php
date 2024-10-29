@@ -26,7 +26,7 @@ class proveedoreController extends Controller
      */
     public function index()
     {
-        $proveedores = Proveedore::with('persona.documento')->get();
+        $proveedores = Proveedore::with('persona.documento', 'persona.razonesSociales')->get();
 
         return view('proveedore.index', compact('proveedores'));
     }
@@ -43,32 +43,35 @@ class proveedoreController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
     public function store(StorePersonaRequest $request)
     {
         try {
             DB::beginTransaction();
 
             // Crear la persona
-            $data = $request->validated();
+            $persona = Persona::create($request->validated());
 
-            // Si es una persona natural, eliminar razon_social de los datos.
-            if ($data['tipo_persona'] === 'natural') {
-                unset($data['razon_social']); // Eliminar razon_social si es persona natural
-            }
-
-            $persona = Persona::create($data);
-
-            // Crear el proveedor
+            // Asociar la persona creada con el cliente
             $persona->proveedore()->create([
                 'persona_id' => $persona->id
             ]);
 
+            // Si es de tipo jurídica, agregar las razones sociales
+            if ($request->tipo_persona === 'juridica' && $request->has('razones_sociales')) {
+                foreach ($request->razones_sociales as $razon) {
+                    $persona->razonesSociales()->create([
+                        'razon_social' => $razon
+                    ]);
+                }
+            }
+
             DB::commit();
 
-            return redirect()->route('proveedores.index')->with('success', 'Proveedor registrado');
+            return redirect()->route('proveedores.index')->with('success', 'Proveedor registrado con éxito');
         } catch (Exception $e) {
             DB::rollback();
-            return redirect()->back()->withErrors('Error al registrar el proveedor: ' . $e->getMessage());
+            return redirect()->route('proveedores.index')->with('error', 'Error al registrar el Proveedor');
         }
     }
 
@@ -91,24 +94,35 @@ class proveedoreController extends Controller
     /**
      * Update the specified resource in storage.
      */
+
     public function update(UpdateProveedoreRequest $request, Proveedore $proveedore)
     {
-        try{
+        try {
             DB::beginTransaction();
 
-            Persona::where('id',$proveedore->persona->id)
-            ->update($request->validated());
+            // Actualizar la persona asociada al proveedore
+            $proveedore->persona->update($request->validated());
+
+            // Si la persona es jurídica, actualizar las razones sociales
+            if ($request->tipo_persona === 'juridica') {
+                // Eliminar las razones sociales actuales
+                $proveedore->persona->razonesSociales()->delete();
+
+                // Volver a crear las razones sociales ingresadas
+                foreach ($request->razones_sociales as $razon) {
+                    $proveedore->persona->razonesSociales()->create([
+                        'razon_social' => $razon
+                    ]);
+                }
+            }
 
             DB::commit();
-        }catch(Exception $e){
-
-                DB::rollBack();
+            return redirect()->route('proveedores.index')->with('success', 'Proveedor editado con éxito');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->route('proveedores.index')->with('error', 'Error al editar el proveedore');
         }
-        return redirect()->route('proveedores.index')->with('success','Proveedor Editado');
     }
-
-
-
 
 
     /**

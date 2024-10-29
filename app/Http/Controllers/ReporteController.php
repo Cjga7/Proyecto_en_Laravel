@@ -145,19 +145,30 @@ class ReporteController extends Controller
         $mes = $request->input('mes');
         $anio = $request->input('anio');
 
-        // Consulta para obtener ventas por cliente
+        // Subconsulta para obtener las razones sociales agrupadas por cliente
+        $razonesSocialesSubquery = DB::table('razon_social')
+            ->select('persona_id', DB::raw("GROUP_CONCAT(DISTINCT razon_social SEPARATOR ', ') as razones_sociales"))
+            ->groupBy('persona_id');
+
+        // Consulta principal para obtener ventas por cliente
         $query = DB::table('ventas')
             ->join('clientes', 'ventas.cliente_id', '=', 'clientes.id')
             ->join('personas', 'clientes.persona_id', '=', 'personas.id') // Relación cliente -> persona
             ->join('producto_venta', 'ventas.id', '=', 'producto_venta.venta_id')
+            ->join('productos', 'producto_venta.producto_id', '=', 'productos.id') // Unión con productos para obtener nombres
+            ->leftJoinSub($razonesSocialesSubquery, 'rs', function ($join) {
+                $join->on('rs.persona_id', '=', 'personas.id');
+            })
             ->select(
-                DB::raw("CONCAT_WS(' ', personas.nombre, personas.primer_apellido, personas.segundo_apellido, personas.razon_social) as cliente"),
+                DB::raw("CONCAT_WS(' ', personas.nombre, personas.primer_apellido, personas.segundo_apellido) as cliente"),
+                'rs.razones_sociales', // Obtener razones sociales ya agrupadas y sin duplicados
                 DB::raw('SUM(producto_venta.cantidad) as total_comprado'),
-                DB::raw('SUM(producto_venta.cantidad * producto_venta.precio_venta) as total_ingresos')
+                DB::raw('SUM(producto_venta.cantidad * producto_venta.precio_venta) as total_ingresos'),
+                DB::raw("GROUP_CONCAT(CONCAT(productos.nombre, ' (', producto_venta.cantidad, ')') SEPARATOR ', ') as productos_vendidos") // Lista de productos y cantidades
             )
-            ->groupBy('personas.nombre', 'personas.primer_apellido', 'personas.segundo_apellido', 'personas.razon_social');
+            ->groupBy('personas.id', 'personas.nombre', 'personas.primer_apellido', 'personas.segundo_apellido', 'rs.razones_sociales');
 
-        // Aplicar los filtros de mes y año si están presentes
+        // Aplicar filtros de mes y año si están presentes
         if (!empty($mes) && !empty($anio)) {
             $query->whereYear('ventas.fecha_hora', $anio)
                 ->whereMonth('ventas.fecha_hora', $mes);
@@ -168,7 +179,7 @@ class ReporteController extends Controller
         // Obtener los resultados de la consulta
         $ventas = $query->get();
 
-        // Verificar si se está solicitando un PDF
+        // Verificar si se solicita un PDF
         if ($request->input('pdf') == '1') {
             $pdf = PDF::loadView('reportes.ventas.ventas_cliente_pdf', compact('ventas', 'mes', 'anio'));
             return $pdf->stream('reporte_ventas_cliente_' . $mes . '_' . $anio . '.pdf');
@@ -176,6 +187,7 @@ class ReporteController extends Controller
 
         return view('reportes.ventas.ventas_cliente', compact('ventas', 'mes', 'anio'));
     }
+
 
 
     public function ventasPorUsuario(Request $request)
@@ -226,7 +238,6 @@ class ReporteController extends Controller
 
 
 
-
     public function inventarioActual()
     {
         $productos = Producto::with(['registrosanitario', 'presentacione', 'categorias'])
@@ -234,12 +245,18 @@ class ReporteController extends Controller
                 $query->where('nombre', 'like', '%' . request()->input('search') . '%');
             })
             ->when(request()->input('tipo') == 'terminado', function ($query) {
-                $query->where('tipo_producto_id', 1);  // Asume que 1 es el ID de productos terminados
+                $query->where('tipo_producto_id', 1);  // ID de productos terminados
             })
             ->when(request()->input('tipo') == 'materia', function ($query) {
-                $query->where('tipo_producto_id', 2);  // Asume que 2 es el ID de materia prima
+                $query->where('tipo_producto_id', 2);  // ID de materia prima
             })
             ->paginate(10);
+
+        // Verifica si el usuario quiere previsualizar el reporte en PDF
+        if (request()->input('preview') == 'pdf') {
+            $pdf = Pdf::loadView('reportes.productos.inventario_pdf', compact('productos'));
+            return $pdf->stream('inventario_actual.pdf');
+        }
 
         return view('reportes.productos.inventario', compact('productos'));
     }
@@ -249,7 +266,6 @@ class ReporteController extends Controller
 
     public function productosMasVendidos()
     {
-        // Obtener el año y el mes de los parámetros de la solicitud, o establecer valores predeterminados
         $anio = request()->input('anio', date('Y'));
         $mes = request()->input('mes', date('m'));
 
@@ -260,17 +276,27 @@ class ReporteController extends Controller
             DB::raw('SUM(producto_venta.cantidad * producto_venta.precio_venta) as ingresos')
         )
             ->join('producto_venta', 'productos.id', '=', 'producto_venta.producto_id')
-            ->where('productos.tipo_producto_id', 1) // Solo productos terminados
-            ->whereYear('producto_venta.created_at', $anio) // Filtrar por año usando la columna correcta
-            ->whereMonth('producto_venta.created_at', $mes) // Filtrar por mes usando la columna correcta
+            ->where('productos.tipo_producto_id', 1)
+            ->whereYear('producto_venta.created_at', $anio)
+            ->whereMonth('producto_venta.created_at', $mes)
             ->groupBy('productos.id', 'productos.nombre')
             ->orderBy('total_vendido', 'desc')
             ->take(10)
             ->get();
 
-        // Obtener los datos para la gráfica
         $nombresProductos = $productos->pluck('nombre');
         $cantidadesVendidas = $productos->pluck('total_vendido');
+
+        // Verifica si se solicita previsualización o descarga del PDF
+        if (request()->input('pdf') == 'preview' || request()->input('pdf') == 'download') {
+            $pdf = Pdf::loadView('reportes.productos.productos_mas_vendidos_pdf', compact('productos', 'anio', 'mes'));
+
+            if (request()->input('pdf') == 'download') {
+                return $pdf->download('productos_mas_vendidos.pdf');
+            } else {
+                return $pdf->stream('productos_mas_vendidos.pdf');  // Previsualización
+            }
+        }
 
         return view('reportes.productos.productos_mas_vendidos', compact('productos', 'anio', 'mes', 'nombresProductos', 'cantidadesVendidas'));
     }
@@ -279,49 +305,57 @@ class ReporteController extends Controller
     public function bajoStock()
     {
         $productos = Producto::where('stock', '<', 5)->get();
+
+        // Verifica si el usuario quiere descargar o previsualizar el reporte en PDF
+        if (request()->input('download') == 'pdf') {
+            $pdf = Pdf::loadView('reportes.productos.bajo_stock_pdf', compact('productos'));
+            return $pdf->download('productos_bajo_stock.pdf');
+        }
+
+        // Verifica si el usuario quiere previsualizar el reporte en PDF
+        if (request()->input('view') == 'pdf') {
+            $pdf = Pdf::loadView('reportes.productos.bajo_stock_pdf', compact('productos'));
+            return $pdf->stream('productos_bajo_stock.pdf');
+        }
+
         return view('reportes.productos.bajo_stock', compact('productos'));
     }
 
     public function historialVentas(Request $request, $productoId)
     {
-        // Obtén las fechas de filtrado, si están presentes en la solicitud
-        $fechaInicio = $request->input('fecha_inicio');
-        $fechaFin = $request->input('fecha_fin');
+        $mes = $request->input('mes');
+        $anio = $request->input('anio');
 
-        // Verifica si se está solicitando el historial de todos los productos
-        if ($productoId === 'all') {
-            // Obtener todas las ventas sin filtrar por producto, aplicando filtro de fechas si existen
-            $historial = Venta::with('productos')
-                ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
-                    $query->whereBetween('fecha_hora', [$fechaInicio, $fechaFin]);
-                })
-                ->get();
-        } else {
-            // Consulta el historial de ventas del producto específico, aplicando filtro de fechas si existen
-            $historial = Venta::whereHas('productos', function ($query) use ($productoId) {
-                $query->where('producto_id', $productoId);
-            })
-                ->when($fechaInicio && $fechaFin, function ($query) use ($fechaInicio, $fechaFin) {
-                    $query->whereBetween('fecha_hora', [$fechaInicio, $fechaFin]);
-                })
-                ->with(['productos' => function ($query) use ($productoId) {
-                    // Filtra solo el producto específico en la relación de productos
-                    $query->where('producto_id', $productoId);
-                }])
-                ->get();
+        $query = Venta::query();
+
+        if ($productoId !== 'all') {
+            $query->whereHas('productos', function ($q) use ($productoId) {
+                $q->where('producto_id', $productoId);
+            });
         }
 
-        // Verifica si hay ventas registradas
-        if ($historial->isEmpty()) {
-            return redirect()->back()->with('message', 'No hay historial de ventas para este producto en el rango de fechas seleccionado.');
+        if ($anio) {
+            $query->whereYear('fecha_hora', $anio);
+        }
+        if ($mes) {
+            $query->whereMonth('fecha_hora', $mes);
         }
 
-        // Obtiene información del producto (si no es "all")
+        $historial = $query->with('productos')->get();
         $producto = ($productoId !== 'all') ? Producto::find($productoId) : null;
 
-        // Devuelve la vista con el historial, el ID del producto y la información del producto
-        return view('reportes.productos.historial_ventas', compact('historial', 'productoId', 'producto'));
+        // Verificar si se solicita la vista en PDF
+        if ($request->input('pdf') == '1') {
+            $pdf = PDF::loadView('reportes.productos.historial_ventas_pdf', compact('historial', 'productoId', 'producto', 'mes', 'anio'));
+
+            return $pdf->stream('historial_ventas_producto_' . $productoId . '.pdf');
+        }
+
+        return view('reportes.productos.historial_ventas', compact('historial', 'productoId', 'producto', 'mes', 'anio'));
     }
+
+
+
 
     public function indexCompras()
     {
@@ -335,12 +369,23 @@ class ReporteController extends Controller
             ->groupBy('productos.nombre')
             ->get();
 
+        // Subconsulta para obtener las razones sociales agrupadas por proveedor
+        $razonesSocialesSubquery = DB::table('razon_social')
+            ->select('persona_id', DB::raw("GROUP_CONCAT(DISTINCT razon_social SEPARATOR ', ') as razones_sociales")) // Ajusta aquí el nombre del campo
+            ->groupBy('persona_id');
+
         // Obtener compras por proveedor
         $comprasPorProveedor = DB::table('compras')
-            ->join('proveedores', 'compras.proveedore_id', '=', 'proveedores.id') // Aquí está el cambio
+            ->join('proveedores', 'compras.proveedore_id', '=', 'proveedores.id')
             ->join('personas', 'proveedores.persona_id', '=', 'personas.id')
-            ->select('personas.razon_social as proveedor', DB::raw('SUM(compras.total) as total_compras'))
-            ->groupBy('personas.razon_social')
+            ->leftJoinSub($razonesSocialesSubquery, 'rs', function ($join) {
+                $join->on('rs.persona_id', '=', 'personas.id');
+            })
+            ->select(
+                DB::raw("COALESCE(rs.razones_sociales, 'Sin razón social') as proveedor"), // Usamos razones_sociales de la subconsulta
+                DB::raw('SUM(compras.total) as total_compras')
+            )
+            ->groupBy('proveedores.id', 'rs.razones_sociales') // Agrupar por ID de proveedor y razones sociales para evitar duplicados
             ->get();
 
         return view('reportes.compras.index', compact('comprasTotales', 'comprasPorProducto', 'comprasPorProveedor'));
@@ -397,9 +442,10 @@ class ReporteController extends Controller
 
         // Generar PDF si es solicitado
         if ($request->input('pdf') == '1') {
-            $pdf = PDF::loadView('reportes.compras.compras_totales_pdf', compact('comprasDelMesSeleccionado', 'anioSeleccionado', 'mesSeleccionado'));
+            $pdf = PDF::loadView('reportes.compras.compras_totales_pdf', compact('comprasDelMesSeleccionado', 'anioSeleccionado', 'mesSeleccionado', 'labels'));
             return $pdf->stream('compras_totales_' . $mesSeleccionado . '_' . $anioSeleccionado . '.pdf');
         }
+
 
         // Pasar las variables a la vista
         return view('reportes.compras.compras_totales', compact('comprasDelMesSeleccionado', 'anioSeleccionado', 'mesSeleccionado', 'labels', 'datosCompras', 'colores'));
@@ -411,10 +457,10 @@ class ReporteController extends Controller
     public function comprasPorProducto(Request $request)
     {
         // Filtros de mes y año
-        $mes = $request->input('mes', date('m')); // Usar el mes actual como predeterminado
-        $anio = $request->input('anio', date('Y')); // Usar el año actual como predeterminado
+        $mes = $request->input('mes', date('m')); // Mes actual predeterminado
+        $anio = $request->input('anio', date('Y')); // Año actual predeterminado
 
-        // Construcción de la consulta para obtener las compras por producto
+        // Consulta para obtener las compras por producto
         $query = DB::table('compra_producto')
             ->join('productos', 'compra_producto.producto_id', '=', 'productos.id')
             ->join('compras', 'compra_producto.compra_id', '=', 'compras.id')
@@ -423,10 +469,10 @@ class ReporteController extends Controller
                 DB::raw('SUM(compra_producto.cantidad) as total_comprado'),
                 DB::raw('SUM(compra_producto.cantidad * compra_producto.precio_compra) as total_gasto')
             )
-            ->where('compras.estado', '=', 1) // Solo considerar las compras activas
+            ->where('compras.estado', '=', 1) // Solo compras activas
             ->groupBy('productos.nombre');
 
-        // Aplicar filtros por año y mes si están presentes
+        // Aplicar filtros de año y mes
         if (!empty($anio)) {
             $query->whereYear('compras.fecha_hora', $anio);
         }
@@ -441,9 +487,16 @@ class ReporteController extends Controller
         $datosCompras = $compras->pluck('total_comprado')->toArray();
         $datosGastos = $compras->pluck('total_gasto')->toArray();
 
-        // Pasar las variables a la vista
+        // Generar el PDF si es solicitado
+        if ($request->input('pdf') == '1') {
+            $pdf = PDF::loadView('reportes.compras.compras_producto_pdf', compact('compras', 'mes', 'anio', 'labels', 'datosCompras', 'datosGastos'));
+            return $pdf->stream('compras_por_producto_' . $mes . '_' . $anio . '.pdf');
+        }
+
+        // Pasar variables a la vista
         return view('reportes.compras.compras_producto', compact('compras', 'mes', 'anio', 'labels', 'datosCompras', 'datosGastos'));
     }
+
 
 
 
@@ -453,15 +506,27 @@ class ReporteController extends Controller
         $mes = $request->input('mes');
         $anio = $request->input('anio');
 
-        // Consulta con joins a las tablas correspondientes
+        // Subconsulta para obtener las razones sociales agrupadas por proveedor
+        $razonesSocialesSubquery = DB::table('razon_social')
+            ->select('persona_id', DB::raw("GROUP_CONCAT(DISTINCT razon_social SEPARATOR ', ') as razones_sociales"))
+            ->groupBy('persona_id');
+
+        // Consulta principal con joins a las tablas correspondientes
         $query = DB::table('compras')
             ->join('proveedores', 'compras.proveedore_id', '=', 'proveedores.id')
             ->join('personas', 'proveedores.persona_id', '=', 'personas.id')
+            ->join('compra_producto', 'compras.id', '=', 'compra_producto.compra_id')
+            ->join('productos', 'compra_producto.producto_id', '=', 'productos.id')
+            ->leftJoinSub($razonesSocialesSubquery, 'rs', function ($join) {
+                $join->on('rs.persona_id', '=', 'personas.id');
+            })
             ->select(
-                DB::raw("CONCAT_WS(' ', personas.nombre, personas.primer_apellido, personas.segundo_apellido, personas.razon_social) as proveedor"),
-                DB::raw('SUM(compras.total) as total_compras')
+                DB::raw("CONCAT_WS(' ', personas.nombre, personas.primer_apellido, personas.segundo_apellido, COALESCE(rs.razones_sociales, 'Sin razón social')) as proveedor"),
+                DB::raw('SUM(compras.total) as total_compras'),
+                DB::raw('SUM(compra_producto.cantidad) as total_productos_comprados'),
+                DB::raw("GROUP_CONCAT(DISTINCT productos.nombre SEPARATOR ', ') as productos")
             )
-            ->groupBy('personas.nombre', 'personas.primer_apellido', 'personas.segundo_apellido', 'personas.razon_social');
+            ->groupBy('personas.nombre', 'personas.primer_apellido', 'personas.segundo_apellido', 'rs.razones_sociales');
 
         // Aplicar filtros de fecha
         if (!empty($anio)) {
@@ -473,6 +538,12 @@ class ReporteController extends Controller
 
         // Obtener los resultados
         $compras = $query->get();
+
+        // Verificar si se solicita un PDF
+        if ($request->input('pdf') == '1') {
+            $pdf = PDF::loadView('reportes.compras.compras_proveedor_pdf', compact('compras', 'mes', 'anio'));
+            return $pdf->stream('compras_por_proveedor_' . ($mes ?? 'todos') . '_' . ($anio ?? 'todos') . '.pdf');
+        }
 
         // Retornar la vista con los datos de compras por proveedor
         return view('reportes.compras.compras_proveedor', compact('compras', 'mes', 'anio'));

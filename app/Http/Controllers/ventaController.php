@@ -50,48 +50,64 @@ class ventaController extends Controller
 
 
     public function store(StoreVentaRequest $request)
-    {
-        try {
-            DB::beginTransaction();
+{
+    try {
+        DB::beginTransaction();
 
-            // Crear registro de venta
-            $venta = Venta::create($request->validated());
+        // Crear registro de venta con datos iniciales, pero sin asignar aún el total
+        $venta = Venta::create($request->validated());
 
-            // Recuperar arrays de productos, cantidades y descuentos
-            $arrayProducto_id = $request->get('arrayidproducto');
-            $arrayCantidad = $request->get('arraycantidad');
-            $arrayDescuento = $request->get('arraydescuento');
+        // Recuperar arrays de productos, cantidades y descuentos
+        $arrayProducto_id = $request->get('arrayidproducto');
+        $arrayCantidad = $request->get('arraycantidad');
+        $arrayDescuento = $request->get('arraydescuento');
 
-            // Procesar cada producto vendido
-            $sizeArray = count($arrayProducto_id);
-            for ($cont = 0; $cont < $sizeArray; $cont++) {
-                $producto = Producto::findOrFail($arrayProducto_id[$cont]);
-                $cantidad = intval($arrayCantidad[$cont]);
+        // Variable para acumular el total de la venta
+        $totalVenta = 0;
 
-                // Asegurarse de que hay suficiente stock
-                if ($producto->stock < $cantidad) {
-                    throw new Exception('Stock insuficiente para el producto: ' . $producto->nombre);
-                }
+        // Procesar cada producto vendido
+        $sizeArray = count($arrayProducto_id);
+        for ($cont = 0; $cont < $sizeArray; $cont++) {
+            $producto = Producto::findOrFail($arrayProducto_id[$cont]);
+            $cantidad = intval($arrayCantidad[$cont]);
 
-                // Registrar el producto en la venta con attach, incluyendo cantidad, precio y descuento
-                $venta->productos()->attach($producto->id, [
-                    'cantidad' => $cantidad,
-                    'precio_venta' => $producto->precio_venta, // Usar el precio de venta actual del producto
-                    'descuento' => $arrayDescuento[$cont] ?? 0 // Usar descuento si está disponible
-                ]);
-
-                // Actualizar el stock del producto
-                $producto->stock -= $cantidad;
-                $producto->save();
+            // Asegurarse de que hay suficiente stock
+            if ($producto->stock < $cantidad) {
+                throw new Exception('Stock insuficiente para el producto: ' . $producto->nombre);
             }
 
-            DB::commit();
-            return redirect()->route('ventas.index')->with('success', 'Venta registrada exitosamente.');
-        } catch (Exception $e) {
-            DB::rollBack();
-            return redirect()->route('ventas.index')->with('error', 'Error al registrar la venta: ' . $e->getMessage());
+            // Obtener el precio y descuento
+            $precioVenta = $producto->precio_venta;
+            $descuento = $arrayDescuento[$cont] ?? 0;
+
+            // Calcular el subtotal del producto en la venta y agregarlo al total
+            $subtotalProducto = ($precioVenta * $cantidad) - $descuento;
+            $totalVenta += $subtotalProducto;
+
+            // Registrar el producto en la venta con attach, incluyendo cantidad, precio y descuento
+            $venta->productos()->attach($producto->id, [
+                'cantidad' => $cantidad,
+                'precio_venta' => $precioVenta,
+                'descuento' => $descuento
+            ]);
+
+            // Actualizar el stock del producto
+            $producto->stock -= $cantidad;
+            $producto->save();
         }
+
+        // Asignar el total de la venta y guardar la venta
+        $venta->total = $totalVenta;
+        $venta->save();
+
+        DB::commit();
+        return redirect()->route('ventas.index')->with('success', 'Venta registrada exitosamente.');
+    } catch (Exception $e) {
+        DB::rollBack();
+        return redirect()->route('ventas.index')->with('error', 'Error al registrar la venta: ' . $e->getMessage());
     }
+}
+
 
 
 

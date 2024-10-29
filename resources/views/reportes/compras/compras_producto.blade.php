@@ -18,26 +18,24 @@
                 <div class="card-header">Filtrar por Mes y Año</div>
                 <div class="card-body">
                     <form action="{{ route('reportes.compras.producto') }}" method="GET" class="form-inline">
-                        <div class="form-group">
-                            <label for="mes" class="mr-2">Mes:</label>
-                            <select name="mes" id="mes" class="form-control mr-3">
-                                <option value="">Todos</option>
-                                @foreach(range(1, 12) as $month)
-                                    <option value="{{ $month }}" {{ request('mes') == $month ? 'selected' : '' }}>
-                                        {{ ucfirst(\Carbon\Carbon::create()->month($month)->locale('es')->translatedFormat('F')) }}
+                        <div class="col-md-6">
+                            <label for="mes" class="form-label">Mes:</label>
+                            <select name="mes" id="mes" class="form-select">
+                                @for ($i = 1; $i <= 12; $i++)
+                                    <option value="{{ $i }}" {{ request('mes') == $i ? 'selected' : '' }}>
+                                        {{ \Carbon\Carbon::create()->month($i)->translatedFormat('F') }}
                                     </option>
-                                @endforeach
+                                @endfor
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label for="anio" class="mr-2">Año:</label>
-                            <select name="anio" id="anio" class="form-control mr-3">
-                                <option value="">Seleccione un año</option>
-                                @foreach(range(now()->year, 2000) as $year)
-                                    <option value="{{ $year }}" {{ request('anio') == $year ? 'selected' : '' }}>
-                                        {{ $year }}
+                        <div class="col-md-6">
+                            <label for="anio" class="form-label">Año:</label>
+                            <select name="anio" id="anio" class="form-select">
+                                @for ($i = date('Y'); $i >= 2000; $i--)
+                                    <option value="{{ $i }}" {{ request('anio') == $i ? 'selected' : '' }}>
+                                        {{ $i }}
                                     </option>
-                                @endforeach
+                                @endfor
                             </select>
                         </div>
                         <button type="submit" class="btn btn-primary">Filtrar</button>
@@ -75,6 +73,16 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                        </div>
+
+                        <!-- Botones para previsualizar y descargar PDF -->
+                        <div class="text-end mt-3">
+                            <a href="{{ route('reportes.compras.producto', array_merge(request()->query(), ['pdf' => '1'])) }}" class="btn btn-secondary" target="_blank">
+                                <i class="bi bi-eye"></i> Previsualizar PDF
+                            </a>
+                            <a href="{{ route('reportes.compras.producto', array_merge(request()->query(), ['pdf' => 'download'])) }}" class="btn btn-danger">
+                                <i class="bi bi-download"></i> Descargar PDF
+                            </a>
                         </div>
                     @endif
                 </div>

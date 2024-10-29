@@ -11,73 +11,90 @@
         <li class="breadcrumb-item active">Inventario Actual</li>
     </ol>
 
-    <!-- Barra de búsqueda y filtro -->
+    <!-- Barra de búsqueda, filtro y botón de descarga PDF -->
     <div class="row mb-4">
-        <div class="col-lg-6">
+        <div class="col-lg-4 mb-2">
             <form action="{{ route('reportes.productos.inventario') }}" method="GET" class="d-flex">
                 <input class="form-control me-2" type="search" name="search" placeholder="Buscar producto..." value="{{ request()->query('search') }}" aria-label="Buscar">
-                <button class="btn btn-outline-primary" type="submit">Buscar</button>
+                <button class="btn btn-primary" type="submit">
+                    <i class="bi bi-search"></i> Buscar
+                </button>
             </form>
         </div>
-        <div class="col-lg-6">
+        <div class="col-lg-4 mb-2">
             <form action="{{ route('reportes.productos.inventario') }}" method="GET">
-                <div class="d-flex justify-content-end">
+                <div class="d-flex justify-content-center">
                     <select name="tipo" class="form-select me-2">
                         <option value="todos" {{ request()->query('tipo') == 'todos' ? 'selected' : '' }}>Todos</option>
                         <option value="terminado" {{ request()->query('tipo') == 'terminado' ? 'selected' : '' }}>Productos Terminados</option>
                         <option value="materia" {{ request()->query('tipo') == 'materia' ? 'selected' : '' }}>Materia Prima</option>
                     </select>
-                    <button class="btn btn-outline-secondary" type="submit">Filtrar</button>
+                    <button class="btn btn-secondary" type="submit">
+                        <i class="bi bi-funnel-fill"></i> Filtrar
+                    </button>
                 </div>
             </form>
+        </div>
+        <div class="col-lg-4 mb-2 d-flex justify-content-end">
+            <a href="{{ route('reportes.productos.inventario', array_merge(request()->query(), ['preview' => 'pdf'])) }}" class="btn btn-info me-2">
+                <i class="bi bi-eye"></i> Previsualizar PDF
+            </a>
+            <a href="{{ route('reportes.productos.inventario', array_merge(request()->query(), ['download' => 'pdf'])) }}" class="btn btn-danger">
+                <i class="bi bi-file-earmark-pdf"></i> Descargar PDF
+            </a>
         </div>
     </div>
 
     <!-- Tabla de productos -->
     <div class="row mb-4">
         <div class="col-lg-12">
-            <div class="card">
-                <div class="card-header">Inventario Actual</div>
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-box-seam"></i> Inventario Actual
+                </div>
                 <div class="card-body">
                     @if ($productos->isEmpty())
-                        <p>No hay productos disponibles en el inventario.</p>
+                        <p class="text-center text-muted">No hay productos disponibles en el inventario.</p>
                     @else
-                        <table class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Código</th>
-                                    <th>Nombre</th>
-                                    <th>Categorías</th>
-                                    <th>Registro Sanitario</th>
-                                    <th>Presentación</th>
-                                    <th>Stock</th>
-                                    <th>Precio de Venta</th>
-                                    <th>Fecha de Vencimiento</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($productos as $item)
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped align-middle">
+                                <thead class="table-primary">
                                     <tr>
-                                        <td>{{ $item->codigo }}</td>
-                                    <td>{{ $item->nombre }}</td>
-                                    <td>
-                                        @foreach ($item->categorias as $category)
-                                            <span class="badge bg-secondary m-1">{{ $category->caracteristica->nombre ?? 'No disponible' }}</span>
-                                        @endforeach
-                                    </td>
-                                    <td>{{ $item->registrosanitario->caracteristica->nombre ?? 'No disponible' }}</td>
-                                    <td>{{ $item->presentacione->caracteristica->nombre ?? 'No disponible' }}</td>
-
-                                        <td>{{ $item->stock }}</td>
-                                        <td>{{ number_format($item->precio_venta, 2) }} Bs</td>
-                                        <td>{{ $item->fecha_vencimiento ? \Carbon\Carbon::parse($item->fecha_vencimiento)->formatLocalized('%d %B %Y') : 'N/A' }}</td>
+                                        <th>Código</th>
+                                        <th>Nombre</th>
+                                        <th>Categorías</th>
+                                        <th>Registro Sanitario</th>
+                                        <th>Presentación</th>
+                                        <th>Stock</th>
+                                        <th>Precio de Venta</th>
+                                        <th>Fecha de Vencimiento</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach($productos as $item)
+                                        <tr>
+                                            <td>{{ $item->codigo }}</td>
+                                            <td>{{ $item->nombre }}</td>
+                                            <td>
+                                                @foreach ($item->categorias as $category)
+                                                    <span class="badge bg-info text-dark">{{ $category->caracteristica->nombre ?? 'No disponible' }}</span>
+                                                @endforeach
+                                            </td>
+                                            <td>{{ $item->registrosanitario->caracteristica->nombre ?? 'No disponible' }}</td>
+                                            <td>{{ $item->presentacione->caracteristica->nombre ?? 'No disponible' }}</td>
+                                            <td class="fw-bold">{{ $item->stock }}</td>
+                                            <td>{{ number_format($item->precio_venta, 2) }} Bs</td>
+                                            <td>{{ $item->fecha_vencimiento ? \Carbon\Carbon::parse($item->fecha_vencimiento)->formatLocalized('%d %B %Y') : 'N/A' }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
 
                         <!-- Controles de paginación -->
-                        {{ $productos->appends(request()->query())->links() }}
+                        <div class="d-flex justify-content-center mt-3">
+                            {{ $productos->appends(request()->query())->links() }}
+                        </div>
                     @endif
                 </div>
             </div>

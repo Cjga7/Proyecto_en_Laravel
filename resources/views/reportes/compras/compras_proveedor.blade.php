@@ -36,6 +36,15 @@
             <div class="col-md-2 align-self-end">
                 <button type="submit" class="btn btn-primary">Filtrar</button>
             </div>
+            <div class="text-end mt-3">
+                <a href="{{ route('reportes.compras.proveedor', array_merge(request()->query(), ['pdf' => '1'])) }}" class="btn btn-secondary" target="_blank">
+                    <i class="bi bi-eye"></i> Previsualizar PDF
+                </a>
+                <a href="{{ route('reportes.compras.proveedor', array_merge(request()->query(), ['pdf' => 'download'])) }}" class="btn btn-danger">
+                    <i class="bi bi-download"></i> Descargar PDF
+                </a>
+            </div>
+
         </div>
     </form>
 
@@ -53,6 +62,8 @@
                                 <tr>
                                     <th>Proveedor</th>
                                     <th>Total Compras (Bs.)</th>
+                                    <th>Total Productos Comprados</th>
+                                    <th>Productos</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -60,6 +71,8 @@
                                     <tr>
                                         <td>{{ $compra->proveedor }}</td>
                                         <td>{{ number_format($compra->total_compras, 2) }} Bs.</td>
+                                        <td>{{ $compra->total_productos_comprados }}</td>
+                                        <td>{{ $compra->productos }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -69,5 +82,6 @@
             </div>
         </div>
     </div>
+
 </div>
 @endsection

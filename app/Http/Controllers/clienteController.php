@@ -25,11 +25,12 @@ class clienteController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $clientes = Cliente::with('persona.documento')->get();
+{
+    // Cargar clientes junto con la persona, el documento y las razones sociales
+    $clientes = Cliente::with(['persona.documento', 'persona.razonesSociales'])->get();
 
-        return view('cliente.index',compact('clientes'));
-    }
+    return view('cliente.index', compact('clientes'));
+}
 
     /**
      * Show the form for creating a new resource.
@@ -45,18 +46,33 @@ class clienteController extends Controller
      */
     public function store(StorePersonaRequest $request)
     {
-        try{
+        try {
             DB::beginTransaction();
+
+            // Crear la persona
             $persona = Persona::create($request->validated());
+
+            // Asociar la persona creada con el cliente
             $persona->cliente()->create([
                 'persona_id' => $persona->id
             ]);
-            DB::commit();
-        }catch (Exception $e){
-            DB::rollback();
-        }
 
-        return redirect()->route('clientes.index')->with('success', 'Cliente registrada');
+            // Si es de tipo jurídica, agregar las razones sociales
+            if ($request->tipo_persona === 'juridica' && $request->has('razones_sociales')) {
+                foreach ($request->razones_sociales as $razon) {
+                    $persona->razonesSociales()->create([
+                        'razon_social' => $razon
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->route('clientes.index')->with('success', 'Cliente registrado con éxito');
+        } catch (Exception $e) {
+            DB::rollback();
+            return redirect()->route('clientes.index')->with('error', 'Error al registrar el cliente');
+        }
     }
 
     /**
@@ -82,18 +98,31 @@ class clienteController extends Controller
      */
     public function update(UpdateClienteRequest $request, Cliente $cliente)
     {
-        try{
+        try {
             DB::beginTransaction();
 
-            Persona::where('id',$cliente->persona->id)
-            ->update($request->validated());
+            // Actualizar la persona asociada al cliente
+            $cliente->persona->update($request->validated());
+
+            // Si la persona es jurídica, actualizar las razones sociales
+            if ($request->tipo_persona === 'juridica') {
+                // Eliminar las razones sociales actuales
+                $cliente->persona->razonesSociales()->delete();
+
+                // Volver a crear las razones sociales ingresadas
+                foreach ($request->razones_sociales as $razon) {
+                    $cliente->persona->razonesSociales()->create([
+                        'razon_social' => $razon
+                    ]);
+                }
+            }
 
             DB::commit();
-        }catch(Exception $e){
-
-                DB::rollBack();
+            return redirect()->route('clientes.index')->with('success', 'Cliente editado con éxito');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->route('clientes.index')->with('error', 'Error al editar el cliente');
         }
-        return redirect()->route('clientes.index')->with('success','Cliente Editado');
     }
 
     /**

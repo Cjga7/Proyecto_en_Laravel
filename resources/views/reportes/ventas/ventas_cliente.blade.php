@@ -47,38 +47,49 @@
         </div>
     </form>
 
-    <!-- Tabla de ventas por cliente -->
-    <div class="row mb-4">
-        <div class="col-lg-12">
-            <div class="card">
-                <div class="card-header">Reporte de Ventas por Cliente</div>
-                <div class="card-body">
-                    @if($ventas->isEmpty())
-                        <p>No se encontraron ventas para los criterios seleccionados.</p>
-                    @else
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Cliente</th>
-                                    <th>Total Productos Comprados</th>
-                                    <th>Total Ingresos (Bs.)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($ventas as $venta)
-                                    <tr>
-                                        <td>{{ $venta->cliente }}</td>
-                                        <td>{{ $venta->total_comprado }}</td>
-                                        <td>{{ number_format($venta->total_ingresos, 2) }} Bs.</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    @endif
-                </div>
+   <!-- Tabla de ventas por cliente -->
+<div class="row mb-4">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">Reporte de Ventas por Cliente</div>
+            <div class="card-body">
+                @if($ventas->isEmpty())
+                    <p>No se encontraron ventas para los criterios seleccionados.</p>
+                @else
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Total Productos Comprados</th>
+                            <th>Total Ingresos (Bs.)</th>
+                            <th>Productos Comprados</th> <!-- Nueva columna para productos comprados -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($ventas as $venta)
+                            <tr>
+                                <td>
+                                    {{ $venta->cliente }}
+                                    @if(!empty($venta->razones_sociales))
+                                        <br><small>(Razón Social: {{ $venta->razones_sociales }})</small>
+                                    @endif
+                                </td>
+                                <td>{{ $venta->total_comprado }}</td>
+                                <td>{{ number_format($venta->total_ingresos, 2) }} Bs.</td>
+                                <td>
+                                    {{ $venta->productos_vendidos }} <!-- Mostrar la lista de productos comprados -->
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+
+                @endif
             </div>
         </div>
     </div>
+</div>
+
 </div>
 
 <!-- Script para previsualizar el PDF -->

@@ -25,7 +25,6 @@ class StorePersonaRequest extends FormRequest
             'nombre' => 'required|max:50',  // Siempre requerido para ambos tipos
             'primer_apellido' => 'required|max:50',  // Siempre requerido para ambos tipos
             'segundo_apellido' => 'nullable|max:50',
-            'razon_social' => 'nullable|max:80|required_if:tipo_persona,juridica|unique:personas,razon_social',
             'direccion' => 'required|max:80',
             'tipo_persona' => 'required|string',
             'documento_id' => 'required|integer|exists:documentos,id',
@@ -34,5 +33,16 @@ class StorePersonaRequest extends FormRequest
             'correo_electronico' => 'nullable|email|max:100|unique:personas,correo_electronico' // Validación para el correo electrónico
         ];
     }
+    public function withValidator($validator)
+    {
+        // Validación condicional para personas jurídicas
+        $validator->sometimes('razones_sociales', 'required|array|min:1', function ($input) {
+            return $input->tipo_persona === 'juridica';
+        });
 
+        // Validación para cada elemento del array de razones sociales
+        $validator->sometimes('razones_sociales.*', 'string|max:255', function ($input) {
+            return $input->tipo_persona === 'juridica';
+        });
+    }
 }

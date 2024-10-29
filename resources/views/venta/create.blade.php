@@ -150,17 +150,17 @@
                                     @foreach ($clientes as $item)
                                         <option value="{{ $item->id }}">
                                             {{ $item->persona->nombre }} {{ $item->persona->primer_apellido }}
-                                            @if ($item->persona->razon_social)
-                                                ({{ $item->persona->razon_social }})
+                                            @if ($item->persona->razonesSociales->isNotEmpty())
+                                                ({{ $item->persona->razonesSociales->pluck('razon_social')->join(', ') }})
                                             @endif
                                         </option>
                                     @endforeach
-
                                 </select>
                                 @error('cliente_id')
                                     <small class="text-danger">{{ '*' . $message }}</small>
                                 @enderror
                             </div>
+
 
                             <!-------Tipo de comprobante---->
                             <div class="col-md-12 mb-2">

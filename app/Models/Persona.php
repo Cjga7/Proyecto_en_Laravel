@@ -9,24 +9,32 @@ class Persona extends Model
 {
     use HasFactory;
 
+    // Relación con la tabla documentos
     public function documento()
     {
         return $this->belongsTo(Documento::class);
     }
 
+    // Relación con la tabla proveedores
     public function proveedore()
     {
         return $this->hasOne(Proveedore::class);
     }
 
+    // Relación con la tabla clientes
     public function cliente()
     {
         return $this->hasOne(Cliente::class);
     }
 
-    // Añadir los nuevos campos 'telefono' y 'correo_electronico'
+    // Relación con la tabla razones_sociales (una persona puede tener varias razones sociales)
+    public function razonesSociales()
+    {
+        return $this->hasMany(RazonSocial::class);
+    }
+
+    // Campos que se pueden rellenar en el modelo
     protected $fillable = [
-        'razon_social',
         'nombre',
         'primer_apellido',
         'segundo_apellido',
@@ -34,7 +42,7 @@ class Persona extends Model
         'tipo_persona',
         'documento_id',
         'numero_documento',
-        'telefono', // nuevo campo
-        'correo_electronico' // nuevo campo
+        'telefono', // campo añadido
+        'correo_electronico' // campo añadido
     ];
 }

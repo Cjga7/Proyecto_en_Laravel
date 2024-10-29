@@ -89,6 +89,7 @@
                     <th>Cliente</th>
                     <th>Total Comprado</th>
                     <th>Total Ingresos</th>
+                    <th>Productos Comprados</th> <!-- Nueva columna para productos comprados -->
                 </tr>
             </thead>
             <tbody>
@@ -97,10 +98,14 @@
                         <td>{{ $venta->cliente }}</td>
                         <td>{{ $venta->total_comprado }}</td>
                         <td>{{ number_format($venta->total_ingresos, 2) }} Bs.</td>
+                        <td>
+                            {{ $venta->productos_vendidos }} <!-- Mostrar la lista de productos comprados -->
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
+
     </main>
 
     <footer>
