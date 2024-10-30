@@ -23,7 +23,7 @@ class StoreCaracteristicaRequest extends FormRequest
     {
         return [
             'nombre' => 'required|max:60|unique:caracteristicas,nombre',
-            'descripcion' => 'nullable|max:255'
+            'descripcion' => 'required|max:255'
         ];
     }
 }

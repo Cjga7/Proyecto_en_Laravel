@@ -79,7 +79,7 @@
         <img src="assets/images/Logo_lanago.png" alt="Logo Lanago">
         <h1>Reporte de Ventas por Cliente</h1>
         <p>Fecha de impresión: {{ \Carbon\Carbon::now()->format('d/m/Y') }}</p>
-        <p>Año: {{ $anio }} @if($mes) | Mes: {{ \Carbon\Carbon::create()->month($mes)->translatedFormat('F') }} @endif</p>
+        <p>Desde: {{ \Carbon\Carbon::parse($fecha_inicio)->format('d/m/Y') }} | Hasta: {{ \Carbon\Carbon::parse($fecha_fin)->format('d/m/Y') }}</p>
     </header>
 
     <main>

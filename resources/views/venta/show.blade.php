@@ -33,15 +33,20 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="text-muted">
+                                <h5 class="font-size-16 mb-3">Detalle a:</h5>
+                                <h5 class="font-size-15 mb-2">
+                                    {{ $venta->cliente->persona->nombre }} {{ $venta->cliente->persona->primer_apellido }} {{ $venta->cliente->persona->segundo_apellido ?? '' }}
+                                </h5>
+                                <p class="mb-1">{{ $venta->cliente->persona->direccion }}</p>
 
-                                    <h5 class="font-size-16 mb-3">Detalle a:</h5>
-                                    <h5 class="font-size-15 mb-2">{{ $venta->cliente->persona->nombre }} {{ $venta->cliente->persona->primer_apellido }} {{ $venta->cliente->persona->segundo_apellido ?? '' }}</h5>
-                                    <p class="mb-1">{{ $venta->cliente->persona->direccion }}</p>
-                                    <p class="mb-1">{{ $venta->cliente->persona->razon_social ?? 'N/A' }}</p>
-                                    <p>{{ $venta->cliente->persona->numero_documento }}</p>
+                                <!-- Mostrar todas las razones sociales, separadas por coma -->
+                                <p class="mb-1">
+                                    {{ $venta->cliente->persona->razonesSociales->pluck('razon_social')->join(', ') ?? 'N/A' }}
+                                </p>
 
+                                <p>{{ $venta->cliente->persona->numero_documento }}</p>
                             </div>
-                        </div>
+
                         <div class="col-sm-6">
                             <div class="text-muted text-sm-end">
                                 <div>

@@ -13,24 +13,31 @@
         <li class="breadcrumb-item active">Productos Más Vendidos</li>
     </ol>
 
-    <!-- Formulario de filtro por año y mes -->
+    <!-- Formulario de filtro por rango de fechas -->
     <div class="row mb-4 justify-content-center">
         <div class="col-lg-8">
             <form action="{{ route('reportes.productos.mas_vendidos') }}" method="GET" class="d-flex justify-content-center">
-                <select name="anio" class="form-select me-2">
-                    @for ($i = 2020; $i <= date('Y'); $i++)
-                        <option value="{{ $i }}" {{ $i == $anio ? 'selected' : '' }}>{{ $i }}</option>
-                    @endfor
-                </select>
-                <select name="mes" class="form-select me-2">
-                    @foreach (['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'] as $index => $nombreMes)
-                        <option value="{{ $index + 1 }}" {{ $index + 1 == $mes ? 'selected' : '' }}>{{ $nombreMes }}</option>
-                    @endforeach
-                </select>
+                <div class="me-2">
+                    <label for="fecha_inicio">Fecha de Inicio:</label>
+                    <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control" required>
+                </div>
+                <div class="me-2">
+                    <label for="fecha_fin">Fecha de Fin:</label>
+                    <input type="date" name="fecha_fin" id="fecha_fin" class="form-control" required>
+                </div>
                 <button class="btn btn-primary" type="submit">
                     <i class="bi bi-funnel-fill"></i> Filtrar
                 </button>
             </form>
+        </div>
+    </div>
+
+    <!-- Mostrar rango de fechas seleccionadas -->
+    <div class="row mb-4 justify-content-center">
+        <div class="col-lg-8 text-center">
+            @if (isset($fechaInicio) && isset($fechaFin))
+                <h5 class="text-muted">Desde: {{ $fechaInicio }} Hasta: {{ $fechaFin }}</h5>
+            @endif
         </div>
     </div>
 
@@ -53,7 +60,7 @@
         </div>
         <div class="card-body">
             @if ($productos->isEmpty())
-                <p class="text-center text-muted">No hay productos vendidos en el mes y año seleccionados.</p>
+                <p class="text-center text-muted">No hay productos vendidos en el rango de fechas seleccionado.</p>
             @else
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped align-middle">

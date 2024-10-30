@@ -11,26 +11,21 @@
         <li class="breadcrumb-item active">Ventas por Cliente</li>
     </ol>
 
-    <!-- Formulario de filtro por mes y año -->
+    <!-- Formulario de filtro por rango de fechas -->
     <form action="{{ route('reportes.ventas.cliente') }}" method="GET" class="mb-4">
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <div class="form-group">
-                    <label for="mes">Mes</label>
-                    <select name="mes" id="mes" class="form-control">
-                        <option value="">Todos</option>
-                        @for($i = 1; $i <= 12; $i++)
-                            <option value="{{ $i }}" {{ request('mes') == $i ? 'selected' : '' }}>
-                                {{ \Carbon\Carbon::create()->month($i)->translatedFormat('F') }}
-                            </option>
-                        @endfor
-                    </select>
+                    <label for="fecha_inicio">Fecha Inicio</label>
+                    <input type="date" name="fecha_inicio" id="fecha_inicio"
+                           value="{{ request('fecha_inicio') }}" class="form-control">
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-6">
                 <div class="form-group">
-                    <label for="anio">Año</label>
-                    <input type="number" name="anio" id="anio" value="{{ request('anio', date('Y')) }}" class="form-control" placeholder="Año">
+                    <label for="fecha_fin">Fecha Fin</label>
+                    <input type="date" name="fecha_fin" id="fecha_fin"
+                           value="{{ request('fecha_fin') }}" class="form-control">
                 </div>
             </div>
 
@@ -39,7 +34,7 @@
                 <button type="submit" class="btn btn-primary">Filtrar</button>
 
                 <!-- Enlace para previsualizar y luego imprimir el PDF -->
-                <a href="{{ route('reportes.ventas.cliente', ['mes' => request('mes'), 'anio' => request('anio'), 'pdf' => 1]) }}"
+                <a href="{{ route('reportes.ventas.cliente', ['fecha_inicio' => request('fecha_inicio'), 'fecha_fin' => request('fecha_fin'), 'pdf' => 1]) }}"
                    class="btn btn-success ms-2" onclick="previsualizarPDF(event, this.href)">
                     <i class="fa fa-print"></i> Previsualizar PDF
                 </a>
@@ -47,49 +42,47 @@
         </div>
     </form>
 
-   <!-- Tabla de ventas por cliente -->
-<div class="row mb-4">
-    <div class="col-lg-12">
-        <div class="card">
-            <div class="card-header">Reporte de Ventas por Cliente</div>
-            <div class="card-body">
-                @if($ventas->isEmpty())
-                    <p>No se encontraron ventas para los criterios seleccionados.</p>
-                @else
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Cliente</th>
-                            <th>Total Productos Comprados</th>
-                            <th>Total Ingresos (Bs.)</th>
-                            <th>Productos Comprados</th> <!-- Nueva columna para productos comprados -->
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($ventas as $venta)
+    <!-- Tabla de ventas por cliente -->
+    <div class="row mb-4">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">Reporte de Ventas por Cliente</div>
+                <div class="card-body">
+                    @if($ventas->isEmpty())
+                        <p>No se encontraron ventas para los criterios seleccionados.</p>
+                    @else
+                    <table class="table table-bordered">
+                        <thead>
                             <tr>
-                                <td>
-                                    {{ $venta->cliente }}
-                                    @if(!empty($venta->razones_sociales))
-                                        <br><small>(Razón Social: {{ $venta->razones_sociales }})</small>
-                                    @endif
-                                </td>
-                                <td>{{ $venta->total_comprado }}</td>
-                                <td>{{ number_format($venta->total_ingresos, 2) }} Bs.</td>
-                                <td>
-                                    {{ $venta->productos_vendidos }} <!-- Mostrar la lista de productos comprados -->
-                                </td>
+                                <th>Cliente</th>
+                                <th>Total Productos Comprados</th>
+                                <th>Total Ingresos (Bs.)</th>
+                                <th>Productos Comprados</th> <!-- Nueva columna para productos comprados -->
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-
-                @endif
+                        </thead>
+                        <tbody>
+                            @foreach($ventas as $venta)
+                                <tr>
+                                    <td>
+                                        {{ $venta->cliente }}
+                                        @if(!empty($venta->razones_sociales))
+                                            <br><small>(Razón Social: {{ $venta->razones_sociales }})</small>
+                                        @endif
+                                    </td>
+                                    <td>{{ $venta->total_comprado }}</td>
+                                    <td>{{ number_format($venta->total_ingresos, 2) }} Bs.</td>
+                                    <td>
+                                        {{ $venta->productos_vendidos }} <!-- Mostrar la lista de productos comprados -->
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
-</div>
-
 </div>
 
 <!-- Script para previsualizar el PDF -->

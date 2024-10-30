@@ -34,15 +34,19 @@
 
             <!-- Información General -->
             @php
-                $fields = [
-                    'Tipo de comprobante' => $compra->comprobante->tipo_comprobante,
-                    'Número de comprobante' => $compra->numero_comprobante,
-                    'Proveedor' => $compra->proveedore->persona->razon_social,
-                    'Fecha' => \Carbon\Carbon::parse($compra->fecha_hora)->format('d-m-Y'),
-                    'Hora' => \Carbon\Carbon::parse($compra->fecha_hora)->format('H:i'),
-                    'Impuesto' => $compra->impuesto
-                ];
-            @endphp
+            $fields = [
+                'Tipo de comprobante' => $compra->comprobante->tipo_comprobante,
+                'Número de comprobante' => $compra->numero_comprobante,
+                'Proveedor' => $compra->proveedore->persona->nombre . ' ' .
+                              $compra->proveedore->persona->primer_apellido . ' ' .
+                              ($compra->proveedore->persona->segundo_apellido ?? '') . ' ' .
+                              ($compra->proveedore->persona->razonesSociales->pluck('razon_social')->join(', ') ?? 'N/A'),
+                'Fecha' => \Carbon\Carbon::parse($compra->fecha_hora)->format('d-m-Y'),
+                'Hora' => \Carbon\Carbon::parse($compra->fecha_hora)->format('H:i'),
+
+            ];
+        @endphp
+
 
             @foreach ($fields as $label => $value)
             <div class="row mb-4">
@@ -79,7 +83,6 @@
                         <th>Producto</th>
                         <th>Cantidad</th>
                         <th>Precio de compra</th>
-                        <th>Precio de venta</th>
                         <th>Subtotal</th>
                     </tr>
                 </thead>
@@ -89,23 +92,14 @@
                         <td>{{ $item->nombre }}</td>
                         <td>{{ $item->pivot->cantidad }}</td>
                         <td>{{ number_format($item->pivot->precio_compra, 2) }}</td>
-                        <td>{{ number_format($item->pivot->precio_venta, 2) }}</td>
                         <td class="td-subtotal">{{ number_format($item->pivot->cantidad * $item->pivot->precio_compra, 2) }}</td>
                     </tr>
                     @endforeach
                 </tbody>
                 <tfoot>
                     <tr>
-                        <th colspan="4">Sumas:</th>
+                        <th colspan="4">total:</th>
                         <th id="th-suma"></th>
-                    </tr>
-                    <tr>
-                        <th colspan="4">IGV:</th>
-                        <th id="th-igv"></th>
-                    </tr>
-                    <tr>
-                        <th colspan="4">Total:</th>
-                        <th id="th-total"></th>
                     </tr>
                 </tfoot>
             </table>

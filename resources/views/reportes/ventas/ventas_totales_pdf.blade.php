@@ -2,29 +2,23 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reporte de Ventas - {{ $mesSeleccionado }}/{{ $anio }}</title>
+    <title>Reporte de Ventas - {{ $fechaInicio }} a {{ $fechaFin }}</title>
     <style>
         body {
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: 'Arial', sans-serif;
             font-size: 12px;
             margin: 20px;
-            background-color: #f9f9f9;
             color: #333;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Asegura que el body ocupe al menos la altura de la ventana */
         }
         header {
             text-align: center;
             margin-bottom: 30px;
-            border-bottom: 2px solid #4CAF50;
-            padding-bottom: 10px;
+            position: relative;
         }
         header img {
             position: absolute;
@@ -34,34 +28,49 @@
         }
         header h1 {
             margin: 0;
-            color: #4CAF50;
             font-size: 24px;
+            color: #4CAF50;
         }
         header h2 {
             margin: 0;
-            color: #777;
             font-size: 18px;
+            color: #777;
         }
-        .footer {
+        header p {
+            margin: 0;
+            font-size: 14px;
+            color: #777;
+        }
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
             text-align: center;
             font-size: 10px;
             color: #777;
+            padding: 10px 0; /* Espaciado en el footer */
         }
         .page-number:after {
             content: counter(page);
         }
+        main {
+            margin-top: 20px;
+            flex: 1; /* Permite que el contenido crezca y empuje el footer hacia abajo */
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
             background-color: #fff;
+            border-radius: 5px;
+            overflow: hidden;
         }
         table, th, td {
             border: 1px solid #ddd;
         }
         th, td {
             padding: 12px;
-            text-align: center;
+            text-align: left;
         }
         th {
             background-color: #4CAF50;
@@ -70,76 +79,47 @@
         tbody tr:nth-child(even) {
             background-color: #f2f2f2;
         }
-        .totales-mes h3 {
-            margin-top: 20px;
-            color: #4CAF50;
-        }
-        .totales-mes table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .totales-mes th {
-            background-color: #4CAF50;
-            color: white;
+        tbody tr:hover {
+            background-color: #e0e0e0;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <img src="assets/images/Logo_lanago.png" alt="Logo Lanago" class="logo">
-            <h1>Reporte de Ventas</h1>
-            <h2>Mes: {{ \Carbon\Carbon::create()->month($mesSeleccionado)->translatedFormat('F') }} - Año: {{ $anio }}</h2>
-            <p>Fecha de impresión: {{ \Carbon\Carbon::now()->format('d/m/Y') }}</p>
-        </header>
+    <header>
+        <img src="assets/images/Logo_lanago.png" alt="Logo Lanago">
+        <h1>Reporte de Ventas</h1>
+        <h2>Del {{ \Carbon\Carbon::parse($fechaInicio)->format('d/m/Y') }} al {{ \Carbon\Carbon::parse($fechaFin)->format('d/m/Y') }}</h2>
+        <p>Fecha de impresión: {{ \Carbon\Carbon::now()->format('d/m/Y') }}</p>
+    </header>
 
-        <h3>Ventas del Mes Seleccionado</h3>
+    <main>
+        <h3>Ventas Totales por Rango de Fechas</h3>
         <table>
             <thead>
                 <tr>
-                    <th>Día</th>
+                    <th>Fecha</th>
                     <th>Total Ventas (Bs)</th>
                 </tr>
             </thead>
             <tbody>
-                @forelse ($ventasDelMesSeleccionado as $venta)
+                @forelse ($ventas as $venta)
                     <tr>
-                        <td>{{ $venta->dia }}</td>
-                        <td>{{ number_format($venta->total, 2) }}</td>
+                        <td>{{ \Carbon\Carbon::parse($venta->fecha)->format('d/m/Y') }}</td>
+                        <td>{{ number_format($venta->total, 2) }} Bs.</td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="2">No hay ventas registradas para este mes.</td>
+                        <td colspan="2">No hay ventas registradas para el período seleccionado.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
+    </main>
 
-        <div class="totales-mes">
-            <h3>Resumen Total de Ventas por Mes</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Mes</th>
-                        <th>Total Ventas (Bs)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($labels as $index => $mes)
-                        <tr style="background-color: {{ $colores[$index] }};">
-                            <td>{{ $mes }}</td>
-                            <td>{{ number_format($datosVentas[$index], 2) }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-
-        <footer>
-            <p>Lanago - Ventas Naturales</p>
-            <p>Contacto: info@lanago.com | Teléfono: +591 123 456 789</p>
-            Página <span class="page-number"></span>
-        </footer>
-    </div>
+    <footer>
+        <p>Lanago - Ventas Naturales</p>
+        <p>Contacto: info@lanago.com | Teléfono: +591 123 456 789</p>
+        Página <span class="page-number"></span>
+    </footer>
 </body>
 </html>

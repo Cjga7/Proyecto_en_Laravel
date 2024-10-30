@@ -11,36 +11,22 @@
             <li class="breadcrumb-item active">Ventas por Producto</li>
         </ol>
 
-        <!-- Formulario para seleccionar mes y año -->
+        <!-- Formulario para seleccionar rango de fechas -->
         <div class="row mb-4">
             <div class="col-lg-12">
                 <div class="card">
-                    <div class="card-header">Filtrar por Mes y Año</div>
+                    <div class="card-header">Filtrar por Rango de Fechas</div>
                     <div class="card-body">
                         <form action="{{ route('reportes.ventas.producto') }}" method="GET" class="form-inline">
                             <div class="form-group">
-                                <label for="mes" class="mr-2">Mes:</label>
-                                <select name="mes" id="mes" class="form-control mr-3">
-                                    <option value="">Todos</option>
-                                    @foreach (range(1, 12) as $month)
-                                        <option value="{{ $month }}"
-                                            {{ request('mes') == $month ? 'selected' : '' }}>
-                                            {{ ucfirst(\Carbon\Carbon::create()->month($month)->locale('es')->translatedFormat('F')) }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <label for="fecha_inicio" class="mr-2">Fecha Inicio:</label>
+                                <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control mr-3"
+                                       value="{{ request('fecha_inicio') }}">
                             </div>
                             <div class="form-group">
-                                <label for="anio" class="mr-2">Año:</label>
-                                <select name="anio" id="anio" class="form-control mr-3">
-                                    <option value="">Seleccione un año</option>
-                                    @foreach (range(now()->year, 2000) as $year)
-                                        <option value="{{ $year }}"
-                                            {{ request('anio') == $year ? 'selected' : '' }}>
-                                            {{ $year }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                <label for="fecha_fin" class="mr-2">Fecha Fin:</label>
+                                <input type="date" name="fecha_fin" id="fecha_fin" class="form-control mr-3"
+                                       value="{{ request('fecha_fin') }}">
                             </div>
 
                             <!-- Botones de Filtrar y Previsualizar PDF -->
@@ -48,8 +34,8 @@
                                 <button type="submit" class="btn btn-primary">Filtrar</button>
 
                                 <!-- Enlace para previsualizar y luego imprimir el PDF -->
-                                <a href="{{ route('reportes.ventas.producto', ['mes' => request('mes'), 'anio' => request('anio'), 'pdf' => 1]) }}"
-                                    class="btn btn-success ms-2" onclick="previsualizarPDF(event, this.href)">
+                                <a href="{{ route('reportes.ventas.producto', ['fecha_inicio' => request('fecha_inicio'), 'fecha_fin' => request('fecha_fin'), 'pdf' => 1]) }}"
+                                   class="btn btn-success ms-2" onclick="previsualizarPDF(event, this.href)">
                                     <i class="fa fa-print"></i> Previsualizar PDF
                                 </a>
                             </div>

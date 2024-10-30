@@ -39,9 +39,6 @@
             <a href="{{ route('reportes.productos.inventario', array_merge(request()->query(), ['preview' => 'pdf'])) }}" class="btn btn-info me-2">
                 <i class="bi bi-eye"></i> Previsualizar PDF
             </a>
-            <a href="{{ route('reportes.productos.inventario', array_merge(request()->query(), ['download' => 'pdf'])) }}" class="btn btn-danger">
-                <i class="bi bi-file-earmark-pdf"></i> Descargar PDF
-            </a>
         </div>
     </div>
 

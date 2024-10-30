@@ -67,23 +67,20 @@ class profileController extends Controller
         $request->validate([
             'name' => 'required',
             'email' => 'required|unique:users,email,' . $profile->id,
-            'password' => 'nullable'
+            'password' => 'nullable|confirmed' // Se agrega la confirmación aquí
         ]);
 
-        /*Comprobar el password y aplicar el Hash*/
-        if (empty($request->password)) {
-            $request = Arr::except($request, array('password'));
-        } else {
-            $fieldHash = Hash::make($request->password);
-            $request->merge(['password' => $fieldHash]);
+        /* Comprobar el password y aplicar el Hash */
+        $data = $request->except(['password', 'password_confirmation']);
+
+        if (!empty($request->password)) {
+            $data['password'] = Hash::make($request->password);
         }
 
-        $profile->update($request->all());
-
+        $profile->update($data);
 
         return redirect()->route('profile.index')->with('success', 'Cambios guardados');
     }
-
     /**
      * Remove the specified resource from storage.
      */

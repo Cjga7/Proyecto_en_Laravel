@@ -38,7 +38,7 @@ class userController extends Controller
     public function create()
     {
         $roles = Role::all();
-        return view('user.create',compact('roles'));
+        return view('user.create', compact('roles'));
     }
 
     /**
@@ -55,13 +55,13 @@ class userController extends Controller
             $request->merge(['password' => $fieldHash]);
 
             //Crear usuario
-           $user= User::create($request->all());
+            $user = User::create($request->all());
 
             //Asignar rol
             $user->assignRole($request->role);
 
             DB::commit();
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             DB::rollback();
         }
         return redirect()->route('users.index')->with('success', 'Usuario registrado');
@@ -81,7 +81,7 @@ class userController extends Controller
     public function edit(User $user)
     {
         $roles = Role::all();
-        return view('user.edit',compact('user','roles'));
+        return view('user.edit', compact('user', 'roles'));
     }
 
     /**
@@ -92,26 +92,29 @@ class userController extends Controller
         try {
             DB::beginTransaction();
 
-            //Comprobar el password y aplicar el hash
-            if(empty($request->password)){
-                $request = Arr::except($request, array(['password']));
-            }else{
+            // Comprobar el password y aplicar el hash
+            if (empty($request->password)) {
+                $requestData = Arr::except($request->all(), ['password']); // Excluye el password
+            } else {
                 $fieldHash = Hash::make($request->password);
-                $request->merge(['password' => $fieldHash]);
+                $requestData = $request->merge(['password' => $fieldHash])->all(); // Si se proporciona, haz el hash
             }
 
-            $user->update($request->all());
+            $user->update($requestData);
 
-            //actualiar rol
+            // Actualizar rol
             $user->syncRoles([$request->role]);
 
-
             DB::commit();
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
+            // Aquí puedes manejar el error, quizás registrar el error o mostrar un mensaje.
+            return back()->withErrors(['error' => 'No se pudo actualizar el usuario.']);
         }
+
         return redirect()->route('users.index')->with('success', 'Usuario editado');
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -127,6 +130,6 @@ class userController extends Controller
         //Eliminar usuario
         $user->delete();
 
-        return redirect()->route('users.index')->with('success','Usuario eliminado');
+        return redirect()->route('users.index')->with('success', 'Usuario eliminado');
     }
 }

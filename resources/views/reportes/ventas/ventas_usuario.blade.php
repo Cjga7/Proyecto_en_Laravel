@@ -11,26 +11,19 @@
         <li class="breadcrumb-item active">Ventas por Usuario</li>
     </ol>
 
-    <!-- Formulario de filtro por mes y año -->
+    <!-- Formulario de filtro por rango de fechas -->
     <form action="{{ route('reportes.ventas.usuario') }}" method="GET" class="mb-4">
         <div class="row">
             <div class="col-md-3">
                 <div class="form-group">
-                    <label for="mes">Mes</label>
-                    <select name="mes" id="mes" class="form-control">
-                        <option value="">Todos</option>
-                        @for($i = 1; $i <= 12; $i++)
-                            <option value="{{ $i }}" {{ request('mes') == $i ? 'selected' : '' }}>
-                                {{ \Carbon\Carbon::create()->month($i)->translatedFormat('F') }}
-                            </option>
-                        @endfor
-                    </select>
+                    <label for="fecha_inicio">Fecha de Inicio</label>
+                    <input type="date" name="fecha_inicio" id="fecha_inicio" value="{{ request('fecha_inicio') }}" class="form-control">
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="form-group">
-                    <label for="anio">Año</label>
-                    <input type="number" name="anio" id="anio" value="{{ request('anio', date('Y')) }}" class="form-control" placeholder="Año">
+                    <label for="fecha_fin">Fecha de Fin</label>
+                    <input type="date" name="fecha_fin" id="fecha_fin" value="{{ request('fecha_fin') }}" class="form-control">
                 </div>
             </div>
 
@@ -39,7 +32,7 @@
                 <button type="submit" class="btn btn-primary">Filtrar</button>
 
                 <!-- Enlace para previsualizar y luego imprimir el PDF -->
-                <a href="{{ route('reportes.ventas.usuario', ['mes' => request('mes'), 'anio' => request('anio'), 'pdf' => 1]) }}"
+                <a href="{{ route('reportes.ventas.usuario', ['fecha_inicio' => request('fecha_inicio'), 'fecha_fin' => request('fecha_fin'), 'pdf' => 1]) }}"
                    class="btn btn-success ms-2" onclick="previsualizarPDF(event, this.href)">
                     <i class="fa fa-print"></i> Previsualizar PDF
                 </a>

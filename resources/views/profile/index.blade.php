@@ -82,6 +82,14 @@
                     </div>
                 </div>
 
+                <!-- Confirm Password -->
+                <div class="mb-3 row">
+                    <label for="password_confirmation" class="col-md-3 col-form-label">Confirmar Contraseña</label>
+                    <div class="col-md-9">
+                        <input type="password" class="form-control" name="password_confirmation" id="password_confirmation" placeholder="Confirme su nueva contraseña">
+                    </div>
+                </div>
+
                 <div class="text-end">
                     <button type="submit" class="btn btn-success">Guardar Cambios</button>
                 </div>

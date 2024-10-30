@@ -10,44 +10,29 @@
             <li class="breadcrumb-item"><a href="{{ route('reportes.compras.index') }}">Reportes de Compras</a></li>
             <li class="breadcrumb-item active">Compras Totales</li>
         </ol>
-        <!-- Formulario de selección de mes y año -->
+
+        <!-- Formulario de selección de rango de fechas -->
         <div class="row mb-4">
             <div class="col-lg-12">
                 <div class="card">
-                    <div class="card-header">Filtrar Compras por Mes y Año</div>
+                    <div class="card-header">Filtrar Compras por Rango de Fechas</div>
                     <div class="card-body">
                         <form action="{{ route('reportes.compras.totales') }}" method="GET">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <label for="mes" class="form-label">Mes:</label>
-                                    <select name="mes" id="mes" class="form-select">
-                                        @for ($i = 1; $i <= 12; $i++)
-                                            <option value="{{ $i }}"
-                                                {{ request('mes') == $i ? 'selected' : '' }}>
-                                                {{ \Carbon\Carbon::create()->month($i)->translatedFormat('F') }}
-                                            </option>
-                                        @endfor
-                                    </select>
+                                    <label for="fecha_inicio" class="form-label">Fecha de Inicio:</label>
+                                    <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control" value="{{ request('fecha_inicio') }}" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="anio" class="form-label">Año:</label>
-                                    <select name="anio" id="anio" class="form-select">
-                                        @for ($i = date('Y'); $i >= 2000; $i--)
-                                            <option value="{{ $i }}"
-                                                {{ request('anio') == $i ? 'selected' : '' }}>
-                                                {{ $i }}
-                                            </option>
-                                        @endfor
-                                    </select>
+                                    <label for="fecha_fin" class="form-label">Fecha de Fin:</label>
+                                    <input type="date" name="fecha_fin" id="fecha_fin" class="form-control" value="{{ request('fecha_fin') }}" required>
                                 </div>
                                 <div class="col-md-12 d-flex align-items-end mt-2">
                                     <button type="submit" class="btn btn-primary">Filtrar</button>
-                                    <!-- Enlace para previsualizar y luego imprimir el PDF -->
-                                    <a href="{{ route('reportes.compras.totales', ['mes' => request('mes'), 'anio' => request('anio'), 'pdf' => 1]) }}"
+                                    <a href="{{ route('reportes.compras.totales', ['fecha_inicio' => request('fecha_inicio'), 'fecha_fin' => request('fecha_fin'), 'pdf' => 1]) }}"
                                         class="btn btn-success ms-2" onclick="previsualizarPDF(event, this.href)">
                                         <i class="fa fa-print"></i> Previsualizar PDF
                                     </a>
-                                    <a href="{{ route('reportes.compras.totales', ['mes' => request('mes'), 'anio' => request('anio'), 'excel' => 1]) }}" class="btn btn-success ms-2">Descargar Excel</a>
                                 </div>
                             </div>
                         </form>
@@ -56,14 +41,12 @@
             </div>
         </div>
 
-        <!-- Mostrar la tabla de compras solo del mes seleccionado -->
-        @if ($comprasDelMesSeleccionado->count() > 0)
+        <!-- Mostrar la tabla de compras solo del rango de fechas seleccionado -->
+        @if ($compras->count() > 0)
             <div class="row mb-4">
                 <div class="col-lg-12">
                     <div class="card">
-                        <div class="card-header">Reporte de Compras para
-                            {{ \Carbon\Carbon::create()->month($mesSeleccionado)->translatedFormat('F') }}
-                            {{ $anioSeleccionado }}</div>
+                        <div class="card-header">Reporte de Compras desde {{ \Carbon\Carbon::parse($fechaInicio)->format('d/m/Y') }} hasta {{ \Carbon\Carbon::parse($fechaFin)->format('d/m/Y') }}</div>
                         <div class="card-body">
                             <table class="table table-striped">
                                 <thead>
@@ -73,9 +56,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($comprasDelMesSeleccionado as $compra)
+                                    @foreach ($compras as $compra)
                                         <tr>
-                                            <td>{{ $compra->dia }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($compra->fecha)->format('d/m/Y') }}</td>
                                             <td>{{ number_format($compra->total, 2) }} Bs.</td>
                                         </tr>
                                     @endforeach
@@ -90,8 +73,7 @@
             <div class="row mb-4">
                 <div class="col-lg-12">
                     <div class="card">
-                        <div class="card-header">Gráfico de Compras por Mes (Resaltando
-                            {{ \Carbon\Carbon::create()->month($mesSeleccionado)->translatedFormat('F') }})</div>
+                        <div class="card-header">Gráfico de Compras por Mes</div>
                         <div class="card-body">
                             <canvas id="comprasTotalesPorMesChart" width="400" height="200"></canvas>
                         </div>
@@ -139,7 +121,7 @@
             <div class="row mb-4">
                 <div class="col-lg-12">
                     <div class="alert alert-info">
-                        No se encontraron compras para el mes seleccionado.
+                        No se encontraron compras en el rango de fechas seleccionado.
                     </div>
                 </div>
             </div>
