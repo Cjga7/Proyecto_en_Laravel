@@ -130,11 +130,39 @@ class compraController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
-    {
-        Compra::where('id',$id)
-        ->update([
-            'estado' => 0
-        ]);
-        return redirect()->route('compras.index')->with('success', 'compra eliminada');
+{
+    try {
+        DB::beginTransaction();
+
+        // Obtener la compra que se va a anular
+        $compra = Compra::findOrFail($id);
+
+        // Verificar que la compra está activa (estado 1) antes de actualizar el stock
+        if ($compra->estado === 1) {
+            // Obtener los productos comprados en la compra
+            $productosComprados = DB::table('compra_producto')
+                ->where('compra_id', $id)
+                ->get();
+
+            // Decrementar el stock de cada producto comprado
+            foreach ($productosComprados as $productoComprado) {
+                $producto = Producto::findOrFail($productoComprado->producto_id);
+                $producto->decrement('stock', intval($productoComprado->cantidad));
+            }
+
+            // Cambiar el estado de la compra a 0 para marcarla como anulada
+            $compra->estado = 0;
+            $compra->save();
+
+            DB::commit();
+            return redirect()->route('compras.index')->with('success', 'Compra anulada y stock actualizado');
+        } else {
+            return redirect()->route('compras.index')->with('error', 'La compra ya está anulada.');
+        }
+    } catch (Exception $e) {
+        DB::rollBack();
+        return redirect()->route('compras.index')->with('error', 'Error al anular la compra: ' . $e->getMessage());
     }
+}
+
 }

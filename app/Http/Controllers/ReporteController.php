@@ -53,13 +53,14 @@ class ReporteController extends Controller
         $datosVentas = [];
         $colores = [];
 
-        // Filtrar ventas en el rango de fechas seleccionado
+        // Filtrar ventas en el rango de fechas seleccionado y estado igual a 1
         if ($fechaInicio && $fechaFin) {
             $ventas = Venta::select(
                 DB::raw('SUM(total) as total'),
                 DB::raw('DATE(fecha_hora) as fecha')
             )
             ->whereBetween('fecha_hora', [$fechaInicio, $fechaFin])
+            ->where('estado', 1) // Filtrar solo ventas con estado igual a 1
             ->groupBy('fecha')
             ->get();
 
@@ -85,13 +86,14 @@ class ReporteController extends Controller
 
 
 
+
     public function ventasPorProducto(Request $request)
     {
         // Obtener los filtros de rango de fechas
         $fechaInicio = $request->input('fecha_inicio');
         $fechaFin = $request->input('fecha_fin');
 
-        // Consulta para obtener las ventas por producto
+        // Consulta para obtener las ventas por producto, incluyendo solo las ventas con estado igual a 1
         $query = DB::table('producto_venta')
             ->join('productos', 'producto_venta.producto_id', '=', 'productos.id')
             ->join('ventas', 'producto_venta.venta_id', '=', 'ventas.id')
@@ -100,6 +102,7 @@ class ReporteController extends Controller
                 DB::raw('SUM(producto_venta.cantidad) as total_vendido'),
                 DB::raw('SUM(producto_venta.cantidad * producto_venta.precio_venta) as total_ingresos')
             )
+            ->where('ventas.estado', 1) // Filtrar solo ventas con estado igual a 1
             ->groupBy('productos.nombre');
 
         // Aplicar el filtro por rango de fechas si se han proporcionado
@@ -133,7 +136,7 @@ class ReporteController extends Controller
             ->select('persona_id', DB::raw("GROUP_CONCAT(DISTINCT razon_social SEPARATOR ', ') as razones_sociales"))
             ->groupBy('persona_id');
 
-        // Consulta principal para obtener ventas por cliente
+        // Consulta principal para obtener ventas por cliente, incluyendo solo las ventas con estado igual a 1
         $query = DB::table('ventas')
             ->join('clientes', 'ventas.cliente_id', '=', 'clientes.id')
             ->join('personas', 'clientes.persona_id', '=', 'personas.id') // Relación cliente -> persona
@@ -149,6 +152,7 @@ class ReporteController extends Controller
                 DB::raw('SUM(producto_venta.cantidad * producto_venta.precio_venta) as total_ingresos'),
                 DB::raw("GROUP_CONCAT(CONCAT(productos.nombre, ' (', producto_venta.cantidad, ')') SEPARATOR ', ') as productos_vendidos") // Lista de productos y cantidades
             )
+            ->where('ventas.estado', 1) // Filtrar solo ventas con estado igual a 1
             ->groupBy('personas.id', 'personas.nombre', 'personas.primer_apellido', 'personas.segundo_apellido', 'rs.razones_sociales');
 
         // Aplicar filtros de rango de fechas si están presentes
@@ -171,13 +175,14 @@ class ReporteController extends Controller
 
 
 
+
     public function ventasPorUsuario(Request $request)
     {
         // Obtener los filtros de fecha de inicio y fin del request
         $fecha_inicio = $request->input('fecha_inicio');
         $fecha_fin = $request->input('fecha_fin');
 
-        // Consulta para obtener ventas por usuario
+        // Consulta para obtener ventas por usuario, incluyendo solo las ventas con estado igual a 1
         $query = DB::table('ventas')
             ->join('users', 'ventas.user_id', '=', 'users.id')
             ->join('producto_venta', 'ventas.id', '=', 'producto_venta.venta_id')
@@ -186,6 +191,7 @@ class ReporteController extends Controller
                 DB::raw('SUM(producto_venta.cantidad) as total_productos_vendidos'),
                 DB::raw('SUM(producto_venta.cantidad * producto_venta.precio_venta) as total_ingresos')
             )
+            ->where('ventas.estado', 1) // Filtrar solo ventas con estado igual a 1
             ->groupBy('users.name'); // Agrupar por el nombre del usuario
 
         // Aplicar el filtro de rango de fechas si están presentes
@@ -208,6 +214,7 @@ class ReporteController extends Controller
 
         return view('reportes.ventas.ventas_usuario', compact('ventas', 'fecha_inicio', 'fecha_fin'));
     }
+
 
 
 

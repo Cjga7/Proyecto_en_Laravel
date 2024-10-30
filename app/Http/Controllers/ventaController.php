@@ -129,10 +129,39 @@ class ventaController extends Controller
 
     public function destroy(string $id)
     {
-        Venta::where('id', $id)
-            ->update([
-                'estado' => 0
-            ]);
-        return redirect()->route('ventas.index')->with('success', 'Venta eliminada');
+        try {
+            DB::beginTransaction();
+
+            // Obtener la venta que se va a anular
+            $venta = Venta::findOrFail($id);
+
+            // Verificar que la venta está activa (estado 1) antes de actualizar el stock
+            if ($venta->estado === 1) {
+                // Obtener los productos vendidos en la venta
+                $productosVendidos = DB::table('producto_venta')
+                    ->where('venta_id', $id)
+                    ->get();
+
+                // Incrementar el stock de cada producto vendido
+                foreach ($productosVendidos as $productoVendido) {
+                    $producto = Producto::findOrFail($productoVendido->producto_id);
+                    $producto->stock += $productoVendido->cantidad;
+                    $producto->save();
+                }
+
+                // Cambiar el estado de la venta a 0 para marcarla como anulada
+                $venta->estado = 0;
+                $venta->save();
+
+                DB::commit();
+                return redirect()->route('ventas.index')->with('success', 'Venta anulada y stock actualizado');
+            } else {
+                return redirect()->route('ventas.index')->with('error', 'La venta ya está anulada.');
+            }
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->route('ventas.index')->with('error', 'Error al anular la venta: ' . $e->getMessage());
+        }
     }
+
 }
