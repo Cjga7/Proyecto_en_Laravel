@@ -4,11 +4,11 @@
 
 @section('content')
 <div class="container-fluid px-4">
-    <h1 class="mt-4 text-center">Inventario de Productos</h1>
+    <h1 class="mt-4 text-center">Todos los Productos</h1>
     <ol class="breadcrumb mb-4">
         <li class="breadcrumb-item"><a href="{{ route('panel') }}">Inicio</a></li>
         <li class="breadcrumb-item"><a href="{{ route('reportes.productos.index') }}">Reportes de Productos</a></li>
-        <li class="breadcrumb-item active">Inventario Actual</li>
+        <li class="breadcrumb-item active">Productos Actuales</li>
     </ol>
 
     <!-- Barra de búsqueda, filtro y botón de descarga PDF -->

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reporte de Inventario</title>
+    <title>Reporte de Productos</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -77,7 +77,7 @@
 <body>
     <header>
         <img src="assets/images/Logo_lanago.png" alt="Logo Lanago">
-        <h1>Reporte de Inventario</h1>
+        <h1>Reporte de Productos</h1>
         <p>Fecha de impresión: {{ \Carbon\Carbon::now()->format('d/m/Y') }}</p>
     </header>
 
